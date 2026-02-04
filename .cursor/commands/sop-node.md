@@ -1,0 +1,1 @@
+根据给定的详细设计 $ARGUMENTS ，输出提示词（保存在 .aisdlc-cli\commands 下），及对应的模版（保存在 .aisdlc-cli\templates\spec 下）
