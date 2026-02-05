@@ -26,19 +26,22 @@ D1 的目标是把需求/重构的**问题域与不确定性**变成可执行的
 
 - **FEATURE_DIR**：由 `Get-SpecContext` 自动获取，定位到 `.aisdlc/specs/{num}-{short-name}/`
 - **必读输入**：
-  - `{FEATURE_DIR}/requirements/clarify.md`（范围边界与约束）
+  - **需求路径**：`{FEATURE_DIR}/requirements/clarify.md`（范围边界与约束）
+  - **重构路径**：`{FEATURE_DIR}/refactors/clarify.md` + `{FEATURE_DIR}/refactors/baseline.md`
   - `{FEATURE_DIR}/requirements/solutions.md` 或 `requirements/prd.md`（若存在）
 - **输出**：`{FEATURE_DIR}/design/research.md`
 
 ### 1.2 必读材料（最小必要读取）
 
-- `requirements/clarify.md`（In/Out 与约束）
+- **需求路径**：`requirements/clarify.md`（In/Out 与约束）
+- **重构路径**：`refactors/clarify.md` + `refactors/baseline.md`（不变量/允许变化点/基线）
 -（按需）相关现状代码、依赖拓扑、运行指标、协议/数据口径入口
 
 ---
 
 ## 2. 强制门禁（MUST）
 
+- **必须基于明确路径输入**：需求路径用 `requirements/clarify.md`；重构路径用 `refactors/clarify.md` + `refactors/baseline.md`。
 - **必须列出所有未知项并标注为 "NEEDS CLARIFICATION"**。
 - **必须输出研究结论**，且以“决策 / 理由 / 备选方案”三段式呈现。
 - **未知项未解决不得进入 D2**（门禁失败则 ERROR）。

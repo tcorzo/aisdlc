@@ -26,13 +26,22 @@ D2 的目标是把需求/重构稳定落到**可评审的方案**：明确系统
 
 - **FEATURE_DIR**：由 `Get-SpecContext` 自动获取，定位到 `.aisdlc/specs/{num}-{short-name}/`
 - **必读输入**：
-  - `{FEATURE_DIR}/requirements/clarify.md`
+  - **需求路径**：`{FEATURE_DIR}/requirements/clarify.md`
+  - **重构路径**：`{FEATURE_DIR}/refactors/clarify.md` + `{FEATURE_DIR}/refactors/baseline.md`
   - `{FEATURE_DIR}/requirements/solutions.md` 或 `requirements/prd.md`
   - `{FEATURE_DIR}/design/research.md`（若存在）
 - **输出**：`{FEATURE_DIR}/design/solution.md`
 
 ### 1.2 必读材料（最小必要读取）
 
+- **标准路径输入**：
+  - `{FEATURE_DIR}/requirements/clarify.md`
+  - `{FEATURE_DIR}/requirements/solutions.md` 或 `requirements/prd.md`
+- **重构路径输入**：
+  - `{FEATURE_DIR}/refactors/clarify.md`
+  - `{FEATURE_DIR}/refactors/baseline.md`
+- **小需求直达 D2（仅文档约定）**：
+  - `{FEATURE_DIR}/requirements/raw.md`
 - 项目级 `project/memory/*`
 - 相关 `project/contracts/` 与 `project/adr/` 索引
 
@@ -40,6 +49,12 @@ D2 的目标是把需求/重构稳定落到**可评审的方案**：明确系统
 
 ## 2. 强制门禁（MUST）
 
+- **标准路径**：必须有 `requirements/clarify.md` 与 `requirements/solutions.md`/`requirements/prd.md`，缺失则不得生成。
+- **重构路径**：必须有 `refactors/clarify.md` 与 `refactors/baseline.md`，缺失则不得生成。
+- **小需求直达 D2（仅文档约定）**：
+  - 允许缺少 `clarify.md` 与 `solutions.md`/`prd.md`
+  - **必须**读取 `requirements/raw.md`
+  - **必须**在 `solution.md` 显式标注“小需求直达 D2”，并补齐最小化需求摘要、边界、未知项与追溯链接
 - **必须覆盖目标/范围/边界**，与需求分析保持一致。
 - **必须给出核心流程或系统边界图**（Mermaid 优先）。
 - **必须记录关键设计决策**（若涉及新决策，需创建或引用 ADR）。

@@ -57,22 +57,21 @@
 
 ---
 
-## SDLC 各阶段：Spec 输入与输出（面向 Agent 的"信息需求表"）
+## Spec 的 7 阶段（顶层规划：只定义核心输出）
 
-> 说明：这里的"Spec（输入）"指 Agent 需要读取的信息资产；"输出"指该阶段产出的新文档/结构化资产（同样进入知识库）。
+> 说明：
+> - 这里的“阶段”指 **需求级 Spec Pack** 的执行闭环阶段（**不包含**项目级长期资产的日常治理）。
+> - 每个阶段只定义“**核心输出**”，避免在顶层规划中写成细节 SOP；SOP/门禁由各阶段的专项文档补齐。
 
-| 阶段 | 目标 | Agent 主要输入（Spec） | 主要输出（进入知识库的资产） |
-|---|---|---|---|
-| 0. 基础/根上下文 | 统一价值观、术语、约束 | 项目级 Memory（产品愿景/边界、技术栈、结构约定、编码规范、术语表、合规要求） | 项目级 `memory/` 全局文件；`glossary.md`；基础规范清单 |
-| 1. 产品设计（Discovery/Concept） | 明确"做什么/为什么做" | 项目级 Memory、业务背景、目标用户、竞品/替代方案、成功指标、约束（预算/周期/合规） | 需求级 PRD（概念级）、范围边界、里程碑、风险清单 |
-| 2. 需求开发（Backlog/Scope） | 从想法到可交付的需求集合 | 项目级 Memory、PRD、用户画像、业务流程、现状与痛点、战略/OKR | 需求级 Epic/Feature 列表、优先级与版本规划、初版验收口径 |
-| 3. 需求分析（SRS/Use case） | 把需求写成可实现的规格 | 项目级 Memory、需求列表、术语表、现有系统约束、合规/安全要求 | 需求级用户故事/用例、状态机/流程图、异常与边界、验收标准（AC） |
-| 4. 需求设计（Solution/Architecture） | 将需求映射到技术方案 | 项目级 Memory、项目级架构、SRS/用例、NFR、现有架构/资源、技术栈约束 | 需求级架构方案、模块边界、数据模型、API 契约（OpenAPI）、ADR |
-| 5. 详细设计（Detailed Design） | 可编码的细粒度设计 | 项目级 Memory、项目级架构、需求级架构方案、API/数据模型、编码规范 | 需求级组件/类/接口设计、时序图、伪代码、迁移方案、测试设计输入 |
-| 6. 需求编码（Implementation） | 产出可运行代码 | 项目级 Memory、项目级架构、需求级详细设计、接口契约、数据模型、质量门禁、依赖策略 | 需求级代码实现；实现追溯（Spec ID ↔ 代码/PR）；变更记录 |
-| 7. 需求测试（QA/Verification） | 验证符合 Spec 与质量目标 | 项目级 Memory、需求级验收标准、风险清单、API/流程、NFR | 需求级测试策略、测试用例（含边界/回归）、测试报告、缺陷与复盘 |
-| 8. 发布与运维（Release/Ops） | 安全上线与可观测运行 | 项目级 Memory、项目级运行手册、需求级变更说明、风险与回滚、依赖与配置、测试报告 | 需求级发布计划、Runbook、监控告警、SLO、回滚手册、事故复盘；晋升到项目级运行资产 |
-| 9. 迭代与维护（Iteration） | 基于反馈持续演进 | 项目级 Memory、项目级 Registry、线上指标、用户反馈、缺陷复盘、技术债清单 | 需求级需求/技术债 Backlog、版本回顾、ADR 补充；晋升到项目级知识库修订 |
+| 阶段 | 核心目标 | 核心输出（Spec Pack 产物） |
+|---|---|---|
+| 1. 产品需求（product） | 明确“做什么/为什么做/成功标准是什么” | `requirements/raw.md`（原始需求）＋ `requirements/prd.md`（PRD：目标/范围/关键流程/验收口径/风险） |
+| 2. 重构需求（refactor） | 明确“为什么要重构/基线是什么/不变量与允许变化点” | `refactors/clarify.md`（目标/范围/约束/不变量）＋ `refactors/baseline.md`（现状基线：结构/依赖/指标/痛点） |
+| 3. 需求设计（design） | 把需求/重构映射为可评审方案 | `design/solution.md`（概要方案、边界、关键权衡）＋（按需）`design/research.md`、契约/数据模型、ADR 入口 |
+| 4. 需求实现（implementation） | 把方案落到可执行的实现计划并完成变更 | `implementation/plan.md`（实现计划）＋ `implementation/tasks.md`（任务分解）＋ 代码变更与追溯链接（Spec ↔ PR/提交） |
+| 5. 需求测试（verification） | 验证功能与非功能满足验收口径 | `verification/plan.md`（测试策略/范围）＋ 用例/回归集 ＋ `verification/report.md`（测试报告与结论） |
+| 6. 发布（release） | 可控上线、可观测运行、可回滚 | `release/plan.md`（发布计划）＋ `release/runbook.md`（运行手册）＋ `release/monitoring.md`（监控告警）＋ `release/rollback.md`（回滚方案） |
+| 7. 回档（merge-back） | 将“可复用资产”晋升回项目级 SSOT，其余归档留证 | `merge_back.md`（清单与证据）：ADR/契约/运维资产/NFR 基线等是否已同步到 `project/`；并更新 Registry 状态 |
 
 ---
 
@@ -116,12 +115,15 @@
   specs                          # 需求级 SSOT（交付闭环）
     001-demo                      # 需求 ID（格式：{num}-{domain-name}，num 为三位数字编号）
       merge_back.md                # Merge-back 执行时生成
-      requirements                 # 需求分析阶段
+      requirements                 # 产品需求（product）阶段（原始需求/PRD/用例等）
         raw.md                     # 原始需求
         prd.md                     # 产品需求文档
         backlog.md                 # 需求列表、优先级
         usecase.md                 # 用例、用户故事
         ...
+      refactors                    # 重构需求阶段（仅重构类需求需要）
+        clarify.md                 # 目标/范围/约束/不变量
+        baseline.md                # 现状基线（结构/依赖/指标/痛点）
       design                       # 设计阶段
         research.md                # 调研、竞品分析
         solution.md                # 方案设计、ADR
@@ -359,14 +361,13 @@ related_tests:
 
 ### 需求级输出（交付闭环）
 
-- **产品设计输出**：`specs/<DEMAND-ID>/requirements/raw.md`、`prd.md`（愿景补充、用户研究、概念 PRD、关键流程）
-- **需求开发输出**：`specs/<DEMAND-ID>/requirements/backlog.md`（版本规划、优先级、范围边界、风险）
-- **需求分析输出**：`specs/<DEMAND-ID>/requirements/usecase.md`（用例、状态机、AC、术语扩展）
-- **方案/架构输出**：`specs/<DEMAND-ID>/design/solution.md`、`api.yaml`、`data.md`（模块设计、ADR、OpenAPI、数据模型）
-- **详细设计输出**：`specs/<DEMAND-ID>/design/sequence.md`（时序图、伪代码、组件设计）
-- **实现侧补充**：`specs/<DEMAND-ID>/implementation/`（实现计划、任务分解、迁移步骤、性能/安全验证记录）
-- **测试输出**：`specs/<DEMAND-ID>/verification/`（测试计划、用例、报告、回归集）
-- **发布运维输出**：`specs/<DEMAND-ID>/release/`（发布计划、Runbook、监控告警、回滚、复盘）
+- **产品需求（product）**：`specs/<DEMAND-ID>/requirements/raw.md`、`requirements/prd.md`（目标/范围/关键流程/验收口径）
+- **重构需求（refactor）**：`specs/<DEMAND-ID>/refactors/clarify.md`、`refactors/baseline.md`（仅重构类需求需要）
+- **需求设计（design）**：`specs/<DEMAND-ID>/design/`（`solution.md` 为核心；按需包含 research/契约/数据/时序等）
+- **需求实现（implementation）**：`specs/<DEMAND-ID>/implementation/`（计划、任务分解、迁移与验证记录；并在代码/PR中回链追溯）
+- **需求测试（verification）**：`specs/<DEMAND-ID>/verification/`（测试计划、用例/回归集、报告）
+- **发布（release）**：`specs/<DEMAND-ID>/release/`（发布计划、Runbook、监控告警、回滚、复盘）
+- **回档（merge-back）**：`specs/<DEMAND-ID>/merge_back.md`（晋升清单与证据：同步到 `project/` 的 ADR/契约/运维/NFR 等）
 
 ---
 

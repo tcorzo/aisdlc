@@ -39,7 +39,9 @@ principles_ref: design/aisdlc.md
 ### 2.2 Agent 读取顺序（渐进式披露）
 
 - **必读（项目级）**：`project/memory/*`（业务/技术/结构/术语）与 `project/contracts/`、`project/adr/` 索引。
-- **按需（需求级）**：仅在明确处理某个 `<DEMAND-ID>` 时读取该需求的 `requirements/*` 与 `design/*`。
+- **按需（需求级）**：仅在明确处理某个 `<DEMAND-ID>` 时读取该需求的：
+  - **需求路径**：`requirements/*` 与 `design/*`
+  - **重构路径**：`refactors/*` 与 `design/*`（R2 的 DoR 作为进入 design 的前置门禁）
 - **回写（入库）**：每个模块独立产出一个文件或一个章节，保持可替换与可审计。
 
 ---
@@ -50,11 +52,21 @@ principles_ref: design/aisdlc.md
 
 **最短路径（小需求）**：
 
-`D2 概要设计`
+`spec-init → D2 概要设计（小需求直达） → 执行`
+
+说明：
+- **仅文档约定**：允许缺少 `requirements/clarify.md` 与 `requirements/solutions.md`/`requirements/prd.md`
+- **最小输入**：`requirements/raw.md`
+- **门禁要求**：`design/solution.md` 中必须标注“小需求直达 D2”，并补齐最小化需求摘要、边界、未知项与追溯链接
 
 **增强路径（中大型需求/重构）**：
 
 `D1 大纲与研究 → D2 概要设计 → D3 详细设计、契约`
+
+**重构路径进入 design 的前置条件**：
+
+- 必须完成 R0~R2（见 `design/aisdlc_spec_refactor.md`）
+- **R2 的 DoR 清单**作为进入 design 的硬门禁
 
 ---
 
@@ -75,7 +87,10 @@ principles_ref: design/aisdlc.md
 1. **设置（Setup）**：
    - 读取当前需求上下文（分支/目录），确定 `<DEMAND-ID>` 与 `specs/<DEMAND-ID>/design/` 目录。
 2. **加载上下文（Load context）**：
-   - 读取 `requirements/` 关键产物（如 `clarify.md`、`solutions.md`、`prd.md`），以及项目级 `memory/`、`contracts/`、`adr/`。
+   - 读取关键产物：
+     - **需求路径**：`requirements/clarify.md`、`requirements/solutions.md` 或 `requirements/prd.md`
+     - **重构路径**：`refactors/clarify.md`、`refactors/baseline.md`
+   - 以及项目级 `memory/`、`contracts/`、`adr/`。
 3. **执行工作流（Execute workflow）**：
    - 依据模块模板执行，**将未知项标记为“NEEDS CLARIFICATION”**。
    - **门禁未通过则报错**（ERROR），不得落盘下一阶段产物。
@@ -92,7 +107,8 @@ principles_ref: design/aisdlc.md
 
 ### 5.2 输入
 
-- `requirements/` 关键产物（如 `clarify.md` / `solutions.md` / `prd.md`）
+- **需求路径**：`requirements/` 关键产物（如 `clarify.md` / `solutions.md` / `prd.md`）
+- **重构路径**：`refactors/clarify.md` + `refactors/baseline.md`
 - 项目级 `memory/` 与相关 `contracts/`、`adr/` 索引
 
 ### 5.3 输出（落盘到 `design/research.md`）
@@ -129,7 +145,8 @@ principles_ref: design/aisdlc.md
 
 ### 6.2 输入
 
-- `requirements/*` 中的核心产物（`clarify.md` / `solutions.md` / `prd.md`）
+- **需求路径**：`requirements/*` 中的核心产物（`clarify.md` / `solutions.md` / `prd.md`）
+- **重构路径**：`refactors/clarify.md` + `refactors/baseline.md`
 - （可选）`design/research.md`
 - 项目级 `memory/`、`contracts/`、`adr/`
 
@@ -185,6 +202,7 @@ principles_ref: design/aisdlc.md
 
 ## 8. 需求 vs 重构差异处理清单（每模块通用）
 
+- **输入口径**：需求用 `requirements/*`；重构用 `refactors/clarify.md` + `refactors/baseline.md`
 - **现状评估**：现有架构/流程/数据口径与债务清单
 - **影响范围**：下游系统、数据迁移、兼容性与回滚
 - **风险预算**：性能/稳定性/成本的变化区间
