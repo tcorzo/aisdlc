@@ -18,7 +18,7 @@ description: Use when 需要在 sdlc-dev 的 Spec 流程中定位当前 spec pac
 ## 唯一做法（PowerShell）
 
 ```powershell
-. ".\.aisdlc-cli\scirpts\spec-common.ps1"
+. ".\spec-common.ps1"
 $context = Get-SpecContext
 $FEATURE_DIR = $context.FEATURE_DIR
 Write-Host "FEATURE_DIR=$FEATURE_DIR"

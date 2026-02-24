@@ -1,1 +1,1 @@
-npx skills add https://github.com/zixun-github/aisdlc --skill * --agent cursor
+npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code

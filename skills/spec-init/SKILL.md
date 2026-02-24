@@ -24,7 +24,7 @@ description: Use when 需要在本仓库的 AI SDLC 流程中初始化新的 Spe
 - **统一输出位置**：`.aisdlc/specs/{num}-{short-name}/`
 - **必备子目录**：`requirements/`、`design/`、`implementation/`、`verification/`、`release/`
 - **初始文件**：`requirements/raw.md`（内容=原始需求；编码=UTF-8 with BOM）
-- **脚本入口**：`.aisdlc-cli/scirpts/spec-create-branch.ps1` 的 `Main`
+- **脚本入口**：`spec-create-branch.ps1` 的 `Main`
 - **脚本参数**
   - `-ShortName`（必需）
   - `-SourceFilePath`（必需，必须是文件路径）
@@ -71,7 +71,7 @@ $sourceFilePath = $tmp
 **必须用 dot sourcing 加载脚本并调用 `Main`，不要直接运行脚本文件。**
 
 ```powershell
-. .\.aisdlc-cli\scirpts\spec-create-branch.ps1
+. .\spec-create-branch.ps1
 
 $shortName = "export-orders"
 $title = ""
