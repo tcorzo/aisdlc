@@ -1,1 +1,0 @@
-E:/dev/tools/sdlc-dev/.aisdlc-cli/commands/spec-product-competitors.md
