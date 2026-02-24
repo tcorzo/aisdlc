@@ -71,7 +71,8 @@ $sourceFilePath = $tmp
 **必须用 dot sourcing 加载脚本并调用 `Main`，不要直接运行脚本文件。**
 
 ```powershell
-. .\spec-create-branch.ps1
+$repoRoot = (git rev-parse --show-toplevel)
+. (Join-Path $repoRoot "skills\spec-init\spec-create-branch.ps1")
 
 $shortName = "export-orders"
 $title = ""
@@ -92,16 +93,40 @@ $result
 如需对 `raw.md` 的 **BOM** 做显式校验，可用下面片段检查前三个字节是否为 `EF BB BF`：
 
 ```powershell
-$rawPath = ".\\.aisdlc\\specs\\$($result.branchName)\\requirements\\raw.md"
+$repoRoot = (git rev-parse --show-toplevel)
+$rawPath = (Join-Path $repoRoot ".aisdlc\specs\$($result.branchName)\requirements\raw.md")
 $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $rawPath))
 ($bytes.Length -ge 3) -and ($bytes[0] -eq 0xEF) -and ($bytes[1] -eq 0xBB) -and ($bytes[2] -eq 0xBF)
 ```
 
-### 5) 下一步（自然衔接）
+### 5) 完成后：自动进入 `spec-product-clarify`（R1）
 
-切到新 Spec Pack 根目录后，进入后续命令：
+**强制衔接规则**：`spec-init` 的 DoD 通过后，不要停在“提示下一步”，而是**立刻进入 R1**（澄清 + 方案对比 + 推荐决策），直到产出 `requirements/solution.md` 或用户明确停止。
 
-- `spec-product-clarify`：基于 `requirements/raw.md` 产出 `requirements/solution.md`
+#### 5.1 先过门禁：定位 `FEATURE_DIR`（必须）
+
+> 禁止手写/猜 `.aisdlc/specs/...` 路径；必须以 `spec-context` 的输出为准。
+
+```powershell
+$repoRoot = (git rev-parse --show-toplevel)
+. (Join-Path $repoRoot "skills\spec-context\spec-common.ps1")
+$context = Get-SpecContext
+$FEATURE_DIR = $context.FEATURE_DIR
+Write-Host "FEATURE_DIR=$FEATURE_DIR"
+```
+
+若上面报错 → **立刻停止**（不要继续生成/写任何 `requirements/*.md` 内容）。
+
+#### 5.2 进入 R1：按 `spec-product-clarify` 的“一次一问 + 增量回写”推进
+
+从这里开始，严格按 `spec-product-clarify` 执行（无需重复发明流程），最小闭环如下：
+
+- **读取**：`$FEATURE_DIR/requirements/raw.md`
+- **立刻发起第 1 个澄清问题**：只问 1 个最高杠杆未知，优先做成 2–4 选项的选择题（带“其他/不确定”兜底 + 你的推荐项与理由）
+- **用户回答后必须增量回写**：追加到 `$FEATURE_DIR/requirements/raw.md` 的 `## 澄清记录`
+- **停止条件满足后生成**：`$FEATURE_DIR/requirements/solution.md`（结论摘要 / 推荐方案 / 2–3 备选 / 决策依据 / 验证清单 / 迭代记录）
+
+> 关键禁令：不写“待确认问题清单”；所有不确定性统一进入 `solution.md` 的“验证清单”（Owner/截止/信号/动作）。
 
 ## 常见错误（以及怎么避免）
 
