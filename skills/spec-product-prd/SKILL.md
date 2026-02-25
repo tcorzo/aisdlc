@@ -72,7 +72,7 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 
 ### 2) 用模板生成/更新 `{FEATURE_DIR}/requirements/prd.md`
 
-优先对齐模板：`skills/spec-product-prd/product-prd-template.md`（只借结构，不把未知当已知）。
+优先对齐模板：`skills/spec-product-prd/prd-template.md`（只借结构，不把未知当已知）。
 
 写作要求（最容易跑偏的点）：
 

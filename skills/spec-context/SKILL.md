@@ -11,7 +11,7 @@ description: Use when 需要在 sdlc-dev 的 Spec 流程中定位当前 spec pac
 
 ## 何时使用
 
-- 你将要读/写：`{FEATURE_DIR}/requirements/raw.md | clarify.md | competitors.md | solutions.md | prd.md`
+- 你将要读/写：`{FEATURE_DIR}/requirements/raw.md | solution.md | prd.md | prototype.md`
 - 你不确定当前处于哪个 spec pack（担心读写错目录）
 - 你看到“分支名不规范 / 目录结构不完整 / 缺 .aisdlc”之类上下文错误
 

@@ -62,7 +62,7 @@ markdown-sharing:
 
 ---
 
-## Spec 的 7 阶段（顶层规划：只定义核心输出）
+## Spec 的 6 阶段（顶层规划：只定义核心输出）
 
 > 说明：
 > - 这里的“阶段”指 **需求级 Spec Pack** 的执行闭环阶段（**不包含**项目级长期资产的日常治理）。
@@ -70,13 +70,15 @@ markdown-sharing:
 
 | 阶段 | 核心目标 | 核心输出（Spec Pack 产物） |
 |---|---|---|
-| 1. 产品需求（product） | 明确“做什么/为什么做/成功标准是什么” | `requirements/raw.md`（原始需求）＋ `requirements/prd.md`（PRD：目标/范围/关键流程/验收口径/风险） |
-| 2. 重构需求（refactor） | 明确“为什么要重构/基线是什么/不变量与允许变化点” | `refactors/clarify.md`（目标/范围/约束/不变量）＋ `refactors/baseline.md`（现状基线：结构/依赖/指标/痛点） |
-| 3. 需求设计（design） | 把需求/重构映射为可评审方案 | `design/solution.md`（概要方案、边界、关键权衡）＋（按需）`design/research.md`、契约/数据模型、ADR 入口 |
-| 4. 需求实现（implementation） | 把方案落到可执行的实现计划并完成变更 | `implementation/plan.md`（实现计划）＋ `implementation/tasks.md`（任务分解）＋ 代码变更与追溯链接（Spec ↔ PR/提交） |
-| 5. 需求测试（verification） | 验证功能与非功能满足验收口径 | `verification/plan.md`（测试策略/范围）＋ 用例/回归集 ＋ `verification/report.md`（测试报告与结论） |
-| 6. 发布（release） | 可控上线、可观测运行、可回滚 | `release/plan.md`（发布计划）＋ `release/runbook.md`（运行手册）＋ `release/monitoring.md`（监控告警）＋ `release/rollback.md`（回滚方案） |
-| 7. 回档（merge-back） | 将“可复用资产”晋升回项目级 SSOT，其余归档留证 | `merge_back.md`（清单与证据）：ADR/契约/运维资产/NFR 基线等是否已同步到 `project/`；并更新 Registry 状态 |
+| 1. 需求澄清（clarify） | 明确“做什么/为什么做/现状是什么/怎么做” | `requirements/raw.md`（原始需求）＋ `requirements/solution.md`（核心方案：目标/范围/流程/验收口径/风险） |
+| 2. 需求决策（design） | 产出用于人类评审共识的决策文档（Decision Doc / RFC），作为执行计划的权威输入（SSOT） | `design/design.md`（问题定义、方案选项/权衡、架构图、数据/接口要点）＋（按需）`design/research.md`、契约/数据模型、ADR 入口 |
+| 3. 需求执行（implementation） | 产出可直接投喂 AI 的执行计划（Execution Plan / Prompt Context）并完成变更 | `implementation/plan.md`（范围/里程碑/风险/验收）＋ `implementation/tasks.md`（文件路径、脚手架、测试点、验证步骤）＋ 代码变更与追溯链接（Spec ↔ PR/提交） |
+| 4. 需求测试（verification） | 验证功能与非功能满足验收口径 | `verification/plan.md`（测试策略/范围）＋ 用例/回归集 ＋ `verification/report.md`（测试报告与结论） |
+| 5. 发布（release） | 可控上线、可观测运行、可回滚 | `release/plan.md`（发布计划）＋ `release/runbook.md`（运行手册）＋ `release/monitoring.md`（监控告警）＋ `release/rollback.md`（回滚方案） |
+| 6. 回档（merge-back） | 将“可复用资产”晋升回项目级 SSOT，其余归档留证 | `merge_back.md`（清单与证据）：ADR/契约/运维资产/NFR 基线等是否已同步到 `project/`；并更新 Registry 状态 |
+
+> 双层文档策略：`design/` 对应 **Layer 1（需求决策 / Decision Doc / RFC）**；`implementation/` 对应 **Layer 2（需求执行 / Execution Plan / Prompt Context）**。  
+> 对于边界清晰、风险低、无关键不确定性的需求，**Layer 1 可选**：可跳过“需求决策（design）”，直接进入“需求执行（implementation）”。但进入执行时，`implementation/plan.md` 必须补齐最小决策信息（目标、范围与边界、关键约束、验收口径、待确认项），不允许脑补。
 
 ---
 
@@ -120,32 +122,20 @@ markdown-sharing:
   specs                          # 需求级 SSOT（交付闭环）
     001-demo                      # 需求 ID（格式：{num}-{domain-name}，num 为三位数字编号）
       merge_back.md                # Merge-back 执行时生成
-      requirements                 # 产品需求（product）阶段（原始需求/PRD/用例等）
-        raw.md                     # 原始需求
-        prd.md                     # 产品需求文档
-        backlog.md                 # 需求列表、优先级
-        usecase.md                 # 用例、用户故事
-        ...
-      refactors                    # 重构需求阶段（仅重构类需求需要）
-        clarify.md                 # 目标/范围/约束/不变量
-        baseline.md                # 现状基线（结构/依赖/指标/痛点）
-      design                       # 设计阶段
+      requirements                 # 需求澄清（clarify）阶段（原始需求/方案/PRD等）
+        raw.md                     # 原始需求（用户/业务输入）
+        solution.md                # 解决方案（澄清后的核心产出：目标/范围/流程/验收口径/风险）
+        prd.md                     # 产品需求文档（可选）
+      design                       # 需求决策阶段（Decision Doc / RFC）
         research.md                # 调研、竞品分析
-        solution.md                # 方案设计、ADR
-        api.yaml                   # API 设计
-        data.md                    # 数据模型
-        sequence.md                # 时序图
-        ...
-      implementation               # 实现阶段
+        design.md                  # 决策文档（问题定义/方案选项/权衡/架构图、ADR 入口）
+      implementation               # 需求执行阶段（Execution Plan / Prompt Context）
         plan.md                    # 实现计划
-        task.md                    # 任务分解
-        migration.md               # 迁移方案（如适用）
-        ...
+        tasks.md                   # 任务分解
       verification                 # 测试验证阶段
         plan.md                    # 测试计划
         usecase.md                 # 测试用例
         report.md                  # 测试报告
-        ...
       release                      # 发布运维阶段
         plan.md                    # 发布计划
         runbook.md                 # 运行手册
@@ -280,8 +270,8 @@ markdown-sharing:
 
 - **Draft**：创建需求目录结构，初始化 `index.md`
 - **In Review**：需求评审阶段，完善 `requirements/prd.md`
-- **Approved(DoR)**：设计评审完成，达到 DoR（范围冻结、验收可执行、依赖可用、风险可控）
-- **In Dev**：开发实现阶段，代码与 Spec 文档同步更新
+- **Approved(DoR)**：需求决策评审完成，达到 DoR（范围冻结、验收可执行、依赖可用、风险可控）
+- **In Dev**：开发执行阶段，代码与 Spec 文档同步更新
 - **In QA**：测试验证阶段，执行测试并生成报告
 - **Released**：发布上线，按灰度策略逐步放量
 - **Merged & Archived**：执行 Merge-back，将可复用资产晋升到项目层
@@ -323,7 +313,7 @@ markdown-sharing:
 ---
 id: 001-user-auth                   # 全局唯一 ID（格式：{num}-{domain-name}）
 demand_id: 001-user-auth             # 所属需求 ID（格式：{num}-{domain-name}）
-stage: requirements                  # product/backlog/requirements/solution/...
+stage: clarify                       # clarify/design/implementation/verification/release/...
 title: 用户登录（短信验证码）
 status: draft                        # draft/review/approved/deprecated
 owners: [PM, BA, DEV, QA]
@@ -366,10 +356,9 @@ related_tests:
 
 ### 需求级输出（交付闭环）
 
-- **产品需求（product）**：`specs/<DEMAND-ID>/requirements/raw.md`、`requirements/prd.md`（目标/范围/关键流程/验收口径）
-- **重构需求（refactor）**：`specs/<DEMAND-ID>/refactors/clarify.md`、`refactors/baseline.md`（仅重构类需求需要）
-- **需求设计（design）**：`specs/<DEMAND-ID>/design/`（`solution.md` 为核心；按需包含 research/契约/数据/时序等）
-- **需求实现（implementation）**：`specs/<DEMAND-ID>/implementation/`（计划、任务分解、迁移与验证记录；并在代码/PR中回链追溯）
+- **需求澄清（clarify）**：`specs/<DEMAND-ID>/requirements/raw.md`、`requirements/solution.md`（目标/范围/关键流程/验收口径；取代原 product/refactor）
+- **需求决策（design）**：`specs/<DEMAND-ID>/design/`（`design.md` 为核心；按需包含 research/契约/数据/时序等）
+- **需求执行（implementation）**：`specs/<DEMAND-ID>/implementation/`（执行计划、任务分解、迁移与验证记录；并在代码/PR中回链追溯）
 - **需求测试（verification）**：`specs/<DEMAND-ID>/verification/`（测试计划、用例/回归集、报告）
 - **发布（release）**：`specs/<DEMAND-ID>/release/`（发布计划、Runbook、监控告警、回滚、复盘）
 - **回档（merge-back）**：`specs/<DEMAND-ID>/merge_back.md`（晋升清单与证据：同步到 `project/` 的 ADR/契约/运维/NFR 等）
@@ -392,10 +381,10 @@ related_tests:
 3. **创建需求级结构示例**：
    - 选一个真实需求，创建 `specs/001-demo/` 目录结构（需求编号格式：`{num}-{domain-name}`）
    - 创建 `specs/001-demo/index.md`，初始化需求元信息
-   - 按元数据规范写 1 份 `specs/001-demo/requirements/prd.md`
+   - 按元数据规范写 1 份 `specs/001-demo/requirements/solution.md`
 
 4. **完善需求级 Spec Pack**：
-   - 为该需求补齐 `design/`（solution.md、API+数据+ADR）与 `verification/`（用例+报告模板）
+   - 为该需求补齐 `design/`（design.md、API+数据+ADR）与 `verification/`（用例+报告模板）
 
 5. **建立 Merge-back 机制**：
    - 创建 `specs/001-demo/merge_back.md` 清单

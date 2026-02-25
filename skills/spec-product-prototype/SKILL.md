@@ -149,5 +149,5 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 - 页面：P-001 表单页（覆盖 T-001/T-002/T-003/T-004）
 - AC 映射：AC-001→P-001/错误态；AC-002→P-001/成功跳转
 
-> 模板入口：`skills/spec-product-prototype/product-prototype-template.md`
+> 模板入口：`skills/spec-product-prototype/prototype-template.md`
 

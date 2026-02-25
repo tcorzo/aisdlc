@@ -236,7 +236,7 @@ principles_ref: design/aisdlc.md
 4. **加载上下文信息**：
    - 读取 `requirements/raw.md`（原始需求）
    - 读取 `requirements/prd.md`（如果存在）
-   - 读取 `design/solution.md`（如果存在）
+   - 读取 `design/design.md`（如果存在）
    - 读取其他相关文档
 
 **优势**：
@@ -253,11 +253,11 @@ principles_ref: design/aisdlc.md
 
 **场景 2：方案设计命令**
 - 自动读取 `requirements/prd.md` 和相关需求文档
-- 基于需求进行方案设计，生成 `design/solution.md`
+- 基于需求进行方案设计，生成 `design/design.md`
 - 自动关联需求上下文
 
 **场景 3：代码实现命令**
-- 自动读取 `design/solution.md` 和需求文档
+- 自动读取 `design/design.md` 和需求文档
 - 基于设计方案进行代码实现
 - 确保实现与需求、设计一致
 
@@ -413,7 +413,7 @@ principles_ref: design/aisdlc.md
 
 - 开始编写需求文档：编辑 `.aisdlc/specs/{num}-{short-name}/requirements/prd.md`
 - 进行需求分析：编辑 `.aisdlc/specs/{num}-{short-name}/requirements/usecase.md`
-- 开始方案设计：编辑 `.aisdlc/specs/{num}-{short-name}/design/solution.md`
+- 开始方案设计：编辑 `.aisdlc/specs/{num}-{short-name}/design/design.md`
 
 **重要**：后续所有 spec 级辅助命令都可以通过当前分支名称自动识别需求上下文，无需额外提供需求信息。
 

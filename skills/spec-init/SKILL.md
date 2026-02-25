@@ -103,9 +103,7 @@ $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $rawPath))
 
 **强制衔接规则**：`spec-init` 的 DoD 通过后，不要停在“提示下一步”，而是**立刻进入 R1**（澄清 + 方案对比 + 推荐决策），直到产出 `requirements/solution.md` 或用户明确停止。
 
-#### 5.1 先过门禁：定位 `FEATURE_DIR`（必须）
-
-> 禁止手写/猜 `.aisdlc/specs/...` 路径；必须以 `spec-context` 的输出为准。
+**门禁（必须）**：先得到并回显 `FEATURE_DIR=...`（来自 `spec-context` / `Get-SpecContext`）。拿不到就**立刻停止**；**任何情况下禁止猜路径**（包括“从分支名推导”或手写 `.aisdlc/specs/...`）。
 
 ```powershell
 $repoRoot = (git rev-parse --show-toplevel)
@@ -115,18 +113,9 @@ $FEATURE_DIR = $context.FEATURE_DIR
 Write-Host "FEATURE_DIR=$FEATURE_DIR"
 ```
 
-若上面报错 → **立刻停止**（不要继续生成/写任何 `requirements/*.md` 内容）。
+- 若脚本报错/用户禁止跑脚本/无法确认 `FEATURE_DIR`：**停止**；请用户在本机运行以上片段并把输出粘贴回来（不要继续写任何 `requirements/*.md`）。
 
-#### 5.2 进入 R1：按 `spec-product-clarify` 的“一次一问 + 增量回写”推进
-
-从这里开始，严格按 `spec-product-clarify` 执行（无需重复发明流程），最小闭环如下：
-
-- **读取**：`$FEATURE_DIR/requirements/raw.md`
-- **立刻发起第 1 个澄清问题**：只问 1 个最高杠杆未知，优先做成 2–4 选项的选择题（带“其他/不确定”兜底 + 你的推荐项与理由）
-- **用户回答后必须增量回写**：追加到 `$FEATURE_DIR/requirements/raw.md` 的 `## 澄清记录`
-- **停止条件满足后生成**：`$FEATURE_DIR/requirements/solution.md`（结论摘要 / 推荐方案 / 2–3 备选 / 决策依据 / 验证清单 / 迭代记录）
-
-> 关键禁令：不写“待确认问题清单”；所有不确定性统一进入 `solution.md` 的“验证清单”（Owner/截止/信号/动作）。
+**从这里开始严格按 `spec-product-clarify` 执行**（R1 的一次一问、回写、`solution.md` 模板与停止条件等细节以该技能为准；此处不重复）。
 
 ## 常见错误（以及怎么避免）
 
