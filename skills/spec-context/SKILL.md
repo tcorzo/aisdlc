@@ -17,7 +17,11 @@ description: Use when 需要在 sdlc-dev 的 Spec 流程中定位当前 spec pac
 - 你不确定当前处于哪个 spec pack（担心读写错目录）
 - 你看到“分支名不规范 / 目录结构不完整 / 缺 .aisdlc”之类上下文错误
 
-## 唯一做法（PowerShell）
+## 唯一做法（PowerShell / Bash）
+
+在 Windows/PowerShell 环境用 PowerShell 版；在 macOS/Linux 或 Git Bash 环境用 Bash 版（两者校验规则对齐）。
+
+### PowerShell
 
 ```powershell
 . ".\spec-common.ps1"
@@ -26,11 +30,19 @@ $FEATURE_DIR = $context.FEATURE_DIR
 Write-Host "FEATURE_DIR=$FEATURE_DIR"
 ```
 
+### Bash
+
+```bash
+source "./spec-common.sh"
+get_spec_context
+echo "FEATURE_DIR=$FEATURE_DIR"
+```
+
 ## 硬规则（必须遵守）
 
 - **先定位再读写**：任何读/写 `requirements/*.md` 之前，必须先运行上面的脚本并回显 `FEATURE_DIR=...`。
-- **失败就停止**：`Get-SpecContext` 报错时，必须立刻停止，不得继续生成/写文件内容（否则几乎必然跑偏上下文）。
-- **只用 FEATURE_DIR 拼路径**：后续所有路径都必须以 `$FEATURE_DIR` 为前缀（禁止用当前工作目录做相对路径猜测）。
+- **失败就停止**：PowerShell 的 `Get-SpecContext` 或 Bash 片段任意一步报错时，必须立刻停止，不得继续生成/写文件内容（否则几乎必然跑偏上下文）。
+- **只用 FEATURE_DIR 拼路径**：后续所有路径都必须以 `$FEATURE_DIR`（PowerShell）或 `${FEATURE_DIR}`（Bash）为前缀（禁止用当前工作目录做相对路径猜测）。
 
 ## 常见错误
 

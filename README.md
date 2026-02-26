@@ -1,3 +1,8 @@
+---
+markdown-sharing:
+  uri: 9ad9e4f3-f0ac-40f2-ad7d-e4676a39dafe
+---
+
 ### sdlc-dev（AI SDLC / Spec Pack 技能集）
 
 本仓库提供一套 **Spec 级**工作流与技能集，围绕 **双层 SSOT（项目级 SSOT + 需求级 Spec Pack）**、**Spec as Code**、**渐进式披露**，把一个需求从“原始输入”推进到“可评审的决策（可选）”与“可直接执行的实现计划 + 分批执行”。
@@ -9,30 +14,12 @@
 ### 安装 / 更新
 
 ```powershell
-npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code --yes --copy
+# 仅项目
+npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude-code --yes --copy
 
-npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code cursor --yes --copy --global
+# 全局安装
+npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude-code cursor --yes --copy --global
 ```
-
----
-
-### Spec Pack（你最终会落盘什么）
-
-- **分支（上下文锚点）**：`{num}-{short-name}`
-- **根目录（需求级 SSOT）**：`.aisdlc/specs/{num}-{short-name}/`
-- **常用产物（按阶段渐进生成）**
-  - **Clarify / requirements/**
-    - `requirements/raw.md`：原始输入（证据入口）
-    - `requirements/solution.md`：澄清 + 方案决策（需求侧 SSOT）
-    - `requirements/prd.md`：（可选）交付规格（更细 AC/范围/依赖）
-    - `requirements/prototype.md`：（可选）原型说明（任务流/页面/状态/AC 映射）
-  - **Design / design/**（整体可跳过；未跳过时 `design.md` 为 SSOT）
-    - `design/research.md`：（可选）调研结论（风险/假设 → 验证清单）
-    - `design/design.md`：（可选）决策文档 / RFC（design 阶段 SSOT，写决策不写实现）
-  - **Implementation / implementation/**
-    - `implementation/plan.md`：实现计划（I1 必做；**唯一执行清单与状态 SSOT**，含任务 checkbox、步骤、最小验证、提交点与审计信息）
-  - **Demo（可选）**
-    - `demo/prototypes/{CURRENT_BRANCH}/...`：（可选）可交互 Demo（默认共享工程模式）
 
 ---
 
@@ -72,6 +59,26 @@ npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-c
     - **输出**：`implementation/plan.md`（唯一执行清单与状态 SSOT）
   - **I2：`spec-implementation-execute`（分批执行 + 回写审计）**
     - **输出**：代码与配置变更；并将任务状态/审计信息**只回写**到 `implementation/plan.md`
+
+---
+
+### Spec Pack（你最终会落盘什么）
+
+- **分支（上下文锚点）**：`{num}-{short-name}`
+- **根目录（需求级 SSOT）**：`.aisdlc/specs/{num}-{short-name}/`
+- **常用产物（按阶段渐进生成）**
+  - **Clarify / requirements/**
+    - `requirements/raw.md`：原始输入（证据入口）
+    - `requirements/solution.md`：澄清 + 方案决策（需求侧 SSOT）
+    - `requirements/prd.md`：（可选）交付规格（更细 AC/范围/依赖）
+    - `requirements/prototype.md`：（可选）原型说明（任务流/页面/状态/AC 映射）
+  - **Design / design/**（整体可跳过；未跳过时 `design.md` 为 SSOT）
+    - `design/research.md`：（可选）调研结论（风险/假设 → 验证清单）
+    - `design/design.md`：（可选）决策文档 / RFC（design 阶段 SSOT，写决策不写实现）
+  - **Implementation / implementation/**
+    - `implementation/plan.md`：实现计划（I1 必做；**唯一执行清单与状态 SSOT**，含任务 checkbox、步骤、最小验证、提交点与审计信息）
+  - **Demo（可选）**
+    - `demo/prototypes/{CURRENT_BRANCH}/...`：（可选）可交互 Demo（默认共享工程模式）
 
 ---
 
