@@ -60,6 +60,9 @@ npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude
   - **I2：`spec-implementation-execute`（分批执行 + 回写审计）**
     - **输出**：代码与配置变更；并将任务状态/审计信息**只回写**到 `implementation/plan.md`
 
+- **快捷方式**
+  - 不确定下一步怎么选：using-aisdlc
+
 ---
 
 ### Spec Pack（你最终会落盘什么）
@@ -82,11 +85,3 @@ npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude
 
 ---
 
-### 参考
-
-- 总体理念与目录约定（双层 SSOT / 渐进式披露）：`design/aisdlc.md`
-- R0 初始化设计实现（分支→目录映射 / 上下文自动识别）：`design/aisdlc_spec_init.md`
-- 需求澄清阶段 SOP（R0–R4）：`design/aisdlc_spec_product.md`
-- 设计阶段 SOP（D0–D2）：`design/aisdlc_spec_design.md`
-- 实现阶段 SOP（I1–I2）：`design/aisdlc_spec_implementation.md`
-- 不确定下一步怎么选：`skills/using-aisdlc/SKILL.md`
