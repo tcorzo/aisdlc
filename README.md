@@ -11,7 +11,7 @@
 ```powershell
 npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code --yes --copy
 
-npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code --yes --copy
+npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code cursor --yes --copy --global
 ```
 
 ---

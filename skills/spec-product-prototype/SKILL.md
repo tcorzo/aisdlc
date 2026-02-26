@@ -15,6 +15,8 @@ R3 的目标是把 `{FEATURE_DIR}/requirements/prd.md` 的**核心场景/规则/
 - **AC → 交互节点映射**：能回答“哪条 AC 在哪个页面/状态被验证”
 - **走查/验证脚本**：验证后能回流更新 R1/R2/R3，形成闭环
 
+**开始时宣布：**「我正在使用 spec-product-prototype 技能基于 prd.md 生成可走查原型说明（prototype.md）。」
+
 > R3 不是强制步骤：若无交互变化或交互简单且明确，应按 PRD 的分流口径跳过 R3，直接进入 design。
 
 ## 何时使用 / 不使用

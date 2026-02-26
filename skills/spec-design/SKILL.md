@@ -10,6 +10,8 @@ description: Use when 需要为某个 Spec Pack 产出 D2 决策文档（RFC/Dec
 本技能用于执行 Spec 级“设计阶段”的 D2：产出可评审的 **决策文档（Decision Doc / RFC）**，并能在执行前**自主决策**是否需要先做 D0（分流：跳过/不跳过设计）与 D1（research：可选调研）。  
 核心原则：**门禁优先（spec-context）→ 先分流（D0）→ 按需调研（D1）→ 决策落盘（D2）**。在任何压力下都禁止猜路径、禁止在缺少 SSOT 时脑补推进。
 
+**开始时宣布：**「我正在使用 spec-design 技能产出设计决策文档（design/design.md / RFC）。」
+
 ## 何时使用 / 不使用
 
 - **使用时机**

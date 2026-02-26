@@ -10,6 +10,8 @@ description: Use when 需要在 Spec 级设计阶段执行 D1 research（产出 
 本技能用于执行 Spec 级设计阶段的 **D1 research（可选）**：为 design 决策补足上下文与证据，并把未知收敛为**可执行的验证清单**，使 D2 可以直接引用结论而无需重复解释。  
 本技能既可独立使用（只做 D1），也可作为 `spec-design` 的子技能被调用（当 D0 判定“不跳过”且命中 D1 触发信号时）。
 
+**开始时宣布：**「我正在使用 spec-design-research 技能进行设计调研并落盘 research.md。」
+
 ## 何时使用 / 不使用
 
 - **使用时机（命中任一）**

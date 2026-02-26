@@ -11,6 +11,8 @@ description: Use when receiving code review feedback, before implementing sugges
 
 **核心原则：** 实施前先验证。假设前先询问。技术正确性优先于社交舒适。
 
+**开始时宣布：**「我正在使用 spec-receiving-code-review 技能评估并实施代码审查反馈。」
+
 ## 响应模式
 
 ```

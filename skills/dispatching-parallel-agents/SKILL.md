@@ -11,6 +11,8 @@ description: Use when facing 2+ independent tasks that can be worked on without 
 
 **核心原则：** 为每个独立问题域派发一个智能体。让它们并发工作。
 
+**开始时宣布：**「我正在使用 dispatching-parallel-agents 技能派发并行智能体处理独立问题域。」
+
 ## 何时使用
 
 ```dot

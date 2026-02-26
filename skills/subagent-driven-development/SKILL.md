@@ -9,6 +9,8 @@ description: Use when executing implementation plans with independent tasks in t
 
 **核心原则：** 每任务一个新子智能体 + 两阶段审查（先规格后质量）= 高质量、快速迭代
 
+**开始时宣布：**「我正在使用 subagent-driven-development 技能按计划派发子智能体并执行两阶段审查。」
+
 ## 何时使用
 
 ```dot

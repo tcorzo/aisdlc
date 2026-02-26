@@ -9,6 +9,8 @@ description: Use when completing tasks, implementing major features, or before m
 
 **核心原则：** 尽早审查、频繁审查。
 
+**开始时宣布：**「我正在使用 spec-requesting-code-review 技能请求代码审查并派发审查子智能体。」
+
 ## 何时请求审查
 
 **必须：**

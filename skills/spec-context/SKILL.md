@@ -9,6 +9,8 @@ description: Use when 需要在 sdlc-dev 的 Spec 流程中定位当前 spec pac
 
 在任何 Spec 命令/技能里，只要会读写 `requirements/*.md`，就必须先确定 `{FEATURE_DIR}`。本仓库以 **当前 Git 分支名**作为 spec pack 的定位锚点，禁止猜路径。
 
+**开始时宣布：**「我正在使用 spec-context 技能定位当前 Spec Pack（FEATURE_DIR）。」
+
 ## 何时使用
 
 - 你将要读/写：`{FEATURE_DIR}/requirements/raw.md | solution.md | prd.md | prototype.md`

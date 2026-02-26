@@ -9,6 +9,8 @@ description: Use when 需要在本仓库的 AI SDLC 流程中初始化新的 Spe
 
 `spec-init` 用于在本仓库里创建一个新的需求级 Spec Pack：自动递增三位编号、创建并切换到 `{num}-{short-name}` 分支、生成 `.aisdlc/specs/{num}-{short-name}/` 目录结构，并把原始需求写入 `requirements/raw.md`（UTF-8 with BOM）。
 
+**开始时宣布：**「我正在使用 spec-init 技能初始化新的 Spec Pack（创建分支与 requirements/raw.md）。」
+
 ## 何时使用 / 不使用
 
 - **使用时机**
@@ -72,7 +74,7 @@ $sourceFilePath = $tmp
 
 ```powershell
 $repoRoot = (git rev-parse --show-toplevel)
-. (Join-Path $repoRoot "skills\spec-init\spec-create-branch.ps1")
+. (Join-Path $repoRoot "./spec-create-branch.ps1")
 
 $shortName = "export-orders"
 $title = ""
@@ -87,35 +89,13 @@ $result
 
 - 当前分支名等于 `$result.branchName`，且符合 `{num}-{short-name}`。
 - `.aisdlc/specs/$($result.branchName)/` 存在，且包含 5 个必需子目录。
-- `.aisdlc/specs/$($result.branchName)/requirements/raw.md` 存在，内容等于原始需求，且为 UTF-8 with BOM。
+- `.aisdlc/specs/$($result.branchName)/requirements/raw.md` 存在，内容等于原始需求
 - `$sourceFilePath` 指向的源文件已被删除（这不是 bug；若用户需要保留，应在步骤 1 之前自行备份）。
-
-如需对 `raw.md` 的 **BOM** 做显式校验，可用下面片段检查前三个字节是否为 `EF BB BF`：
-
-```powershell
-$repoRoot = (git rev-parse --show-toplevel)
-$rawPath = (Join-Path $repoRoot ".aisdlc\specs\$($result.branchName)\requirements\raw.md")
-$bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $rawPath))
-($bytes.Length -ge 3) -and ($bytes[0] -eq 0xEF) -and ($bytes[1] -eq 0xBB) -and ($bytes[2] -eq 0xBF)
-```
 
 ### 5) 完成后：自动进入 `spec-product-clarify`（R1）
 
 **强制衔接规则**：`spec-init` 的 DoD 通过后，不要停在“提示下一步”，而是**立刻进入 R1**（澄清 + 方案对比 + 推荐决策），直到产出 `requirements/solution.md` 或用户明确停止。
 
-**门禁（必须）**：先得到并回显 `FEATURE_DIR=...`（来自 `spec-context` / `Get-SpecContext`）。拿不到就**立刻停止**；**任何情况下禁止猜路径**（包括“从分支名推导”或手写 `.aisdlc/specs/...`）。
-
-```powershell
-$repoRoot = (git rev-parse --show-toplevel)
-. (Join-Path $repoRoot "skills\spec-context\spec-common.ps1")
-$context = Get-SpecContext
-$FEATURE_DIR = $context.FEATURE_DIR
-Write-Host "FEATURE_DIR=$FEATURE_DIR"
-```
-
-- 若脚本报错/用户禁止跑脚本/无法确认 `FEATURE_DIR`：**停止**；请用户在本机运行以上片段并把输出粘贴回来（不要继续写任何 `requirements/*.md`）。
-
-**从这里开始严格按 `spec-product-clarify` 执行**（R1 的一次一问、回写、`solution.md` 模板与停止条件等细节以该技能为准；此处不重复）。
 
 ## 常见错误（以及怎么避免）
 
