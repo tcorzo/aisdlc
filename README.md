@@ -13,12 +13,22 @@ markdown-sharing:
 
 ### 安装 / 更新
 
-```powershell
+```
+
+# powershell
+# 仅项目
+npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code --yes --copy
+
+# 全局安装
+npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code cursor --yes --copy --global
+
+# bash
 # 仅项目
 npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude-code --yes --copy
 
 # 全局安装
 npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude-code cursor --yes --copy --global
+
 ```
 
 ---

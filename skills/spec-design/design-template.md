@@ -69,35 +69,71 @@ status: draft
 只写“要点 + 追溯链接”。字段/DDL/迁移脚本细节不写在本文件。
 
 - 契约（API/事件）：变更要点 + `project/contracts/` 入口
+- 契约（API/事件）：变更要点 + 组件页契约锚点（优先：`project/components/{module}.md#api-contract` / `#data-contract`；如项目另有 `project/contracts/` 目录则同时给入口）
 - 权限：变更要点 + 追溯入口
 - 数据口径：变更要点 + 追溯入口
 - 兼容性：版本/废弃策略要点 + 追溯入口
 - 迁移与回滚：承诺要点 + `project/adr/` 入口（如适用）
 
-## 4. 影响分析
+## 4. 与现有系统的对齐（必填；基于 `{FEATURE_DIR}/requirements/solution.md#impact-analysis`）
+
+### 4.1 契约兼容性声明（逐模块）
+
+对每个受影响模块，显式声明与现有契约的关系（兼容/扩展/破坏性变更），并引用组件页中的具体不变量：
+
+- 模块：
+  - API Contract：引用 `project/components/{module}.md#api-contract` 的不变量（逐条）
+  - Data Contract：引用 `project/components/{module}.md#data-contract` 的不变量（逐条）
+  - 兼容性结论：兼容 / 扩展 / 破坏性变更（说明原因与缓解）
+
+### 4.2 ADR 合规声明（逐 ADR）
+
+- ADR：
+  - 是否遵守：是 / 否
+  - 若否：需要新增 ADR / 修改 ADR / 调整方案（写清楚动作）
+
+### 4.3 状态机 / 领域事件影响
+
+引用 `project/components/{module}.md` 的 `## State Machines & Domain Events`，说明：
+
+- 是否新增状态/事件：
+- 是否改变状态迁移规则：
+- 是否影响幂等/一致性/重试语义：
+
+### 4.4 跨模块影响确认
+
+基于 `project/components/index.md` 的依赖关系图，逐项确认受影响上下游已被考虑：
+
+- 上游：
+- 下游：
+- 交互方式（API/事件/数据共享等）：
+
+## 5. 影响分析
 
 - 上下游系统影响：……
 - 数据口径影响：……
 - 运行与运维影响（监控/容量/告警/权限/审计）：……
 - 迁移/回滚要点（机制级）：……
 
-## 5. 风险与验证清单（可执行；所有不确定性仅写在此处）
+## 6. 风险与验证清单（可执行；所有不确定性仅写在此处）
 
 | # | 风险/假设 | 验证方式 | 成功信号 | 失败信号 | Owner | 截止 | 下一步动作 |
 |---|---|---|---|---|---|---|---|
 | R1 |  |  |  |  |  |  |  |
 | R2 |  |  |  |  |  |  |  |
 
-## 6. 追溯链接
+## 7. 追溯链接
 
-- `{FEATURE_DIR}/requirements/solution.md`（段落/条目/链接）：
+- `{FEATURE_DIR}/requirements/solution.md`（段落/条目/链接；必读#impact-analysis,提取受影响模块/不变量/ADR/跨模块影响）
 - `{FEATURE_DIR}/requirements/prd.md`（如适用）
 - `{FEATURE_DIR}/requirements/prototype.md`（如适用）
 - `{FEATURE_DIR}/design/research.md`（如适用）
+- `project/components/index.md`（依赖关系图）：
+- 受影响模块 `project/components/{module}.md`（全文；契约/状态机/证据入口）：
 - 相关 `project/contracts/` 入口（如适用）
 - 相关 `project/adr/` 入口（如适用）
 
-## 7. 迭代记录（追加，不覆盖）
+## 8. 迭代记录（追加，不覆盖）
 
 - YYYY-MM-DD：本轮变更摘要（相对上一轮改了什么、为什么）
 

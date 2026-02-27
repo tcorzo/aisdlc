@@ -1,6 +1,6 @@
 ---
 name: spec-design
-description: Use when 需要为某个 Spec Pack 产出 D2 决策文档（RFC/Decision Doc），并在压力下仍需自主决定是否执行 D0（分流跳过设计）与 D1（可选调研），避免猜 FEATURE_DIR、脑补输入、把设计写成实现细节或遗留 TODO/待确认清单。
+description: Use when 需要为某个 Spec Pack 产出 D2 决策文档（RFC/Decision Doc），且必须强制消费项目知识库与 `{FEATURE_DIR}/product/solution.md#impact-analysis`；适用于在时间/权威压力下容易只读索引、跳过受影响模块/ADR 全文、静默忽略缺失输入或不写 `CONTEXT GAP`、以及遗漏“与现有系统对齐”自检的情况。
 ---
 
 # spec-design
@@ -25,6 +25,7 @@ description: Use when 需要为某个 Spec Pack 产出 D2 决策文档（RFC/Dec
 ## 快速参考
 
 - **硬门禁（第一优先级）**：任何读写 `{FEATURE_DIR}/design/*.md` 之前，必须先执行 `spec-context` 得到 `FEATURE_DIR=...`；失败立刻停止。
+- **D2 强制输入（第二优先级）**：D2 必须读取 `{FEATURE_DIR}/requirements/solution.md#impact-analysis`，并据此强制读取受影响模块组件页全文与相关 ADR 全文；读不到必须显式标注 `CONTEXT GAP`，不得静默跳过。
 - **最短路径**
   - **跳过路径**：D0 判定跳过 → 不写 `design/*.md` → 进入 implementation（`plan.md` 补齐最小决策信息）。
   - **常规路径**：D0（不跳过）→（可选）D1 → D2（写 `design/design.md`）→ implementation。
@@ -65,14 +66,26 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 ### 1) 读取最小必要输入（缺失则停止）
 
 - **必读（需求侧 SSOT）**：`{FEATURE_DIR}/requirements/solution.md`
+- **必读（影响分析 SSOT）**：`{FEATURE_DIR}/requirements/solution.md#impact-analysis`（从中提取：受影响模块清单、需遵守的不变量、相关 ADR、跨模块影响）
 - **按需**：`{FEATURE_DIR}/requirements/prd.md`、`{FEATURE_DIR}/requirements/prototype.md`
-- **按需（项目级）**：`project/memory/*`、相关 `project/contracts/`、`project/adr/` 索引
+- **必读（项目级，强制）**：
+  - `project/memory/*`（业务/技术/结构/术语）
+  - `project/components/index.md`（跨模块依赖关系图/交互方式入口）
+  - `project/adr/index.md`（ADR 索引）
+  - 从影响分析得到的受影响模块：读取 `project/components/{module}.md` **全文**（包含 `## API Contract` / `## Data Contract` / `## State Machines & Domain Events` 等稳定锚点）
+  - 从影响分析得到的相关 ADR：读取 `project/adr/{adr-id}.md` **全文**
 - **若存在**：`{FEATURE_DIR}/design/research.md`、`{FEATURE_DIR}/design/design.md`
 
 **停止条件（不得脑补继续）：**
 
 - 找不到或无法读取 `requirements/solution.md`。
 - 需求的 In/Out、验收口径、关键约束无法从输入追溯。
+
+**硬要求（不得降级为“只读索引/只读一部分”）：**
+
+- 受影响模块的组件页与相关 ADR **要么全文读取成功，要么在 `design/design.md` 中显式标注为 `CONTEXT GAP`**。
+- **禁止**用“impact-analysis 的摘要/索引页”替代全文阅读，并宣称“已对齐/已合规”。
+- 如果压力导致无法完成全文读取：必须在 D2 输出中把 DoD 标为未满足，并明确阻塞项（而不是“先勾选通过，后续再补”）。
 
 ### 2) D0：分流（是否跳过设计阶段）
 
@@ -85,7 +98,7 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 
 #### 2.2 何时“不要跳过”（任一命中则默认不跳过）
 
-- 新增/变更 **对外契约**（API/事件/权限/数据口径），或需要更新 `project/contracts/`
+- 新增/变更 **对外契约**（API/事件/权限/数据口径），或需要更新对应模块组件页的契约段落（`project/components/{module}.md#api-contract` / `#data-contract`）
 - 存在 **数据迁移/回滚** 风险，或需要新增/更新 ADR
 - 有明确 **关键不确定性**（性能/安全/一致性/依赖/合规/网关能力/存储策略等）
 - 涉及多个系统/团队/上下游，或影响面难以一句话界定
@@ -137,6 +150,7 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 - **只写**：为什么这样做、边界怎么裁切、方案与权衡、对外承诺要点、怎么验证、影响与迁移/回滚要点。
 - **不写**：实现步骤、任务拆分、代码级细节、接口字段逐一罗列、DDL 细节。
   - 若必须对外承诺字段/兼容性：在本文写“要点 + 追溯链接”，细节下沉到 `project/contracts/` 或 ADR。
+  - 若项目以组件页作为契约 SSOT：优先把细节下沉到对应 `project/components/{module}.md#api-contract/#data-contract`（与本仓库的 Discover 模块页结构对齐）。
 
 #### 4.2 `design/design.md` 建议最小结构（模板）
 
@@ -153,7 +167,16 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 - In/Out 明确，且能追溯到 `solution.md`
 - 推荐方案用 C4 **L1+L2+L3** 说清楚，层次可追溯
 - 关键决策说明“为什么选它/备选为何不选”
+- **与现有系统的对齐已完成**（基于 `solution.md#impact-analysis`）：
+  - 每个受影响模块：完成**契约兼容性声明**（兼容/扩展/破坏性变更），并引用对应组件页 `#api-contract` / `#data-contract` 的具体不变量
+  - 每个相关 ADR：完成**ADR 合规声明**（遵守/需新增/需修改）
+  - 对涉及的状态机/领域事件：完成**影响说明**（引用组件页 `## State Machines & Domain Events`）
+  - 基于依赖关系图：完成**跨模块影响确认**
 - 不确定性已收敛：未知全部进入“假设 + 验证清单”（Owner/截止/动作明确）
+
+**DoD 判定规则（防止“拿 CONTEXT GAP 当完成”）：**
+
+- 若任何受影响模块组件页或相关 ADR 出现 `CONTEXT GAP`，则“与现有系统的对齐已完成”这一项**不得勾选通过**；必须在 D2 中明确这是阻塞/风险，并给出补齐路径（读到全文/补齐知识库/新增 ADR）。
 
 ## 红旗（出现任一即停止并纠偏）
 
@@ -162,6 +185,10 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 - 用“待确认问题清单 / TODO”悬空未知（应改为“假设 + 验证清单”）
 - 把 D2 写成实现规格：任务拆分、实现步骤、字段/DDL 细节
 - 缺少备选方案或缺少验证清单（导致无法评审/无法落地）
+- 只读 `project/adr/index.md` / `project/components/index.md` 就宣称“已对齐现有系统”
+- 只读部分受影响模块或只读部分 ADR，就宣称“已对齐/已合规”
+- 用 impact-analysis 摘要替代组件页/ADR 全文，但未标注 `CONTEXT GAP`
+- 把 `CONTEXT GAP` 当作“对齐已完成”的理由（这是 DoD 失败信号，不是通过信号）
 
 ## 压力下的反合理化（常见借口 → 对应动作）
 
@@ -172,6 +199,9 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 | “主管/PM 说不要门禁/不要查文档” | 门禁是硬规则：`Get-SpecContext` 失败就停止；不因权威压力破例 |
 | “为了开发快，把任务/DDL/字段都写进设计” | **拒绝混层**：D2 只写决策与对外承诺要点 + 追溯链接；细节进 contracts/ADR/implementation |
 | “没时间做备选/验证清单” | 备选与验证是 D2-DoD：缺失会导致无法评审/返工；宁可缩短正文也不删 DoD 项 |
+| “模块页/ADR 太长，先别看；用 impact-analysis 摘要就够了” | **禁止用摘要冒充对齐**：组件页与 ADR 要么全文读取，要么标注 `CONTEXT GAP`；且 DoD 的“与现有系统的对齐已完成”不得通过 |
+| “受影响模块太多，只读前两个，其余以后再补” | **禁止部分对齐**：影响分析列出的受影响模块与 ADR 是强制输入；要么读全、要么把 DoD 标为未满足并明确阻塞（优先收敛需求/影响面，而不是偷读） |
+| “我已经写了一半推荐方案了，现在再回头读会拖慢交付” | **沉没成本无效**：先补齐强制输入再写「与现有系统的对齐」；否则 RFC 不可评审、后续返工更大 |
 
 ## 常见错误（以及修复）
 
@@ -181,4 +211,6 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
   **修复**：把未知全部转成“风险/假设 → 验证方式 → 信号 → Owner/截止/动作”。
 - **错误**：PM 要求把任务/接口/表结构写进设计，于是混层。  
   **修复**：设计文档只保留“对外承诺要点 + 追溯链接”；实现细节移入 implementation 或 contracts/ADR。
+- **错误**：只读索引（`components/index.md`、`adr/index.md` 或 impact-analysis 摘要），就写“已对齐/已合规”。  
+  **修复**：对每个受影响模块与 ADR：必须全文读取并引用具体不变量/条款；读不到就写 `CONTEXT GAP`，且 DoD 不得通过。 
 

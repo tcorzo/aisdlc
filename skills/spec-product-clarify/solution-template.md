@@ -74,6 +74,29 @@ status: draft
 - YYYY-MM-DD：本轮变更摘要（相对上一轮改了什么、为什么）【必填】
 - YYYY-MM-DD：…
 
+## 7. Impact Analysis（需求影响分析）
+
+> 目的：把项目知识库消费成后续 D2/I1 可直接引用的约束输入（受影响模块、不变量、跨模块影响、缺口）。
+
+### 7.1 受影响模块
+
+| 模块 | 影响类型 | 关键不变量 | stale? |
+|------|----------|-----------|--------|
+| <module> | 新增能力/修改契约/读取数据/... | <摘要 + 来源锚点> | yes/no |
+
+### 7.2 需遵守的不变量
+
+- [不变量 1]（来源：`.aisdlc/project/components/<module>.md#...`）
+- [不变量 2]（来源：`.aisdlc/project/components/<module>.md#...`）
+
+### 7.3 跨模块影响
+
+- 改了 A → 需关注 B（原因：<调用关系/数据依赖>）
+
+### 7.4 Context Gaps
+
+- `CONTEXT GAP`：<缺失的必读文件/缺失的模块 TL;DR/模块 stale> → 建议动作：<例如先做 Delta Discover / 补权威入口>
+
 ## 8. Mini-PRD（仅在跳过 `requirements/prd.md` 时必填）
 
 - **MVP 范围**：In / Out（精确到行为/规则）

@@ -38,9 +38,16 @@ principles_ref: design/aisdlc.md
 
 #### 2.2 Agent 读取顺序（渐进式披露）
 
-- **必读（项目级）**：`project/memory/*`（业务/技术/结构/术语）与 `project/contracts/`、`project/adr/` 索引。
+- **必读（项目级，强制，对齐上下文注入协议）**：
+  - `project/memory/*`（业务/技术/结构/术语）
+  - `project/components/index.md`（应用组件地图 + 跨模块依赖关系图）
+  - `project/adr/index.md`（架构决策索引）
+  - **受影响模块的完整内容**：从 `specs/{id}/index.md#impact-analysis`（R1.5 产出）获取受影响模块清单，读取对应 `project/components/{module}.md` 的**全部内容**（含 TL;DR、API/Data Contract 不变量、状态机/领域事件、Evidence）——D2 必须显式声明与这些模块现有契约的关系
+  - **相关 ADR 全文**：从影响分析中获取相关 ADR 编号，读取 `project/adr/{adr-id}.md` 全文——确保设计不违反历史决策
+  - 读取失败或不存在时显式标注为 `CONTEXT GAP`（而非静默跳过）
 - **按需（需求级）**：仅在明确处理某个 `<DEMAND-ID>` 时读取该需求的最小必要材料：
   - **需求路径**：`requirements/solution.md`、`requirements/prd.md`（可选）、`requirements/prototype.md`（可选）
+  - **影响分析**：`specs/{id}/index.md#impact-analysis`（R1.5 产出，必读）
   - **设计路径**：`design/design.md`（若已存在）与 `design/research.md`（可选）
 - **回写（入库）**：每个模块独立产出一个文件（或一个章节），保持可替换与可审计。
 
@@ -91,7 +98,7 @@ principles_ref: design/aisdlc.md
 
 - `{FEATURE_DIR}/requirements/solution.md`（必需）
 - （可选）`{FEATURE_DIR}/requirements/prd.md`、`{FEATURE_DIR}/requirements/prototype.md`
-- 项目级 `project/memory/*`、`project/contracts/`、`project/adr/` 索引（按需）
+- 项目级 `project/memory/*`、`project/components/index.md`、`project/adr/` 索引（按需）
 
 #### 4.3 输出
 
@@ -126,7 +133,7 @@ principles_ref: design/aisdlc.md
 
 - **门禁**：先执行 `spec-context` 获取 `FEATURE_DIR`（失败即停止；见 2.3/3.3）
 - **需求路径**：`{FEATURE_DIR}/requirements/solution.md`（必需）与（可选）`prd.md/prototype.md`
-- **项目级资源**：`project/memory/*`、相关 `contracts/`、`adr/` 索引
+- **项目级资源**：`project/memory/*`、相关 `components/{module}.md`、`adr/` 索引（契约入口位于组件页的 `## API Contract / ## Data Contract`）
 
 #### 5.3 输出（落盘到 `design/research.md`，可选）
 
@@ -160,8 +167,13 @@ principles_ref: design/aisdlc.md
 
 - **门禁**：先执行 `spec-context` 获取 `FEATURE_DIR`（失败即停止；见 2.3/3.3）
 - **需求路径**：`{FEATURE_DIR}/requirements/solution.md`（必需）与（可选）`prd.md/prototype.md`
+- **影响分析（必读）**：`{FEATURE_DIR}/index.md#impact-analysis`（R1.5 产出），获取受影响模块清单与需遵守的不变量
 - （可选）`{FEATURE_DIR}/design/research.md`
-- 项目级 `project/memory/*`、`project/contracts/`、`project/adr/` 索引
+- **项目级（强制，对齐上下文注入协议）**：
+  - `project/memory/*`（业务/技术/结构/术语）
+  - 受影响模块的 `project/components/{module}.md` **完整内容**（含 API/Data Contract 不变量、状态机/领域事件）
+  - 相关 ADR 全文（从影响分析中获取编号）
+  - 读取失败时标注 `CONTEXT GAP`
 
 #### 6.3 输出（落盘到 `design/design.md`）
 
@@ -173,20 +185,26 @@ principles_ref: design/aisdlc.md
 - **范围与边界（必填）**：系统边界、影响面、明确不做什么（与 `requirements/solution.md` 对齐）
 - **推荐方案（必填，1 个；按 C4 L1–L3 描述）**
   - **C4-L1：System Context（系统上下文）**：用户/角色、外部系统、系统边界、关键交互与主要输入输出；明确不变量与约束（必要时配 Mermaid 图）
-  - **C4-L2：Container（容器/部署单元）**：应用/服务/函数/作业、数据库/缓存/队列等容器划分；每个容器的职责、主要技术选型、关键数据流与对外契约入口（contracts/事件/接口）
+  - **C4-L2：Container（容器/部署单元）**：应用/服务/函数/作业、数据库/缓存/队列等容器划分；每个容器的职责、主要技术选型、关键数据流与对外契约入口（组件页契约段落/事件/接口）
   - **C4-L3：Component（组件）**：关键容器内部的组件拆分（职责/接口/依赖）；关键数据模型与状态流转；错误处理与幂等/一致性策略（描述到“组件与接口”，不落实现细节）
   - **关键决策与取舍（必填，≥3 条）**：性能/成本/一致性/复杂度/演进等维度的权衡，说明为什么选它
-  - **对外承诺要点（必填）**：契约/权限/数据口径/兼容性/迁移与回滚承诺；必要时下沉到 `project/contracts/` 或新增 ADR
+  - **对外承诺要点（必填）**：契约/权限/数据口径/兼容性/迁移与回滚承诺；必要时更新对应 `project/components/{module}.md` 的契约段落或新增 ADR
 - **备选方案（必填，2–3 个）**：各备选的适用前提（何时会选它）+ 不选原因（1–2 条关键差异即可）
+- **与现有系统的对齐（必填，基于 R1.5 影响分析）**：
+  - **契约兼容性声明**：对每个受影响模块，显式声明本设计与现有 API/Data 契约的关系（兼容/扩展/破坏性变更），引用 `components/{module}.md#api-contract` / `#data-contract` 中的具体不变量
+  - **ADR 合规声明**：对每个相关 ADR，显式声明本设计是否遵守、是否需要新增/修改 ADR
+  - **状态机/事件影响**：对涉及的状态机与领域事件，说明是否新增状态/事件、是否改变转移规则（引用模块页的 `## State Machines & Domain Events`）
+  - **跨模块影响确认**：基于依赖关系图，确认所有受影响的上下游模块已被考虑
 - **影响分析（必填）**：上下游系统、数据口径、运行与运维影响、迁移/回滚要点（按需）
 - **风险与验证清单（必填）**：风险/假设 → 验证方式 → 成功/失败信号 → Owner → 截止 → 下一步动作
-- **追溯链接（必填）**：`requirements/solution.md`（以及 `prd.md/prototype.md` 如适用）、相关 contracts/ADR 入口
+- **追溯链接（必填）**：`requirements/solution.md`（以及 `prd.md/prototype.md` 如适用）、`index.md#impact-analysis`（R1.5 产出）、相关组件页契约段落/ADR 入口
 
 #### 6.4 质量门槛（D2-DoD）
 
 - 方案覆盖需求的目标、范围与关键约束，且 In/Out 明确
 - 推荐方案以 C4 的 **L1（Context）+ L2（Container）+ L3（Component）** 三层次描述清楚（图或等价结构均可），且层次之间可追溯
 - 关键决策可追溯（至少能指出“为什么选它”与“备选为何不选”）
+- **与现有系统的对齐已完成**：每个受影响模块的契约兼容性已声明、相关 ADR 合规性已确认、状态机/事件影响已说明
 - 不确定性已收敛：未知以“假设 + 验证清单”承接（Owner/截止/动作明确）
 
 #### 6.5 下一步（D2 → implementation）
@@ -208,5 +226,5 @@ principles_ref: design/aisdlc.md
 ### 8. 追溯与 Merge-back 提示
 
 - 设计阶段新增的关键决策应落盘到 `project/adr/`（或在 `design/design.md` 中提供 ADR 入口与摘要）。
-- 接口或数据契约的变更应更新 `project/contracts/` 对应索引与契约文件。
+- 接口或数据契约的变更应更新对应 `project/components/{module}.md` 的 `## API Contract / ## Data Contract` 段落，并确保 `project/components/index.md` 可稳定跳转到锚点。
 - 可复用的长期资产在需求完成后通过 Merge-back 晋升到项目级（避免知识资产散落在单个 Spec Pack 内）。

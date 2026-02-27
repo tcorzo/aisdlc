@@ -38,8 +38,13 @@ principles_ref: design/aisdlc.md
 
 ### 2.2 Agent 读取顺序（渐进式披露）
 
-- **必读（项目级）**：`project/memory/*`（业务/技术/结构/术语）与 `project/contracts/`、`project/adr/` 索引
+- **必读（项目级，强制，对齐上下文注入协议）**：
+  - `project/memory/*`（业务/技术/结构/术语）
+  - 受影响模块的 `project/components/{module}.md` 的 API/Data 契约段落 + Evidence 入口（从 `index.md#impact-analysis` 获取受影响模块清单）
+  - 相关 ADR（从影响分析获取）
+  - 读取失败时标注 `CONTEXT GAP`
 - **按需（需求级）**：仅在明确处理某个 `<DEMAND-ID>` 时读取该需求的：
+  - **影响分析（必读）**：`specs/{id}/index.md#impact-analysis`（R1.5 产出，获取受影响模块与不变量）
   - **需求路径**：`requirements/*`（包含 `solution.md` 或 `prd.md`）
   - **设计路径**：`design/*`（包含 `design.md` 或 `solution.md`）
 - **实现阶段 SSOT**：`implementation/plan.md`（唯一执行清单与状态来源）
@@ -103,7 +108,7 @@ flowchart TD
    - 读取关键产物（按需最少读取）：
      - **需求路径**：`requirements/solution.md`、`requirements/prd.md`
      - **设计路径**：`design/design.md`（如存在）
-   - 以及项目级 `memory/`、`contracts/`、`adr/`
+   - 以及项目级 `memory/`、`components/`、`adr/`
 3. **执行工作流（Execute workflow）**：
    - 依据模块模板执行，**将未知项标记为 “NEEDS CLARIFICATION”**
    - **门禁未通过则报错**（ERROR），不得落盘下一阶段产物
@@ -121,8 +126,13 @@ flowchart TD
 ### 5.2 输入
 
 - **需求路径**：`requirements/solution.md` / `requirements/prd.md`
-- **设计路径**：`design/design.md`（如存在）
-- **项目级资源**：`project/memory/*` 与 `project/contracts/`、`project/adr/`
+- **影响分析（必读）**：`{FEATURE_DIR}/index.md#impact-analysis`（R1.5 产出），获取受影响模块清单、需遵守的不变量、相关 ADR
+- **设计路径**：`design/design.md`（如存在；含"与现有系统的对齐"声明）
+- **项目级资源（强制，对齐上下文注入协议）**：
+  - `project/memory/*`（业务/技术/结构/术语）
+  - 受影响模块的 `project/components/{module}.md`（API/Data 契约段落 + Evidence 入口 + 状态机/领域事件）
+  - 相关 ADR 全文
+  - 跨模块依赖关系（从 `components/index.md` 的依赖关系图获取）
 
 ### 5.3 输出（落盘到 `{FEATURE_DIR}/implementation/plan.md`；唯一 SSOT）
 
@@ -140,6 +150,8 @@ flowchart TD
 **范围：** In / Out
 **架构：** [2–3 句方法说明 + 关键约束]
 **验收口径：** [引用 requirements/solution.md 或 requirements/prd.md 的 AC/验收点]
+**影响范围：** [引用 index.md#impact-analysis 的受影响模块清单]
+**需遵守的不变量：** [从影响分析提取的关键 API/Data 契约不变量]
 
 ---
 ```
@@ -148,6 +160,11 @@ flowchart TD
 
 - **TL;DR**：一句话概括计划目标与范围
 - **范围与边界**：In/Out（对齐需求与设计）
+- **影响范围与约束（基于 R1.5 影响分析，必填）**：
+  - 受影响模块清单及影响类型（引用 `index.md#impact-analysis`）
+  - 需遵守的 API/Data 契约不变量（逐条列出，标注来源模块）
+  - 需遵守的状态机/领域事件约束（如涉及）
+  - 跨模块影响与协调事项
 - **里程碑与节奏**：阶段拆分、时间预估、交付物清单
 - **依赖与资源**：外部系统/团队/权限/环境/数据依赖
 - **风险与验证**：风险清单、验证方式、Owner
@@ -198,6 +215,7 @@ flowchart TD
 - 里程碑明确且可验收（每一项有对应产物或可验证标准）
 - 依赖与风险已列出，并有最小验证/缓解动作
 - 关键验收口径可追溯（至少引用 `prd.md` 或 `solution.md`）
+- **影响范围与约束已注入**：`plan.md` 包含"影响范围与约束"段落，受影响模块与需遵守的不变量已从 `index.md#impact-analysis` 提取并逐条列出
 - `plan.md` 内存在“任务清单（SSOT）”，且每个任务包含：文件路径、验收点、最小验证方式、提交点与审计信息
 - 任何不确定项均标注为 “NEEDS CLARIFICATION”，且未消除前不得进入 I2
 
@@ -211,9 +229,10 @@ flowchart TD
 
 ### 6.2 输入
 
-- `{FEATURE_DIR}/implementation/plan.md`（必须；SSOT）
+- `{FEATURE_DIR}/implementation/plan.md`（必须；SSOT，含"影响范围与约束"段落）
 - `requirements/*`、`design/*`（按 `plan.md` 中引用路径按需读取）
-- 项目级 `project/memory/*`、`project/contracts/`、`project/adr/` **索引（只读）**（如涉及契约/决策/术语）
+- `{FEATURE_DIR}/index.md#impact-analysis`（R1.5 产出，按需回查受影响模块与不变量）
+- 项目级受影响模块的 `project/components/{module}.md`（API/Data 契约段落，**只读**，用于实现时校验不变量合规）
 
 ### 6.3 输出（执行过程回写；以 `plan.md` 为唯一状态来源）
 
@@ -224,7 +243,7 @@ flowchart TD
   - 阻塞任务必须写清：缺什么、如何补齐、向谁取证/从哪里取证
 - **决策与契约草拟（Spec 内落盘，禁止直接更新 project/）**（如执行中产生）：
   - **ADR 草案**：优先记录在 `{FEATURE_DIR}/design/design.md` 的“决策/权衡”段落；如需独立文件，可新增 `{FEATURE_DIR}/design/adr/` 下的 ADR 草案（仅需求级资产）
-  - **契约草案**：在 `{FEATURE_DIR}/design/contracts/` 下草拟/更新（需求级资产）
+  - **契约草案**：在 `{FEATURE_DIR}/design/` 内草拟/更新（需求级资产；可用 `design/contract-delta.md` 或在 `design/design.md` 中记录契约差量与证据入口）
   - **Merge-back 待办（仅记录，不在本阶段执行）**：在 `plan.md` 中追加“Merge-back 待办清单”小节，记录需要晋升的 ADR/契约/运维/NFR 变更与证据入口；后续由独立的 Merge-back 流程处理（见 `design/aisdlc.md`）
 
 > 说明：本 SOP 不强制新增额外执行日志文件；如需要更细审计，可在 `implementation/` 下增补 `execution-log.md`，但 `plan.md` 仍是唯一的执行清单与状态来源。
@@ -264,5 +283,5 @@ flowchart TD
 
 - `{FEATURE_DIR}/implementation/plan.md` 必须引用对应 `requirements/*` 与 `design/*`（保持可追溯）
 - 状态回写以 `plan.md` 为唯一来源（checkbox + 审计信息）；
-- 实现过程中产生的关键决策/契约变更：**仅在 Spec 目录内落盘草案**；Merge-back 待办与证据入口记录在 `plan.md` 中，后续在独立的 Merge-back 阶段晋升/同步到 `project/adr/` 与 `project/contracts/`
+- 实现过程中产生的关键决策/契约变更：**仅在 Spec 目录内落盘草案**；Merge-back 待办与证据入口记录在 `plan.md` 中，后续在独立的 Merge-back 阶段晋升/同步到 `project/adr/` 与对应 `project/components/{module}.md` 的契约段落
 - 建议在 PR/提交信息中回链到任务 ID 与 Spec 产物路径（例如：`specs/<DEMAND-ID>/implementation/plan.md#Task-T1`）

@@ -99,24 +99,12 @@ markdown-sharing:
       index.md
       0001-xxx.md
       ...
-    contracts                      # 对外契约
-      index.md
-      api                          # API 契约
-        index.md
-        auth.yaml
-        user.yaml
-        ...
-      data                         # 数据契约
-        index.md
-        schemas
-        dictionaries
-        ...
     products                       # 业务架构层（Business Architecture，可选）：业务域/业务模块资产（索引 + 模块文件）
       index.md
       a.md
       ...
     components                     # 应用架构层（Application Architecture，可选）：承载业务能力的应用组件资产（索引 + 模块文件）
-      index.md
+      index.md                     # 应用组件地图（索引 + 跨模块依赖关系图）
       a.md
       ...
   specs                          # 需求级 SSOT（交付闭环）
@@ -150,6 +138,7 @@ markdown-sharing:
 > 说明：
 > - `project/products/` 用于**业务架构层（Business Architecture）**的“业务域/业务模块”资产，表达业务边界、业务能力、价值流/核心场景、参与者/角色、业务流程、业务服务、业务对象与事件、业务规则与口径、业务指标与依赖等（强调业务语义，不写技术实现）。
 > - `project/components/` 用于**应用架构层（Application Architecture）**的“应用组件”资产，表达应用组件边界、应用服务/接口、组件协作与数据对象责任等（强调应用层承诺与协作边界，不写具体实现细节）。
+> - **契约组织方式（默认）**：不单独维护 `project/contracts/**`；模块的 **API/Data 契约**统一合并到 `project/components/{module}.md` 内的固定段落：`## API Contract` / `## Data Contract`，并在段落中链接到仓库内的权威证据（OpenAPI/Proto/Schema/DDL/迁移/ORM 等）。
 > - 技术基础设施/平台能力（Technology Layer，例如缓存、消息队列、网关、中间件）**不建议**混入 `project/components/`；如项目需要，可新建 `project/platform/` 或 `project/tech/` 承载对应资产（按需落地）。
 
 ---
@@ -195,15 +184,18 @@ markdown-sharing:
 
 按企业架构（应用架构，ArchiMate Application Layer）常见表达方式，建议至少覆盖：
 
+- **TL;DR（决策级摘要，3-5 句话，必填）**：模块做什么、边界是什么、关键不变量是什么——让 AI 在"地图浏览"阶段用摘要判断是否需要深入，减少无效 token 消耗。
 - **组件定位（In/Out + 边界）**：组件提供什么应用能力/承诺、明确不负责什么；与相邻组件边界如何裁切（以契约/ADR 为裁决依据）。
 - **承载业务映射**：该组件承载哪些业务模块（`project/products/*.md`）、哪些业务能力/流程/对象（CAP/BP/BO 编号），以及面向哪些消费者（人/系统/其他组件）。
+- **变更热力（Change Frequency）**：基于 git log 统计的变更频率（high/medium/low），让 AI 在需求分析阶段预判哪些模块更可能受影响、更需要谨慎设计。在 frontmatter 中记录 `change_frequency: high|medium|low` 与 `last_verified_at: <date>`。
 - **应用服务目录（Application Service Catalog）**：稳定的“应用层服务承诺”，描述输入/输出、前置条件/约束（业务/合规）、SLA/SLO/NFR 要点（不写实现）。
 - **应用接口与契约入口（Application Interface）**：
-  - API：权威入口指向 `project/contracts/api/*.yaml`
+  - API：权威入口写在 `project/components/{module}.md#api-contract`，并链接到仓库内的 OpenAPI/Proto 生成物/源文件与生成命令（或 CI job）
   - 事件/消息：topic/event 的业务语义与契约入口（如适用）
   - UI/Batch：入口与约束（如适用）
 - **关键协作关系（Interaction / Collaboration）**：挑 1-2 个代表性场景，说明跨组件调用链/协作关系与关键边界（详细时序下沉需求级）。
-- **数据对象与责任边界（Data Object & Ownership）**：组件负责哪些数据对象（Owner/主写/只读）、主键/唯一标识与生命周期摘要；权威定义指向 `project/contracts/data/`。
+- **数据对象与责任边界（Data Object & Ownership）**：组件负责哪些数据对象（Owner/主写/只读）、主键/唯一标识与生命周期摘要；权威入口写在 `project/components/{module}.md#data-contract`，并链接到仓库内的 Schema/DDL/迁移/ORM 等证据。
+- **关键状态机与领域事件（State Machines & Domain Events）**：从代码中识别的关键状态机（enum/status 字段 + 状态转移逻辑）和领域事件（event publish/subscribe），沉淀为摘要——这是需求分析阶段最常"猜错"的部分。
 - **非功能需求分摊（NFR Allocation）**：性能、可用性、安全合规、成本等“护栏/预算”在组件层的分摊与边界；运行操作细节指向 `project/ops/`。
 - **集成与依赖（上下游清单）**：依赖原因、交互方式、风险与缓解措施（技术实现细节不写在这里）。
 - **运行入口（轻量）**：监控/告警、Runbook、回滚等入口链接（不重复操作步骤）。
@@ -217,14 +209,14 @@ markdown-sharing:
 ### 需求级 Spec Pack 如何落到应用组件
 
 - 需求的 `specs/<DEMAND-ID>/design/` 应**引用**对应应用组件（`project/components/*.md`）中的应用服务/接口/数据对象编号与契约入口，避免在需求级重复定义长期稳定的应用层承诺。
-- 需求级应承载“为交付而生”的细节：详细时序、错误码、字段级约束、迁移脚本、具体实现方案等；其中可复用的接口/数据契约与关键 ADR 必须 Merge-back 回 `project/contracts/` 与 `project/adr/`。
+- 需求级应承载“为交付而生”的细节：详细时序、错误码、字段级约束、迁移脚本、具体实现方案等；其中可复用的接口/数据契约与关键 ADR 必须 Merge-back 回 `project/components/`（契约段落）与 `project/adr/`。
 - 当需求引入“新的长期应用服务/接口契约/数据对象责任边界”，应在 Merge-back 阶段晋升更新到 `project/components/`，并记录变更原因与关联 ADR/Spec。
 
 ### 多级结构说明
 
 **项目级 Memory（`project/memory/`）**：
 - 项目快照，包含产品业务信息、模块信息、代码结构等
-- 链接到项目级 SSOT 的稳定资产（`project/adr/`、`project/contracts/` 等）
+- 链接到项目级 SSOT 的稳定资产（`project/adr/`、`project/components/`、`project/ops/` 等）
 - 每次 Agent 执行任务时都应优先加载，提供全局上下文
 
 **需求级 Memory（`specs/<DEMAND-ID>/index.md`）**：
@@ -248,17 +240,99 @@ markdown-sharing:
    - `project/index.md`（Spec Registry，需求列表与状态）
    - `project/products/index.md`（业务架构索引：业务域/业务模块地图，可选）
    - `project/components/index.md`（应用架构索引：应用组件地图，可选）
-   - `project/contracts/index.md`（契约索引）
+   - 契约入口：通过 `project/components/index.md` 跳转到 `project/components/{module}.md#api-contract` / `#data-contract`
    - `project/adr/index.md`（架构决策索引）
 
-3. **按需（需求级 Spec Pack）**：
+3. **影响分析（需求落点，R1 完成后自动执行）**：
+   - 基于 `requirements/solution.md` 的目标/范围，从 `products/index.md` 和 `components/index.md` 匹配受影响模块
+   - 提取受影响模块的 TL;DR 摘要、API/Data 不变量、相关 ADR
+   - 输出影响报告写入 `specs/<DEMAND-ID>/index.md` 的 `## Impact Analysis`
+   - 后续 D2/I1/I2 阶段以此为约束输入，避免遗漏关键依赖与不变量
+
+4. **按需（需求级 Spec Pack）**：
    - 仅当任务明确指向某个需求时，读取对应需求的 `specs/<DEMAND-ID>/index.md`
    - 再按需读取该需求 Spec Pack 中的具体文档（requirements/、design/、implementation/、verification/、release/ 等）
    - 不将其它需求的 `specs/` 内容当作通用知识源；需要跨需求复用的内容必须 Merge-back 到 `project/`
 
-4. **回写（产出入库）**：
+5. **回写（产出入库）**：
    - 需求级输出：写入对应需求的 `specs/<DEMAND-ID>/` 目录
    - 项目级更新：通过 Merge-back 机制，将可复用资产晋升到 `project/` 目录
+
+---
+
+## 知识消费机制：让项目知识库成为 AI 工作流的「标配输入」
+
+> 目标：打通"知识产出 → 知识消费 → 知识演进"的闭环。项目知识库的价值不在于文档本身，而在于**每个需求阶段的 AI Agent 都能稳定获取做决策所需的最小必要上下文**。
+
+### 上下文注入协议（Context Injection Protocol）
+
+**问题**：当前渐进式披露依赖"Agent 按规则主动去读"，实践中常出现 Agent 忘记读、读了不用、不知道该读什么。
+
+**机制**：为每个 Spec 阶段定义「必须注入的上下文切片」——不是让 Agent 自主决定读什么，而是由工作流在启动 Agent 前，根据需求涉及的模块自动拼装上下文。
+
+| Spec 阶段 | 必须注入的项目级上下文 | 注入目的 |
+|---|---|---|
+| R1 需求澄清 | `memory/product.md` + `products/index.md`（如有）+ 涉及模块的 TL;DR 摘要 | 避免问出"项目已有答案"的问题；对齐业务边界与术语 |
+| D0 分流判定 | 同上 + 涉及模块的 API/Data 不变量摘要 | 准确判断是否涉及对外承诺变化 |
+| D2 设计决策 | 涉及模块的 `components/{module}.md` 完整内容 + `adr/index.md` + 相关 ADR | 设计必须显式声明与现有契约的关系 |
+| I1 实现计划 | 涉及模块的 API/Data 契约段落 + Evidence 入口 + 跨模块依赖关系 | 实现计划必须遵守现有不变量 |
+
+**注入方式（建议，可渐进落地）**：
+
+1. **最小可用（当前）**：在各阶段 Skill 的门禁中，将"读取项目级上下文"从"按需/如存在"升级为**必须**，读取失败或不存在时显式标注为 `CONTEXT GAP`（而非静默跳过）。
+2. **进阶（推荐）**：在 `spec-context` 输出中增加 `RELATED_MODULES` 字段（基于需求描述中的关键词匹配 `components/index.md`），自动生成推荐阅读清单写入 `specs/{id}/index.md`。
+3. **远期**：提供结构化查询能力（例如 CLI：`aisdlc query --module=auth --aspect=api-contract`），按需返回目标段落，减少全文读取的 token 浪费。
+
+### 需求影响分析（Impact Analysis）
+
+**问题**：新需求进来时，AI 无法快速判断"改了什么会影响什么"，导致需求分析阶段遗漏关键约束、设计阶段重复造轮子、实现阶段违反现有契约。
+
+**机制**：在 R1（需求澄清）完成后、D0/D2 之前，增加一个轻量级的「需求落点分析」步骤，自动从项目知识库提取影响报告。
+
+**影响分析的输入与输出**：
+
+- **输入**：`requirements/solution.md` 中的目标/范围/关键流程
+- **项目知识库查询**：
+  - 从 `products/index.md` 匹配受影响的业务模块
+  - 从 `components/index.md` 匹配受影响的应用组件
+  - 从匹配到的 `components/{module}.md` 提取需遵守的 API/Data 不变量
+  - 从 `adr/index.md` 提取可能受影响的历史决策
+- **输出**：写入 `specs/{id}/index.md` 的 `## Impact Analysis`：
+  - 受影响模块清单（Products + Components）
+  - 需遵守的不变量（从模块页 API/Data Contract 提取）
+  - 相关 ADR（可能约束设计方向）
+  - 跨模块影响（从依赖关系图推导）
+
+> 这是项目知识库最高 ROI 的消费场景：一次分析，后续 D2/I1/I2 全程受益。
+
+### 知识增量演进（Delta Discover + Staleness Detection）
+
+**问题**：Discover SOP 是一个完整的 7 步流程，适合初始化。但项目持续演进，知识库如果不能随代码变化而更新，很快就会"过时即无效"。
+
+**机制一：增量 Discover（Delta Discover）**
+
+- **触发时机**：当 Merge-back 完成、或 PR 涉及 P0/P1 模块的核心文件变更时
+- **执行范围**：基于 `git diff --stat`（或 PR 变更文件列表），识别受影响的模块，只对这些模块执行 Step4（模块页更新）+ Step7（DoD 校验），而非重跑全量 SOP
+- **产出**：更新受影响模块的 `components/{module}.md`，并回填 `components/index.md` 状态
+
+**机制二：过期检测（Staleness Detection）**
+
+- 在模块页 frontmatter 中记录 `last_verified_at`（最后校验时间）和 `source_files`（关键源文件列表）
+- CI 可检查"距离上次校验是否超过 N 次提交/N 天"，超期的标记为 `stale`
+- `stale` 模块在被 Impact Analysis 命中时，自动提示"此模块知识可能过期，建议先执行 Delta Discover"
+
+**机制三：Merge-back 触发 Discover 校验**
+
+- Merge-back 完成后，自动对涉及的模块页运行一次 DoD 快速校验，确保晋升的内容与模块页整体一致
+
+### 知识质量度量
+
+| 指标 | 定义 | 用途 |
+|---|---|---|
+| **知识覆盖率** | 已完成模块页的 P0 模块数 / 总 P0 模块数 × 100% | 项目健康度指标 |
+| **链接可达率** | `.aisdlc/` 中可达的相对链接数 / 总链接数 × 100% | CI 自动校验，断链即报错 |
+| **知识利用率** | Spec Pack 各阶段 `depends_on` 中引用项目级知识的比例 | 指导后续维护优先级：被引用最多的知识资产优先维护 |
+| **知识新鲜度** | 非 `stale` 的 P0 模块数 / 总 P0 模块数 × 100% | 过期检测的量化反映 |
 
 ---
 
@@ -283,10 +357,9 @@ markdown-sharing:
 #### 必须合并回项目层的内容（默认）
 
 - **ADR**：任何关键决策必须进入 `project/adr/` 并在 `project/adr/index.md` 汇总
-- **对外契约**：
-  - API：若有变更，更新 `project/contracts/api/`（或链接到 Schema 文件），并更新弃用策略
-  - Data：若有变化，更新 `project/contracts/data/`（字典/口径/质量规则）与迁移结论
-  - UX：关键流程/信息架构变更，更新 `project/contracts/ux/`（如适用）
+- **对外契约（默认合并到组件页）**：
+  - API：若有变更，更新对应 `project/components/{module}.md#api-contract`（权威入口 + 不变量摘要 + 证据入口 + 缺口清单）
+  - Data：若有变化，更新对应 `project/components/{module}.md#data-contract`（数据主责 + 权威入口 + 不变量摘要 + 证据入口 + 缺口清单）
 - **运行资产**：上线相关 Runbook/监控告警/回滚策略，更新 `project/ops/`
 - **NFR 预算与基线**：若对性能/稳定性/成本有影响，更新 `project/nfr.md`（预算、现状、目标）
 
@@ -294,7 +367,7 @@ markdown-sharing:
 
 在每个需求 `specs/<DEMAND-ID>/merge_back.md` 里维护清单（Done/Not Done）：
 - ADR 是否已归档到 `project/adr/`
-- API/Data/UX 是否已更新到 `project/contracts/` 对应目录
+- API/Data 是否已更新到对应 `project/components/{module}.md` 的契约段落（并且 `project/components/index.md` 的链接可稳定跳转到锚点）
 - Runbook/监控是否已更新到 `project/ops/`
 - NFR 预算是否更新到 `project/nfr.md`
 - Registry 是否更新需求状态为 Released / Merged（更新 `project/index.md`）
@@ -319,7 +392,7 @@ status: draft                        # draft/review/approved/deprecated
 owners: [PM, BA, DEV, QA]
 depends_on:
   - project/memory/product.md
-  - project/contracts/api/auth.yaml
+  - project/components/auth.md#api-contract
   - specs/001-user-auth/requirements/prd.md
 policy_refs:
   - project/memory/tech.md#质量门禁
@@ -349,7 +422,7 @@ related_tests:
 
 - **架构演进**：`project/memory/`（product.md、tech.md、structure.md、glossary.md）
 - **架构决策**：`project/adr/`（架构决策记录）
-- **契约更新**：`project/contracts/`（api/、data/、ux/）
+- **契约更新（默认合并到组件页）**：`project/components/{module}.md`（`## API Contract` / `## Data Contract`，并在段落中指向仓库内权威证据）
 - **运行资产**：`project/ops/`（runbook.md、release.md、monitoring.md）
 - **NFR 预算**：`project/nfr.md`
 - **项目总览**：`project/index.md`（Spec Registry）
@@ -372,11 +445,11 @@ related_tests:
    - 创建 `project/memory/` 目录，补齐 `product.md`、`tech.md`、`structure.md`、`glossary.md`
    - 创建 `project/index.md`（Spec Registry）
    - 创建 `project/adr/` 目录（架构决策记录）
-   - 创建 `project/contracts/`、`project/ops/`、`project/nfr.md` 基础结构
+   - 创建 `project/components/`、`project/ops/`、`project/nfr.md` 基础结构
 
 2. **建立项目级 Memory**：
    - Memory 文件（`product.md`、`tech.md`、`structure.md`、`glossary.md`）已位于 `project/memory/` 目录
-   - 这些文件链接到项目级 SSOT 的稳定资产（`project/adr/`、`project/contracts/` 等）
+   - 这些文件链接到项目级 SSOT 的稳定资产（`project/adr/`、`project/components/`、`project/ops/` 等）
 
 3. **创建需求级结构示例**：
    - 选一个真实需求，创建 `specs/001-demo/` 目录结构（需求编号格式：`{num}-{domain-name}`）
