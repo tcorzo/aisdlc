@@ -119,9 +119,32 @@ source_file_path="$raw_file"
 - `.aisdlc/specs/<branchName>/requirements/raw.md` 存在，内容等于原始需求（注意文件头有 UTF-8 BOM）。
 - 传入的源文件已被删除（这不是 bug；若用户需要保留，应在步骤 1 之前自行备份）。
 
-### 5) 完成后：回到 `using-aisdlc` 路由下一步
+### 5) 完成后：直接进入 R1（`spec-product-clarify`），无需 `using-aisdlc`
 
-`spec-init` 的 DoD 通过后，本技能不再“自动衔接”到任何下游技能；请回到 `using-aisdlc` 作为**唯一路由器**决定下一步（通常先 `spec-context`，再路由到 R1：`spec-product-clarify`）。
+`spec-init` 的 DoD 通过后，默认直接串联进入需求澄清 R1：
+
+- 下一步（固定）：先执行 `spec-context` 并回显 `FEATURE_DIR=...`
+- 然后进入：`spec-product-clarify`（基于 `requirements/raw.md` 产出 `requirements/solution.md`，含 `#impact-analysis`）
+
+> 说明：本技能只做“进入 R1”的固定衔接，不做 D0/D1/D2/I1/I2 等后续路径选择；后续如需分流，再回到 `using-aisdlc`。
+
+## 完成后输出（供自动推进读取）
+
+在回答末尾追加以下两段（不要省略）：
+
+- 「本阶段产物已落盘。下一步将直接进入 `spec-context → spec-product-clarify`（无需 `using-aisdlc`）。」
+- `ROUTER_SUMMARY`：
+
+```yaml
+ROUTER_SUMMARY:
+  stage: R0
+  artifacts:
+    - ".aisdlc/specs/{num}-{short-name}/requirements/raw.md"
+  needs_human_review: false
+  blocked: false
+  block_reason: ""
+  notes: "DoD 通过后固定进入 R1：spec-context → spec-product-clarify"
+```
 
 
 ## 常见错误（以及怎么避免）
