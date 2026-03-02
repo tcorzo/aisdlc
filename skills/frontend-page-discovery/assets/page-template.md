@@ -1,8 +1,3 @@
----
-title: 页面证据包（单页）
-status: draft
----
-
 # <page_name>（<page_id>）
 
 ## 页面概览（产品视角）
@@ -105,9 +100,9 @@ status: draft
     - file:lines
   evidence_gaps: []
 
-## 附录：证据（最精简）
+## 附录：证据
 
-### A) 关键字段的证据（最小映射）
+### A) 关键字段的证据
 
 - page_id: <page_id>
 - module_name: <module_name｜未归类>
