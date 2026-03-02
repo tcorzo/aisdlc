@@ -160,12 +160,11 @@ if ($null -ne $FEATURE_DIR -and (Test-Path $FEATURE_DIR) -and (Test-Path (Join-P
 - 遇到阻塞/澄清项立刻停止，不要猜测推进
 - 执行中产生 ADR/契约：只在 `{FEATURE_DIR}` 内落盘草案，并在 `plan.md` 记录 Merge-back 待办（I2 不直接改 `project/*`）
 
-## 完成/检查点输出（供 `using-aisdlc` 自动推进读取）
+## 完成后输出与自动路由（必须执行）
 
-在以下任一时刻（批次检查点汇报结束 / 因阻塞停止 / 全部任务完成准备进入 Finish），在回答末尾追加以下两段（不要省略）：
+在以下任一时刻（批次检查点汇报结束 / 因阻塞停止 / 全部任务完成准备进入 Finish），**必须**完成以下动作（按顺序，不可省略）：
 
-- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
-- `ROUTER_SUMMARY`（按当前状态填写；不要总是写死为同一个值）：
+1. **输出 ROUTER_SUMMARY**（YAML 形态，供 Router 决策；按当前状态填写，不要总是写死为同一个值）：
 
 **填写规则：**
 
@@ -183,6 +182,12 @@ ROUTER_SUMMARY:
   block_reason: ""
   notes: "示例：批次检查点已汇报，等待反馈后继续下一批"
 ```
+
+2. **立即执行 `using-aisdlc`**：将上述 `ROUTER_SUMMARY` 作为路由输入传递给 using-aisdlc，由 Router 判定下一步并**自动推进**（无需等待用户说「继续」）。  
+   - 若 Router 判定可自动续跑：在同一轮对话内继续执行下一步 worker skill（如下一批 I2、Finish 等）
+   - 若 Router 触发硬中断：停下并输出阻断原因、需要的输入、候选下一步
+
+3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 
 ## 集成
 

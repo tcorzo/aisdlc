@@ -90,13 +90,11 @@ description: Use when 需要在 Spec 级设计阶段执行 D1 research（产出 
 
 完成后：**立即调用** `using-aisdlc` 路由下一步（通常进入 D2：`spec-design`）。
 
-## 完成后输出（供 `using-aisdlc` 自动推进读取）
+## 完成后输出与自动路由（必须执行）
 
-在回答末尾追加以下两段（不要省略）：
+`research.md` 落盘后，**必须**完成以下动作（按顺序，不可省略）：
 
-- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
-- `ROUTER_SUMMARY`：
-
+1. **输出 ROUTER_SUMMARY**（YAML 形态，供 Router 决策）：
 ```yaml
 ROUTER_SUMMARY:
   stage: D1
@@ -107,6 +105,12 @@ ROUTER_SUMMARY:
   block_reason: ""
   notes: "research 结论建议评审；通常下一步进入 D2（spec-design）"
 ```
+
+2. **立即执行 `using-aisdlc`**：将上述 `ROUTER_SUMMARY` 作为路由输入传递给 using-aisdlc，由 Router 判定下一步并**自动推进**（无需等待用户说「继续」）。  
+   - 若 Router 判定可自动续跑：在同一轮对话内继续执行下一步 worker skill（如 D2 等）
+   - 若 Router 触发硬中断：停下并输出阻断原因、需要的输入、候选下一步
+
+3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 
 ## 红旗（出现任一即停止并纠偏）
 

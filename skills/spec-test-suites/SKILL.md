@@ -77,13 +77,11 @@ Write-Host "OUTPUT=$out"
 
 ---
 
-## 输出约定（交还 Router）
+## 完成后输出与自动路由（必须执行）
 
-在回答末尾追加以下两段（不要省略）：
+`suites.md` 落盘后，**必须**完成以下动作（按顺序，不可省略）：
 
-- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
-- `ROUTER_SUMMARY`：
-
+1. **输出 ROUTER_SUMMARY**（YAML 形态，供 Router 决策）：
 ```yaml
 ROUTER_SUMMARY:
   stage: V3
@@ -94,6 +92,12 @@ ROUTER_SUMMARY:
   block_reason: ""
   notes: "软检查点：测试套件已生成/更新；Router 可继续自动推进到 V4（spec-test-execute）"
 ```
+
+2. **立即执行 `using-aisdlc`**：将上述 `ROUTER_SUMMARY` 作为路由输入传递给 using-aisdlc，由 Router 判定下一步并**自动推进**（无需等待用户说「继续」）。  
+   - 若 Router 判定可自动续跑：在同一轮对话内继续执行下一步 worker skill（如 V4 等）
+   - 若 Router 触发硬中断：停下并输出阻断原因、需要的输入、候选下一步
+
+3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 
 ---
 name: spec-test-suites
@@ -167,7 +171,25 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 - 未回显 `FEATURE_DIR=...` 就开始写 `suites.md`
 - 套件条目没有引用任何 `TC-...` 编号
 
-## 输出约定（给 Router）
+## 完成后输出与自动路由（必须执行）
 
-以 `spec-test` 与 `using-aisdlc` 定义的 YAML `ROUTER_SUMMARY` 为准输出（并在输出中写明“立即调用 using-aisdlc 路由下一步”）。
+`suites.md` 落盘后，**必须**完成以下动作（按顺序，不可省略）：
+
+1. **输出 ROUTER_SUMMARY**（YAML 形态，供 Router 决策）：
+```yaml
+ROUTER_SUMMARY:
+  stage: V3
+  artifacts:
+    - "{FEATURE_DIR}/verification/suites.md"
+  needs_human_review: false
+  blocked: false
+  block_reason: ""
+  notes: "软检查点：测试套件已生成/更新；Router 可继续自动推进到 V4（spec-test-execute）"
+```
+
+2. **立即执行 `using-aisdlc`**：将上述 `ROUTER_SUMMARY` 作为路由输入传递给 using-aisdlc，由 Router 判定下一步并**自动推进**（无需等待用户说「继续」）。  
+   - 若 Router 判定可自动续跑：在同一轮对话内继续执行下一步 worker skill（如 V4 等）
+   - 若 Router 触发硬中断：停下并输出阻断原因、需要的输入、候选下一步
+
+3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 

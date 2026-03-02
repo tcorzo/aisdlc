@@ -110,13 +110,11 @@ R3 的目标是把 `{FEATURE_DIR}/requirements/prd.md` 的**核心场景/规则/
 
 完成后：**立即调用** `using-aisdlc` 路由下一步。
 
-## 完成后输出（供 `using-aisdlc` 自动推进读取）
+## 完成后输出与自动路由（必须执行）
 
-在回答末尾追加以下两段（不要省略）：
+`prototype.md` 落盘后，**必须**完成以下动作（按顺序，不可省略）：
 
-- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
-- `ROUTER_SUMMARY`：
-
+1. **输出 ROUTER_SUMMARY**（YAML 形态，供 Router 决策）：
 ```yaml
 ROUTER_SUMMARY:
   stage: R3
@@ -127,6 +125,12 @@ ROUTER_SUMMARY:
   block_reason: ""
   notes: "软检查点：原型建议走查；如不触发硬中断 Router 可继续自动推进"
 ```
+
+2. **立即执行 `using-aisdlc`**：将上述 `ROUTER_SUMMARY` 作为路由输入传递给 using-aisdlc，由 Router 判定下一步并**自动推进**（无需等待用户说「继续」）。  
+   - 若 Router 判定可自动续跑：在同一轮对话内继续执行下一步 worker skill（如 R4、D0 等）
+   - 若 Router 触发硬中断：停下并输出阻断原因、需要的输入、候选下一步
+
+3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 
 ## Quick reference（高频规则速查）
 

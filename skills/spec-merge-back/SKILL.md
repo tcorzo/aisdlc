@@ -105,14 +105,11 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 | “project 目录没有，我先建个最小的让它跑起来” | merge-back 不负责初始化 project SSOT；缺失即 `CONTEXT GAP` 并停止。 |
 | “不看 plan.md 待办也能总结” | 待办是唯一执行期汇总入口；跳过会遗漏且不可审计。 |
 
-## Exit Contract (return to Router)
+## 完成后输出与自动路由（必须执行）
 
-完成后必须输出两段：
+`merge_back.md` 落盘后，**必须**完成以下动作（按顺序，不可省略）：
 
-1) 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
-
-2) `ROUTER_SUMMARY`（YAML）：
-
+1. **输出 ROUTER_SUMMARY**（YAML 形态，供 Router 决策）：
 ```yaml
 ROUTER_SUMMARY:
   stage: MergeBack
@@ -123,4 +120,10 @@ ROUTER_SUMMARY:
   block_reason: ""
   notes: "已晋升 ADR/契约/ops/NFR/registry；Done/Not Done 与证据入口齐全。"
 ```
+
+2. **立即执行 `using-aisdlc`**：将上述 `ROUTER_SUMMARY` 作为路由输入传递给 using-aisdlc，由 Router 判定下一步并**自动推进**（无需等待用户说「继续」）。  
+   - 若 Router 判定可自动续跑：在同一轮对话内继续执行下一步 worker skill
+   - 若 Router 触发硬中断：停下并输出阻断原因、需要的输入、候选下一步
+
+3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 

@@ -191,7 +191,6 @@ ROUTER_SUMMARY:
 
 3. **对话输出**：在调用 using-aisdlc 前，可简短说明「本阶段产物已落盘，正在调用 using-aisdlc 路由下一步。」
 
-> **输入理解对齐**：本技能在「输入理解」目标下与 using-aisdlc 协同——澄清完成即视为 R1 完成，ROUTER_SUMMARY 是传递给 Router 的结构化输入；Router 负责根据 SSOT 与门禁决定下一步，本技能不预判、不分流。
 
 ## 极简例子（单轮澄清 + 回写）
 
