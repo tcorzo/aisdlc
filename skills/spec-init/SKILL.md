@@ -100,11 +100,44 @@ source_file_path="$raw_file"
 - `.aisdlc/specs/<branchName>/requirements/raw.md` 存在，内容等于原始需求（注意文件头有 UTF-8 BOM）。
 - 传入的源文件已被删除（这不是 bug；若用户需要保留，应在步骤 1 之前自行备份）。
 
-### 5) 完成后：自动执行 `spec-product-clarify`（不要停在中间）
+### 5) 完成后：立即交回 `using-aisdlc` 继续自动推进
 
-`spec-init` 的 DoD 通过后，必须立刻继续执行（不等待用户追加指令）：
+`spec-init` 的 DoD 通过后，本技能不做“下一步分流”判定（避免出现第二个路由源）。统一做法：
 
-- 立即进入 `spec-product-clarify`
+- 输出 `ROUTER_SUMMARY`（见下节）
+- **立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；进入 R1：`spec-product-clarify`）
+
+## 完成后输出（供 `using-aisdlc` 自动推进读取）
+
+在回答末尾追加以下两段（不要省略），并按实际结果填写：
+
+- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
+- `ROUTER_SUMMARY`：
+
+**创建成功时：**
+
+```yaml
+ROUTER_SUMMARY:
+  stage: R0
+  artifacts:
+    - "{FEATURE_DIR}/requirements/raw.md"
+  needs_human_review: false
+  blocked: false
+  block_reason: ""
+  notes: "Spec Pack 已初始化完成；建议 Router 进入 R1（spec-product-clarify）"
+```
+
+**任一 DoD 未满足并停止时：**
+
+```yaml
+ROUTER_SUMMARY:
+  stage: R0
+  artifacts: []
+  needs_human_review: true
+  blocked: true
+  block_reason: "<填写失败点与最小修复动作>"
+  notes: "未完成初始化，需先修复再继续"
+```
 
 ## 常见错误（以及怎么避免）
 

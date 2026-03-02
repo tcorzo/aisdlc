@@ -128,7 +128,7 @@ if ($null -ne $FEATURE_DIR -and (Test-Path $FEATURE_DIR) -and (Test-Path (Join-P
 
 当 `plan.md` 中计划内任务全部完成且最小验证通过后：
 
-- 本技能不直接决定“下一步”。请回到 `using-aisdlc` 路由到 Finish：`finishing-development`（仅验证，确保测试/检查全绿）。
+- 本技能不直接决定“下一步”。请**立即调用** `using-aisdlc` 路由到 Finish：`finishing-development`（仅验证，确保测试/检查全绿）。
 - 进入 Finish 前，确保 `plan.md` 的审计信息完整可追溯（至少包含 `commit` 与关键验证结果摘要；若有 PR 则补齐 `pr`）
 
 ## 何时停止并寻求帮助（Stop on block）
@@ -164,7 +164,7 @@ if ($null -ne $FEATURE_DIR -and (Test-Path $FEATURE_DIR) -and (Test-Path (Join-P
 
 在以下任一时刻（批次检查点汇报结束 / 因阻塞停止 / 全部任务完成准备进入 Finish），在回答末尾追加以下两段（不要省略）：
 
-- 「本阶段产物已落盘。请回到 `using-aisdlc` 进行下一步路由（如未触发人工门禁，Router 可自动续跑）。」
+- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
 - `ROUTER_SUMMARY`（按当前状态填写；不要总是写死为同一个值）：
 
 **填写规则：**

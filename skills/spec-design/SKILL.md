@@ -143,7 +143,7 @@ description: Use when 需要为某个 Spec Pack 产出 D2 决策文档（RFC/Dec
 
 当 `{FEATURE_DIR}/design/design.md` 已落盘后，在回答末尾追加以下两段（不要省略）：
 
-- 「本阶段产物已落盘。请回到 `using-aisdlc` 进行下一步路由（如未触发人工门禁，Router 可自动续跑）。」
+- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
 - `ROUTER_SUMMARY`：
 
 ```yaml

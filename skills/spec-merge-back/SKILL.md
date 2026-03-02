@@ -109,7 +109,7 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 
 完成后必须输出两段：
 
-1) 「本阶段产物已落盘。请回到 `using-aisdlc` 进行下一步路由（如未触发人工门禁，Router 可自动续跑）。」
+1) 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
 
 2) `ROUTER_SUMMARY`（YAML）：
 

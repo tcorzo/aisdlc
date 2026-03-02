@@ -84,16 +84,20 @@ Write-Host "OUTPUT=$out"
 
 ## 输出约定（交还 Router）
 
-```text
-ROUTER_SUMMARY
-- feature_dir: <FEATURE_DIR>
-- outputs:
-  - verification/test-plan.md
-- context_gaps:
-  - <CONTEXT GAP...> (if any)
-- dod:
-  - pass: <yes/no> (and why)
-  - next_risks: <short list>
+在回答末尾追加以下两段（不要省略）：
+
+- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
+- `ROUTER_SUMMARY`：
+
+```yaml
+ROUTER_SUMMARY:
+  stage: V1
+  artifacts:
+    - "{FEATURE_DIR}/verification/test-plan.md"
+  needs_human_review: false
+  blocked: false
+  block_reason: ""
+  notes: "软检查点：测试计划已生成/更新；建议按需评审，但 Router 可继续自动推进到 V2/V3/V4"
 ```
 
 ---
@@ -174,14 +178,5 @@ Write-Host "FEATURE_DIR=$FEATURE_DIR"
 
 ## 输出约定（给 Router）
 
-```text
-ROUTER_SUMMARY
-- FEATURE_DIR=...
-- artifacts_written:
-  - verification/test-plan.md
-- context_gaps: [...]
-- open_risks: [...]
-- blocked_by: [...]
-- router_hints: ["回到 using-aisdlc 继续路由"]
-```
+以 `spec-test` 与 `using-aisdlc` 定义的 YAML `ROUTER_SUMMARY` 为准输出（并在输出中写明“立即调用 using-aisdlc 路由下一步”）。
 

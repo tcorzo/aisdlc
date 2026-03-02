@@ -88,13 +88,13 @@ description: Use when 需要在 Spec 级设计阶段执行 D1 research（产出 
 - 每个关键结论都能追溯到：`solution.md`、contracts/ADR 索引或验证清单条目编号
 - 验证清单可直接映射到 D2 的“风险与验证清单”（Owner/截止/动作不丢失）
 
-完成后：回到 `using-aisdlc` 路由下一步（通常进入 D2：`spec-design`）。
+完成后：**立即调用** `using-aisdlc` 路由下一步（通常进入 D2：`spec-design`）。
 
 ## 完成后输出（供 `using-aisdlc` 自动推进读取）
 
 在回答末尾追加以下两段（不要省略）：
 
-- 「本阶段产物已落盘。请回到 `using-aisdlc` 进行下一步路由（如未触发人工门禁，Router 可自动续跑）。」
+- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
 - `ROUTER_SUMMARY`：
 
 ```yaml

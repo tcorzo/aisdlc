@@ -108,13 +108,13 @@ R3 的目标是把 `{FEATURE_DIR}/requirements/prd.md` 的**核心场景/规则/
 - 每个核心场景写一个任务脚本（目标→步骤→成功标准→观察点）
 - 明确回流规则：何种问题回流 R1/R2/R3
 
-完成后：回到 `using-aisdlc` 路由下一步。
+完成后：**立即调用** `using-aisdlc` 路由下一步。
 
 ## 完成后输出（供 `using-aisdlc` 自动推进读取）
 
 在回答末尾追加以下两段（不要省略）：
 
-- 「本阶段产物已落盘。请回到 `using-aisdlc` 进行下一步路由（如未触发人工门禁，Router 可自动续跑）。」
+- 「本阶段产物已落盘。请**立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；若触发硬中断会停下并输出候选下一步）。」
 - `ROUTER_SUMMARY`：
 
 ```yaml
@@ -122,10 +122,10 @@ ROUTER_SUMMARY:
   stage: R3
   artifacts:
     - "{FEATURE_DIR}/requirements/prototype.md"
-  needs_human_review: true
+  needs_human_review: false
   blocked: false
   block_reason: ""
-  notes: "原型建议走查后再进入 R4 或实现侧"
+  notes: "软检查点：原型建议走查；如不触发硬中断 Router 可继续自动推进"
 ```
 
 ## Quick reference（高频规则速查）
