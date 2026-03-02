@@ -3,11 +3,10 @@ markdown-sharing:
   uri: 9ad9e4f3-f0ac-40f2-ad7d-e4676a39dafe
 ---
 
-### sdlc-dev（AI SDLC / Spec Pack 技能集）
+
+# sdlc-dev
 
 本仓库提供一套 **Spec 级**工作流与技能集，围绕 **双层 SSOT（项目级 SSOT + 需求级 Spec Pack）**、**Spec as Code**、**渐进式披露**，把一个需求从“原始输入”推进到“可评审的决策（可选）”与“可直接执行的实现计划 + 分批执行”。
-
-> 关键约束：任何会读写 Spec Pack 的技能/命令，必须先用 `spec-context` 定位 `{FEATURE_DIR}`；失败即停止（禁止猜路径）。
 
 ---
 
@@ -16,21 +15,35 @@ markdown-sharing:
 ```
 
 # powershell
-# 仅项目
-npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code --yes --copy
-
-# 全局安装
 npx skills add https://github.com/zixun-github/aisdlc --skill * --agent claude-code cursor --yes --copy --global
 
 # bash
-# 仅项目
-npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude-code --yes --copy
-
-# 全局安装
 npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude-code cursor --yes --copy --global
 
 ```
 
+### 最短的使用方式
+
+```
+# 开始新的需求或BUG修复(会自动创建开发分支)
+/spec-init 输入新的需求内容...
+# 创建执行计划
+/spec-implementation-plan 
+# 执行计划
+/spec-implementation-execute
+```
+
+---
+### 小需求（轻量）Spec Pack：最短闭环步骤（推荐）
+
+适用于 **范围小、影响面可控、无明显交互不确定性** 的需求（例如：小修复、小增强、脚本/配置调整、一次性迁移）。目标是 **最小落盘 + 可追溯 + 可执行**，避免把小需求做成“重流程”。
+
+- **步骤清单（从零到完成）**
+  - **R0：初始化**：`spec-init` → 生成分支与 Spec Pack，并落盘 `raw.md`
+  - **R1：最小澄清**：`spec-product-clarify` → 产出精简 `solution.md`（写清边界与验收）
+    - 若需求已经清楚：也建议用极简方式补齐 `solution.md`，保证后续评审与回溯有锚点
+  - **I1：实现计划**：`spec-implementation-plan` → 产出 `implementation/plan.md`
+  - **I2：分批执行**：`spec-implementation-execute` → 按 `plan.md` 分批实现与最小验证，并回写审计信息
 ---
 
 ### 步骤速览（用途 & 输出）
