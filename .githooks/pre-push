@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+set -eu
+
+# Git doesn't provide a standard post-push hook. This pre-push hook keeps local
+# Cursor/Claude skills in sync before pushing.
+#
+# Skip for a single push:
+#   SKIP_AISDLC_SKILLS_ADD=1 git push
+# Or:
+#   git push --no-verify
+
+PSSCRIPT="$(dirname "$0")/pre-push.ps1"
+
+if [ -f "$PSSCRIPT" ]; then
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$PSSCRIPT"
+fi

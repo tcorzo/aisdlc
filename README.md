@@ -22,6 +22,26 @@ npx skills add https://github.com/zixun-github/aisdlc --skill '*' --agent claude
 
 ```
 
+### （可选）git push 时自动执行安装/更新
+
+Git 没有标准的 `post-push` hook。本仓库提供了 `pre-push` hook，用来在你执行 `git push` 时自动运行一次：
+
+```
+npx skills add https://github.com/zixun-github/aisdlc --skill "*" --agent claude-code cursor --yes --copy --global
+```
+
+启用方式（仅需一次）：
+
+```
+# powershell（在仓库根目录）
+.\scripts\setup-git-hooks.ps1
+```
+
+跳过方式：
+
+- `git push --no-verify`
+- `SKIP_AISDLC_SKILLS_ADD=1 git push`
+
 ### 最短的使用方式
 
 ```
