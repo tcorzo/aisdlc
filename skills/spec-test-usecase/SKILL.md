@@ -11,7 +11,8 @@ description: Use when 需要在 Spec Pack 的 verification 阶段生成或更新
 
 ## 输入与门禁（必须遵守）
 
-- **先定位再读写**：必须先通过 `spec-context` 获取 `FEATURE_DIR`；失败即停止，禁止猜路径。
+**REQUIRED SUB-SKILL：先满足 `spec-context` 门禁并在对话中回显 `FEATURE_DIR=...`（允许 `(reuse)`）。**
+
 - **必读项目级 memory**：`project/memory/product.md`、`project/memory/tech.md`、`project/memory/glossary.md`；读不到必须写 `CONTEXT GAP`。
 - **需求级最小输入**：`{FEATURE_DIR}/requirements/solution.md` 或 `{FEATURE_DIR}/requirements/prd.md` 至少其一必须存在；否则停止并写 `CONTEXT GAP`。
 - **强制使用模板**：`usecase.md` 必须直接使用用例模板 `assets/test_usercase_template.md`（不得自创结构、不得改字段名/章节名）。

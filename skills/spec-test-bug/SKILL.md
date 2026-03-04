@@ -16,6 +16,8 @@ description: Use when 需要在 Spec Pack 的 verification 阶段创建“可直
 
 ## 输入与门禁（必须遵守）
 
+**REQUIRED SUB-SKILL：先满足 `spec-context` 门禁并在对话中回显 `FEATURE_DIR=...`（允许 `(reuse)`）。**
+
 - **先定位再回写**：若需要把缺陷编号/链接回写到 `report-*.md`，必须先通过 `spec-context` 获取 `FEATURE_DIR`；失败即停止，禁止猜路径。
 - **必读项目级 memory**：`project/memory/product.md`、`project/memory/tech.md`、`project/memory/glossary.md`；缺失必须写 `CONTEXT GAP`。
 - **最小事实输入**（用户需提供，或从上下文提取）：

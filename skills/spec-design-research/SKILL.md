@@ -43,7 +43,8 @@ description: Use when 需要在 Spec 级设计阶段执行 D1 research（产出 
 
 ### 0) 门禁：定位 `{FEATURE_DIR}`（必须）
 
-> 任何读写 `{FEATURE_DIR}/design/*.md` 之前，必须先满足 `spec-context` 门禁并回显 `FEATURE_DIR=...`（允许 `(reuse)`）；失败立刻停止。
+**REQUIRED SUB-SKILL：先满足 `spec-context` 门禁并在对话中回显 `FEATURE_DIR=...`（允许 `(reuse)`）。**
+
 
 ### 1) 读取最小必要输入（缺失则停止）
 
