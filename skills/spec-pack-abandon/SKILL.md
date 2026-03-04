@@ -38,7 +38,7 @@ description: Use when 需要因需求重大问题而废弃/撤销当前 Spec Pac
 
 ```powershell
 . (Join-Path (git rev-parse --show-toplevel) "skills\spec-context\scripts\spec-common.ps1")
-$context = Get-SpecContext
+$context = Get-SpecContext -SkillName "spec-pack-abandon"
 $FEATURE_DIR = $context.FEATURE_DIR
 Write-Host ("FEATURE_DIR={0}" -f $FEATURE_DIR)
 Write-Host ("CURRENT_BRANCH={0}" -f $context.CURRENT_BRANCH)
@@ -88,7 +88,7 @@ if ($aheadBehind) {
 
 ```powershell
 . (Join-Path (git rev-parse --show-toplevel) "skills\spec-context\scripts\spec-common.ps1")
-$context = Get-SpecContext
+$context = Get-SpecContext -SkillName "spec-pack-abandon"
 $branch = $context.CURRENT_BRANCH
 $featureDir = $context.FEATURE_DIR
 $repoRoot = $context.REPO_ROOT
