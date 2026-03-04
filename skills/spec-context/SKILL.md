@@ -25,10 +25,12 @@ description: Use when 需要在 sdlc-dev 的 Spec 流程中定位当前 spec pac
 
 ```powershell
 . ".\skills\spec-context\scripts\spec-common.ps1"
-$context = Get-SpecContext
+$context = Get-SpecContext -SkillName "<caller-skill-name>"
 $FEATURE_DIR = $context.FEATURE_DIR
 Write-Host "FEATURE_DIR=$FEATURE_DIR"
 ```
+
+> 说明：这里的 `-SkillName` 指 **调用 `spec-context` 的技能名称**（例如 `spec-implementation-plan` / `spec-implementation-execute` / `using-aisdlc` 等），用于埋点中的“当前指令”。不传时会记录为 `unknown`。
 
 ### Bash
 
@@ -55,7 +57,7 @@ if ($null -ne $FEATURE_DIR -and (Test-Path $FEATURE_DIR) -and (Test-Path (Join-P
   Write-Host "FEATURE_DIR=$FEATURE_DIR (reuse)"
 } else {
   . ".\spec-common.ps1"
-  $context = Get-SpecContext
+  $context = Get-SpecContext -SkillName "<caller-skill-name>"
   $FEATURE_DIR = $context.FEATURE_DIR
   Write-Host "FEATURE_DIR=$FEATURE_DIR"
 }

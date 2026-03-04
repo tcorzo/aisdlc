@@ -11,6 +11,87 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 
 <#
 .SYNOPSIS
+生成并打印 SDLC 埋点（不发送）
+
+.DESCRIPTION
+采集字段：git 账号（user.email）、git 地址（remote.origin.url）、分支、当前指令（调用 Get-SpecContext 的命令行）。
+注意：使用 Write-Host 打印，避免污染 Get-SpecContext 的返回值与管道。
+#>
+
+function Get-GitUserEmail {
+    try {
+        $result = git config user.email 2>$null
+        if ($? -and $result) {
+            return $result.Trim()
+        }
+    } catch {
+        # ignore
+    }
+    return $null
+}
+
+function Get-GitRemoteOriginUrl {
+    try {
+        $result = git remote get-url origin 2>$null
+        if ($? -and $result) {
+            return $result.Trim()
+        }
+    } catch {
+        # ignore
+    }
+    return $null
+}
+
+function New-SdlcTelemetryPayload {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory)]
+        [string]$CurrentBranch,
+
+        [Parameter(Mandatory)]
+        [string]$SkillName
+    )
+
+    $email = Get-GitUserEmail
+    $origin = Get-GitRemoteOriginUrl
+
+    return [PSCustomObject]@{
+        gitAccount = $email
+        gitUrl     = $origin
+        branch     = $CurrentBranch
+        command    = $SkillName
+        repoRoot   = $RepoRoot
+        timestamp  = (Get-Date).ToString("o")
+    }
+}
+
+function Publish-SdlcTelemetry {
+    param(
+        [Parameter(Mandatory)]
+        [string]$RepoRoot,
+
+        [Parameter(Mandatory)]
+        [string]$CurrentBranch,
+
+        [Parameter(Mandatory)]
+        [string]$SkillName
+    )
+
+    try {
+        $payload = New-SdlcTelemetryPayload -RepoRoot $RepoRoot -CurrentBranch $CurrentBranch -SkillName $SkillName
+        $global:SDLC_LAST_TELEMETRY = $payload
+
+        $json = $payload | ConvertTo-Json -Compress -Depth 5
+        Write-Host ("AISDLC_TELEMETRY=" + $json)
+    } catch {
+        # ignore all telemetry errors
+    }
+}
+
+<#
+.SYNOPSIS
 获取 Git 仓库根目录
 
 .DESCRIPTION
@@ -211,19 +292,31 @@ Write-Host "当前分支: $($context.CURRENT_BRANCH)"
 Write-Host "Spec 目录: $($context.FEATURE_DIR)"
 #>
 function Get-SpecContext {
+    param(
+        [string]$SkillName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($SkillName)) {
+        $SkillName = 'unknown'
+    }
+
     # 1. 获取 REPO_ROOT
     $repoRoot = Get-RepoRoot
     if (-not $repoRoot) {
         Write-Error "错误：当前不在 Git 仓库中。请切换到正确的仓库目录。" -ErrorAction Stop
     }
+
+    # 埋点采集：尽量早打印（即使后续校验失败）
+    $currentBranch = Get-CurrentBranch
+    $branchForTelemetry = if ($currentBranch) { $currentBranch } else { '' }
+    Publish-SdlcTelemetry -RepoRoot $repoRoot -CurrentBranch $branchForTelemetry -SkillName $SkillName
     
     # 验证 REPO_ROOT
     if (-not (Test-SpecRepoRoot -RepoRoot $repoRoot)) {
-        Write-Error "错误：当前目录不是有效的 Git 仓库根目录，或缺少 .aisdlc 目录。请确保在正确的仓库目录中执行命令。" -ErrorAction Stop
+        Write-Error "错误：当前目录不是有效的 aisdlc 仓库根目录，或缺少 .aisdlc 目录。请确保在正确的仓库目录中执行命令。" -ErrorAction Stop
     }
     
-    # 2. 获取 CURRENT_BRANCH
-    $currentBranch = Get-CurrentBranch
+    # 2. 获取 CURRENT_BRANCH（上面已尝试获取；这里保证非空）
     if (-not $currentBranch) {
         Write-Error "错误：无法获取当前 Git 分支。请确保在 Git 仓库中执行命令。" -ErrorAction Stop
     }
