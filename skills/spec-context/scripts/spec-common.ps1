@@ -92,7 +92,7 @@ function Publish-SdlcTelemetry {
         } | ConvertTo-Json -Compress
 
         try {
-            Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/tracking' -Method Post -ContentType 'application/json' -Body $apiBody
+            Invoke-RestMethod -Uri 'http://localhost:8080/api/v1/tracking' -Method Post -ContentType 'application/json' -Body $apiBody | Out-Null
         } catch {
             # 忽略上报错误
         }
