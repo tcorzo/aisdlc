@@ -12,7 +12,7 @@ description: Use when 需要在本仓库的 AI SDLC 流程中初始化新的 Spe
 ## 何时使用 / 不使用
 
 - **使用时机**
-  - 用户要开始一个“新需求”的 Spec（还没有 `{num}-{short-name}` 分支与 `.aisdlc/specs/...` 目录）。
+  - 用户要开始一个"新需求"的 Spec（还没有 `{num}-{short-name}` 分支与 `.aisdlc/specs/...` 目录）。
   - 用户只给了中文需求文本（不方便先手动建文件），担心参数编码导致乱码。
   - 需要确保分支命名、编号来源、目录结构符合仓库约定。
 - **不要用在**
@@ -35,45 +35,27 @@ description: Use when 需要在本仓库的 AI SDLC 流程中初始化新的 Spe
 
 **强制规则：始终以文件路径方式传入需求内容**（避免中文内容在参数传递/编码上出问题）。
 
-- **输入是文件路径**：直接用该路径作为 `$sourceFilePath`（但要提示“会被删除”）。
-- **输入是文本**：创建临时文件并用 **UTF-8 with BOM** 写入，然后把临时文件路径作为 `$sourceFilePath`。
+- **输入是文件路径**：直接用该路径作为 `$sourceFilePath`（但要提示"会被删除"）。
+- **输入是文本**：用 Agent 的 **Write 工具** 将文本直接写入仓库根目录下的临时文件 `_sdlc-raw-temp.md`，然后用该路径作为 `$sourceFilePath`。
+  - **无需担心残留**：脚本执行成功后会自动删除该源文件。
 
-PowerShell 模板（文本 → BOM 临时文件）：
+示例（Agent 操作）：
 
-```powershell
-$raw = @"
-为现有后台系统新增‘批量导出订单’功能：支持按时间范围/状态筛选、CSV 与 XLSX 两种格式、导出任务异步执行并在导出中心可下载，权限仅管理员可见。
-"@
-
-$utf8Bom = [System.Text.UTF8Encoding]::new($true)
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("sdlc-raw-{0}.md" -f ([guid]::NewGuid().ToString("N")))
-[System.IO.File]::WriteAllText($tmp, $raw, $utf8Bom)
-$sourceFilePath = $tmp
 ```
-
-Bash 模板（文本 → BOM 临时文件）：
-
-```bash
-raw_file="$(mktemp)"
-{
-  printf '\xEF\xBB\xBF'
-  cat <<'EOF'
-为现有后台系统新增‘批量导出订单’功能：支持按时间范围/状态筛选、CSV 与 XLSX 两种格式、导出任务异步执行并在导出中心可下载，权限仅管理员可见。
-EOF
-} >"$raw_file"
-source_file_path="$raw_file"
+1. Write 工具 → 路径: {REPO_ROOT}/_sdlc-raw-temp.md，内容: 用户提供的原始需求文本
+2. 将 {REPO_ROOT}/_sdlc-raw-temp.md 作为 $sourceFilePath / --source-file 传入脚本
 ```
 
 ### 2) 生成 `short-name`（2-4 词，kebab-case）
 
-从原始需求提炼 2-4 个词的短名称，优先“动词-名词”，保留常见技术缩写（如 `oauth2`、`jwt`、`api`）：
+从原始需求提炼 2-4 个词的短名称，优先"动词-名词"，保留常见技术缩写（如 `oauth2`、`jwt`、`api`）：
 
 - 示例：批量导出订单 + 异步任务 → `export-orders-batch` 或 `add-order-export`
 - 若不确定，宁可更通用、更短：`export-orders`
 
 ### 3) 调用脚本创建分支与 Spec Pack
 
-**按操作系统自动选择脚本实现（不要硬跑“另一种”）。**
+**按操作系统自动选择脚本实现（不要硬跑"另一种"）。**
 
 - Windows / PowerShell：用 dot sourcing 加载 `spec-create-branch.ps1` 并调用 `Main`
 - macOS/Linux / Bash：直接执行 `spec-create-branch.sh`（stdout 输出 JSON）
@@ -102,7 +84,7 @@ source_file_path="$raw_file"
 
 ### 5) 完成后：立即交回 `using-aisdlc` 继续自动推进
 
-`spec-init` 的 DoD 通过后，本技能不做“下一步分流”判定（避免出现第二个路由源）。统一做法：
+`spec-init` 的 DoD 通过后，本技能不做"下一步分流"判定（避免出现第二个路由源）。统一做法：
 
 - 输出 `ROUTER_SUMMARY`（见下节）
 - **立即调用** `using-aisdlc` 路由下一步（Router 默认自动续跑；进入 R1：`spec-product-clarify`）
@@ -147,6 +129,6 @@ ROUTER_SUMMARY:
 ## 常见错误（以及怎么避免）
 
 - **自创分支/目录结构**：不要用 `spec/<slug>`、`feature/<slug>`、`features/<slug>`；本仓库规范是 `{num}-{short-name}` + `.aisdlc/specs/...`。
-- **把中文需求当作命令行参数直接传递**：一律写入 UTF-8 BOM 文件，再传路径。
+- **把中文需求当作命令行参数直接传递**：一律写入文件，再传路径。
 - **误以为脚本不会删源文件**：它会删除 `SourceFilePath` 指向的文件；对用户的原始文件务必先确认是否需要备份。
 - **短名称不规范**：避免大写、下划线、中文；避免前后连字符与连续 `--`；尽量 2-4 词。
