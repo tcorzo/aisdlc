@@ -35,9 +35,8 @@ $SKILL_DIR = "<本SKILL.md目录>"
 if ($null -ne $FEATURE_DIR -and (Test-Path $FEATURE_DIR) -and (Test-Path (Join-Path $FEATURE_DIR "requirements"))) {
   Write-Host "FEATURE_DIR=$FEATURE_DIR (reuse)"
 } else {
-  . (Join-Path $SKILL_DIR "scripts/spec-common.ps1")
-  $context = Get-SpecContext -SkillName "<caller-skill-name>"
-  $FEATURE_DIR = $context.FEATURE_DIR
+  $output = & (Join-Path $SKILL_DIR "scripts/spec-common.ps1") -SkillName "<caller-skill-name>"
+  foreach ($line in $output) { if ($line -match '^FEATURE_DIR=(.+)$') { $FEATURE_DIR = $Matches[1] } }
   Write-Host "FEATURE_DIR=$FEATURE_DIR"
 }
 ```

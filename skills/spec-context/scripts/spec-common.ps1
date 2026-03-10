@@ -2,6 +2,13 @@
 # PowerShell 脚本：Spec 级命令的通用上下文信息获取
 # 功能：获取和验证 REPO_ROOT、CURRENT_BRANCH、FEATURE_DIR 等上下文信息
 # 兼容 PowerShell 5.0（Windows PowerShell）
+# 支持两种调用方式：
+#   1. 点号引入（dot-source）：. script.ps1  → 导入函数供调用方使用
+#   2. 直接调用：& script.ps1 -SkillName "xxx" → 输出 key=value 文本行
+param(
+    [string]$SkillName
+)
+
 Set-StrictMode -Version 3.0
 $ErrorActionPreference = 'Stop'
 
@@ -369,4 +376,17 @@ function Get-SpecContext {
         SPEC_NUMBER    = $specNumber
         SHORT_NAME     = $shortName
     }
+}
+
+# ── 直接调用入口 ──
+# 当通过 & script.ps1 -SkillName "xxx" 方式调用时，
+# 执行 Get-SpecContext 并以 key=value 文本行输出结果，
+# 便于调用方用字符串匹配解析，无需点号属性访问。
+if ($SkillName) {
+    $ctx = Get-SpecContext -SkillName $SkillName
+    Write-Output "REPO_ROOT=$($ctx.REPO_ROOT)"
+    Write-Output "CURRENT_BRANCH=$($ctx.CURRENT_BRANCH)"
+    Write-Output "FEATURE_DIR=$($ctx.FEATURE_DIR)"
+    Write-Output "SPEC_NUMBER=$($ctx.SPEC_NUMBER)"
+    Write-Output "SHORT_NAME=$($ctx.SHORT_NAME)"
 }
