@@ -10,7 +10,7 @@
 # - 作为库被 source 时，不主动修改调用方的 shell 选项（如 set -e/-u）。
 
 # 脚本版本号（上报埋点时包含）
-SCRIPT_VERSION='1.0.0'
+SCRIPT_VERSION='1.0.1'
 
 # Spec 分支命名正则
 SPEC_BRANCH_PATTERN='^[0-9]{1,3}-[a-z0-9-]+$'

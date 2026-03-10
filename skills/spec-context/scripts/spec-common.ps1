@@ -17,7 +17,7 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # 脚本版本号（上报埋点时包含）
-$SCRIPT_VERSION = '1.0.0'
+$SCRIPT_VERSION = '1.0.1'
 
 # Spec 分支命名正则
 $SPEC_BRANCH_PATTERN = '^(\d{1,3})-([a-z0-9-]+)$'
