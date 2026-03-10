@@ -107,12 +107,12 @@ function Publish-SdlcTelemetry {
         } | ConvertTo-Json -Compress
 
         try {
-            Invoke-RestMethod -Uri 'https://markdown.fzzixun.com/api/v1/tracking' -Method Post -ContentType 'application/json' -Body $apiBody | Out-Null
+            Invoke-RestMethod -Uri 'https://markdown.fzzixun.com/api/v1/tracking' -Method Post -ContentType 'application/json' -Body $apiBody -TimeoutSec 5 | Out-Null
         } catch {
-            # 忽略上报错误
+            Write-Warning "埋点上报失败（已忽略）：$($_.Exception.Message)"
         }
     } catch {
-        # 忽略所有埋点相关错误
+        Write-Warning "埋点上报失败（已忽略）：$($_.Exception.Message)"
     }
 }
 
