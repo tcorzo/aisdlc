@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.0
+#Requires -Version 5.0
 # PowerShell 脚本：Spec 级命令的通用上下文信息获取
 # 功能：获取和验证 REPO_ROOT、CURRENT_BRANCH、FEATURE_DIR 等上下文信息
 # 兼容 PowerShell 5.0（Windows PowerShell）
@@ -17,7 +17,7 @@ $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # 脚本版本号（上报埋点时包含）
-$SCRIPT_VERSION = '1.0.1'
+$SCRIPT_VERSION = '1.0.2'
 
 # Spec 分支命名正则
 $SPEC_BRANCH_PATTERN = '^(\d{1,3})-([a-z0-9-]+)$'
@@ -118,6 +118,36 @@ function Publish-SdlcTelemetry {
 
 <#
 .SYNOPSIS
+在指定目录下执行 git 命令（替代 git -C，使命令可被前缀匹配授权）
+
+.PARAMETER Dir
+目标目录的绝对路径
+
+.PARAMETER GitArgs
+传给 git 的参数数组，如 @('branch','--show-current')
+
+.OUTPUTS
+[PSCustomObject] 包含 Output（命令输出）、Success（$?）、ExitCode（$LASTEXITCODE）
+#>
+function Invoke-GitInDir {
+    param(
+        [Parameter(Mandatory)][string]$Dir,
+        [Parameter(Mandatory)][string[]]$GitArgs
+    )
+    $savedLocation = Get-Location
+    try {
+        Set-Location -LiteralPath $Dir
+        $output = & git @GitArgs 2>$null
+        $success = $?
+        $exitCode = $LASTEXITCODE
+        return [PSCustomObject]@{ Output = $output; Success = $success; ExitCode = $exitCode }
+    } finally {
+        Set-Location -LiteralPath $savedLocation
+    }
+}
+
+<#
+.SYNOPSIS
 获取 Git 仓库根目录
 
 .DESCRIPTION
@@ -191,12 +221,15 @@ function Get-CurrentBranch {
 
     try {
         if ($RepoRoot) {
-            $result = git -C $RepoRoot branch --show-current 2>$null
+            $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('branch','--show-current')
+            if ($r.Success -and $r.Output) {
+                return ($r.Output).Trim()
+            }
         } else {
             $result = git branch --show-current 2>$null
-        }
-        if ($? -and $result) {
-            return $result.Trim()
+            if ($? -and $result) {
+                return $result.Trim()
+            }
         }
     } catch {
         # Git 命令失败
@@ -233,12 +266,14 @@ function Get-SubmoduleState {
         return @()
     }
 
-    $pathOutput = git -C $RepoRoot config -f $gitmodulesPath --get-regexp '^submodule\..*\.path$' 2>$null
-    if (-not $?) {
+    $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('config', '-f', $gitmodulesPath, '--get-regexp', '^submodule\..*\.path$')
+    if (-not $r.Success) {
         return @()
     }
+    $pathOutput = $r.Output
 
-    $urlOutput = git -C $RepoRoot config -f $gitmodulesPath --get-regexp '^submodule\..*\.url$' 2>$null
+    $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('config', '-f', $gitmodulesPath, '--get-regexp', '^submodule\..*\.url$')
+    $urlOutput = $r.Output
     $urlMap = @{}
     foreach ($line in $urlOutput) {
         if ([regex]::IsMatch($line, '^submodule\.(.+)\.url\s+(.+)$')) {
@@ -263,7 +298,8 @@ function Get-SubmoduleState {
 
         if ($exists -and (Test-GitDirectoryMarker -RepoRoot $fullPath)) {
             try {
-                $branch = git -C $fullPath branch --show-current 2>$null
+                $r = Invoke-GitInDir -Dir $fullPath -GitArgs @('branch','--show-current')
+                $branch = $r.Output
                 if ($branch) {
                     $branch = $branch.Trim()
                 }
@@ -272,7 +308,8 @@ function Get-SubmoduleState {
             }
 
             try {
-                $head = git -C $fullPath rev-parse HEAD 2>$null
+                $r = Invoke-GitInDir -Dir $fullPath -GitArgs @('rev-parse','HEAD')
+                $head = $r.Output
                 if ($head) {
                     $head = $head.Trim()
                 }
@@ -281,7 +318,8 @@ function Get-SubmoduleState {
             }
 
             try {
-                $status = git -C $fullPath status --porcelain 2>$null
+                $r = Invoke-GitInDir -Dir $fullPath -GitArgs @('status','--porcelain')
+                $status = $r.Output
                 $isDirty = [bool]$status
             } catch {
                 $isDirty = $false

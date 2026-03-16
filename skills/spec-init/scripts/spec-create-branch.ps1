@@ -9,6 +9,23 @@ $ErrorActionPreference = 'Stop'
 $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+function Invoke-GitInDir {
+    param(
+        [Parameter(Mandatory)][string]$Dir,
+        [Parameter(Mandatory)][string[]]$GitArgs
+    )
+    $savedLocation = Get-Location
+    try {
+        Set-Location -LiteralPath $Dir
+        $output = & git @GitArgs 2>$null
+        $success = $?
+        $exitCode = $LASTEXITCODE
+        return [PSCustomObject]@{ Output = $output; Success = $success; ExitCode = $exitCode }
+    } finally {
+        Set-Location -LiteralPath $savedLocation
+    }
+}
+
 function Resolve-RepoRoot {
   param(
     [Parameter(Mandatory)]
@@ -86,9 +103,10 @@ function Find-MaxNumber {
   # 1. 获取远程分支编号（匹配 {num}-{short-name} 格式，short-name 可以是任何字符）
   try {
     Write-Host "正在获取远程分支..."
-    $null = git -C $RepoRoot fetch --all --prune 2>&1
+    $null = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('fetch','--all','--prune')
     
-    $remoteBranches = git -C $RepoRoot branch -r 2>&1 | Where-Object { $_ -match "^\s+origin/(\d{1,3})-.+$" }
+    $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('branch','-r')
+    $remoteBranches = $r.Output | Where-Object { $_ -match "^\s+origin/(\d{1,3})-.+$" }
     foreach ($branch in $remoteBranches) {
       if ($branch -match "(\d{1,3})-.+") {
         $num = [int]$matches[1]
@@ -103,7 +121,8 @@ function Find-MaxNumber {
   # 2. 获取本地分支编号（匹配 {num}-{short-name} 格式，short-name 可以是任何字符）
   try {
     Write-Host "正在获取本地分支..."
-    $localBranches = git -C $RepoRoot branch 2>&1 | Where-Object { $_ -match "^\s*\*?\s*(\d{1,3})-.+$" }
+    $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('branch')
+    $localBranches = $r.Output | Where-Object { $_ -match "^\s*\*?\s*(\d{1,3})-.+$" }
     foreach ($branch in $localBranches) {
       if ($branch -match "(\d{1,3})-.+") {
         $num = [int]$matches[1]
@@ -159,19 +178,16 @@ function Create-SpecBranch {
   $branchName = "$Number-$ShortName"
   
   # 检查分支是否已存在
-  $existingBranches = git -C $RepoRoot branch -a 2>&1 | Where-Object { $_ -match "^\s*\*?\s*$([regex]::Escape($branchName))$|origin/$([regex]::Escape($branchName))$" }
+  $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('branch','-a')
+  $existingBranches = $r.Output | Where-Object { $_ -match "^\s*\*?\s*$([regex]::Escape($branchName))$|origin/$([regex]::Escape($branchName))$" }
   if ($existingBranches) {
     throw "分支 '$branchName' 已存在"
   }
   
   # 创建分支（git 将 "Switched to a new branch" 输出到 stderr，PowerShell 会误判为错误，需临时抑制）
   Write-Host "正在创建分支: $branchName"
-  $prevEAP = $ErrorActionPreference
-  $ErrorActionPreference = 'SilentlyContinue'
-  git -C $RepoRoot checkout -b $branchName 2>&1 | Out-Null
-  $exitCode = $LASTEXITCODE
-  $ErrorActionPreference = $prevEAP
-  if ($exitCode -ne 0) {
+  $r = Invoke-GitInDir -Dir $RepoRoot -GitArgs @('checkout','-b',$branchName)
+  if ($r.ExitCode -ne 0) {
     throw "创建分支失败: git checkout -b $branchName"
   }
   
