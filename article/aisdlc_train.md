@@ -1,5 +1,5 @@
 ---
-title: AI SDLC（aisdlc）团队培训讲义
+title: AI SDLC (aisdlc) team training handouts
 status: draft
 audience:
   - PM
@@ -13,93 +13,90 @@ repo: sdlc-dev
 markdown-sharing:
   uri: 97db1123-6412-4e1a-9d9a-9362839137df
 ---
+## AI SDLC (aisdlc) team training handout
 
-## AI SDLC（aisdlc）团队培训讲义
+### 1. Training goals and boundaries
 
-### 1. 培训目标与边界
+#### 1.1 What you will master
 
-#### 1.1 你将掌握什么
+- **Core Goal**: Allow the team to use AI SDLC (aisdlc) to steadily promote "requirements→design→implementation→verification closing" in this warehouse, and precipitate key knowledge into maintainable SSOT.
+- **Key Abilities**:
+  - **Know the process**: Know what to read/write/how to stop/how to accept at each stage.
+  - **Ability to select skills**: Can choose the correct one according to the scene`skill`(And execute according to access control).
+  - **Can stop losses**: No brain-braining, no guessing of paths, no scattered TODO/to-be-confirmed documents, and can stop correctly and propose evidence collection paths when encountering obstructions.
 
-- **核心目标**：让团队能在本仓库用 AI SDLC（aisdlc）稳定推进“需求→设计→实现→验证收尾”，并把关键知识沉淀为可维护的 SSOT。
-- **关键能力**：
-  - **会走流程**：知道每个阶段读什么/写什么/怎么停/怎么验收。
-  - **会选技能**：能根据场景选择正确的 `skill`（并按门禁执行）。
-  - **会止损**：不脑补、不猜路径、不把 TODO/待确认散落文档，遇阻塞能正确停止并提出取证路径。
+#### 1.2 What this handout does not cover
 
-#### 1.2 这份讲义不覆盖什么
-
-- 不讲具体业务、也不替代各团队的工程规范（测试策略、发布策略等仍以项目实际为准）。
-- 不追求“把所有代码翻译成文档”：项目级只做**地图层 + 权威入口 + 证据链**，不是字段大全。
-
----
-
-### 2. 核心理念（必须先对齐）
-
-#### 2.1 双层 SSOT（Single Source of Truth）
-
-- **项目级 SSOT（长期资产）**：`.aisdlc/project/`  
-  用于长期稳定事实：入口、边界、契约权威入口、证据链、运行入口（ops）、ADR 等。
-- **需求级 SSOT（Spec Pack，交付闭环）**：`.aisdlc/specs/{num}-{short-name}/`  
-  每个需求一个包，用于该需求从澄清到交付的全过程证据与产物；完成后通过 **Merge-back** 晋升可复用资产回项目级。
-
-#### 2.2 渐进式披露（Progressive Disclosure）
-
-- **先看地图，再按需取证**：先读项目级 `memory/` 与索引（地图层），再进入受影响模块页与 Spec Pack 的最小必要文件。
-- **缺失必须显式标注**：项目级输入缺失/读取失败要显式标为 `CONTEXT GAP`，不能静默跳过后继续脑补推进。
-
-#### 2.3 门禁（Gates）与停止机制（Stop）
-
-- **门禁的意义**：让 AI 和人都“不在错误上下文写文件、不在缺 SSOT 时推进、不把未知当已知”。
-- **停止不是失败**：停止意味着你识别到缺证据/缺输入/存在阻塞，并把问题转成“可执行的下一步”。
+- It does not talk about specific business, nor does it replace the engineering specifications of each team (testing strategy, release strategy, etc. are still subject to the actual project).
+- Do not pursue "translating all codes into documents": the project level only does **map layer + authoritative entrance + evidence chain**, not a complete list of fields.
 
 ---
 
-### 3. 两条主线
+### 2. Core concept (must be aligned first)
 
-#### 3.1 项目级 Discover（存量项目逆向）
+#### 2.1 Double-layer SSOT (Single Source of Truth)
 
-用于“我要让 AI/新人不再猜入口、猜边界、猜契约”，落盘在 `.aisdlc/project/...`，核心是**地图层 + 权威入口 + 证据链**与可持续维护（Delta Discover / stale）。
+- **Project Level SSOT (Long Term Asset)**:`.aisdlc/project/`Used for long-term stable facts: portals, boundaries, contract authority portals, evidence chains, operational portals (ops), ADR, etc.
+- **Requirement level SSOT (Spec Pack, delivery closed loop)**:`.aisdlc/specs/{num}-{short-name}/`One package for each requirement, used for the entire process of evidence and products from clarification to delivery of the requirement; after completion, reusable assets are promoted back to the project level through **Merge-back**.
 
-#### 3.2 需求级 Spec Pack（交付闭环）
+#### 2.2 Progressive Disclosure
 
-用于“我要交付一个需求/变更”，落盘在 `.aisdlc/specs/{id}/...`，核心是**可追溯的交付闭环**。
+- **Read the map first, then collect evidence as needed**: Read the project level first`memory/`and Index (Map Layer), then go to the Affected Modules page with the Minimum Necessary Files for Spec Pack.
+- **Missing must be explicitly marked**: Project-level input missing/failed to read must be explicitly marked as`CONTEXT GAP`, you cannot silently skip and continue to advance with your brain.
 
-#### 3.3 推荐落地顺序（团队级：先项目级，再需求级）
+#### 2.3 Gates and Stop Mechanism
 
-在团队规模化使用 aisdlc 前，推荐按以下顺序落地（避免后续每个需求都在“猜入口/猜边界/猜契约”）：
-
-- **先做项目级 Discover（MVP）**：至少把 `.aisdlc/project/memory/*`、`components/index.md` 与 1–3 个 P0 模块页（含契约段落与证据链）做出来。
-- **再跑需求级 Spec Pack**：此时 R1/D2/I1 能“先看地图、再按需取证”，影响分析/设计对齐/实现计划会明显更稳定。
+- **The meaning of access control**: Let AI and humans "not write files in error context, not advance when SSOT is missing, and not treat the unknown as known".
+- **Stop is not failure**: Stopping means that you recognize the lack of evidence/lack of input/the presence of a blockage and turn the problem into an "executable next step".
 
 ---
 
-### 4. 项目级 Discover（存量项目逆向）：流程与技能映射（建议先做）
+### 3. Two main lines
 
-#### 4.1 Discover 的目标（不是字段大全）
+#### 3.1 Project-level Discover (reverse engineering of existing projects)
 
-建立 `.aisdlc/project/` 项目级 SSOT，让 AI/新人少猜入口、少猜边界、少猜契约：
+Used for "I want AI/newcomers to no longer guess entrances, boundaries, and contracts", placed on`.aisdlc/project/...`, the core is **map layer + authoritative entrance + evidence chain** and sustainable maintenance (Delta Discover/stale).
 
-- **地图层**：索引只导航（不双写细节）
-- **权威入口**：模块页单页 SSOT（固定锚点）
-- **证据链**：每个关键结论都指向可定位证据或结构化缺口（Evidence Gaps）
+#### 3.2 Demand-level Spec Pack (delivery closed loop)
 
-#### 4.2 Discover 子技能链路（四段式）
+Used for "I want to deliver a requirement/change", placed in`.aisdlc/specs/{id}/...`, the core is **traceable delivery closed loop**.
 
-| 你现在要做什么 | 用哪个技能 | 主要输出 |
+#### 3.3 Recommended implementation order (team level: project level first, then demand level)
+
+Before the team uses aisdlc on a large scale, it is recommended to implement it in the following order (to avoid "guessing the entrance/guessing the boundary/guessing the contract" for every subsequent requirement):
+
+- **Do project-level Discover (MVP) first**: at least`.aisdlc/project/memory/*`、`components/index.md`Create with 1–3 P0 module pages (containing contract paragraphs and evidence chains).
+- **Run the demand level Spec Pack again**: At this time, R1/D2/I1 can "look at the map first, and then obtain evidence as needed", and the impact analysis/design alignment/implementation plan will be significantly more stable.
+
+---
+
+### 4. Project-level Discover (reverse engineering of existing projects): process and skill mapping (recommended to do first)
+
+#### 4.1 The goal of Discover (not a complete list of fields)
+
+Create`.aisdlc/project/`Project-level SSOT allows AI/newcomers to guess less about entrances, boundaries, and contracts:
+
+- **Map Layer**: Index navigation only (no double-writing details)
+- **Authoritative Entry**: Module page single page SSOT (fixed anchor)
+- **Evidence Chain**: Each key conclusion points to locatable evidence or structured gaps (Evidence Gaps)
+
+#### 4.2 Discover sub-skill link (four-stage)
+
+| What are you going to do now | Which skill to use | Main output |
 |---|---|---|
-| Step0+1：盘点证据入口 + P0/P1/P2 止损 | `project-discover-preflight-scope` | `.aisdlc/project/components/index.md`（只导航）+ 入口清单落位到后续 memory/ops |
-| Step2+3：北极星（memory）+ 索引骨架 | `project-discover-memory-index` | `.aisdlc/project/memory/*` + `components/index.md` + `products/index.md` |
-| Step4：模块页 + 契约段落 + 证据链 | `project-discover-modules-contracts` | `.aisdlc/project/components/{module}.md` |
-| Step5+6+7+11：Products 收敛 + Ops 入口 + DoD + 增量维护 | `project-discover-products-ops-dod` | `.aisdlc/project/products/*` + `.aisdlc/project/ops/*` + DoD/Delta/stale 规则 |
+| Step0+1: Inventory evidence entrance + P0/P1/P2 stop loss |`project-discover-preflight-scope` | `.aisdlc/project/components/index.md`(Navigation only) + Entry list is moved to subsequent memory/ops |
+| Step2+3: North Star (memory) + index skeleton |`project-discover-memory-index` | `.aisdlc/project/memory/*` + `components/index.md` + `products/index.md`|
+| Step4: Module page + contract paragraph + evidence chain |`project-discover-modules-contracts` | `.aisdlc/project/components/{module}.md`|
+| Step5+6+7+11: Products convergence + Ops entry + DoD + incremental maintenance |`project-discover-products-ops-dod` | `.aisdlc/project/products/*` + `.aisdlc/project/ops/*`+ DoD/Delta/stale rules |
 
-#### 4.3 Discover 的硬规则（团队必须背下来）
+#### 4.3 Hard rules of Discover (the team must memorize them)
 
-- 禁止 `.aisdlc/project/contracts/**`（API/Data 契约合并到模块页固定段落）。
-- 索引只导航：`components/index.md`、`products/index.md` 不写不变量/字段/流程/“待补”。
-- P0 模块页必须包含固定标题（锚点稳定）：`## TL;DR`、`## API Contract`、`## Data Contract`、`## Evidence`、`## Evidence Gaps`。
-- 缺证据就写 `Evidence Gaps`（结构化：缺口/期望粒度/候选证据位置/影响），禁止“待补/未发现/TODO”散落正文。
-- 先 Scope 止损：先把 1–3 个 P0 模块做到可追溯三件套，再扩展。
-- Products 默认收敛到 <= 6（否则地图失效；无法收敛要写明原因与治理建议入口）。
+- Prohibited`.aisdlc/project/contracts/**`(API/Data contract merged into module page fixed section).
+- Index navigation only:`components/index.md`、`products/index.md`Do not write invariants/fields/processes/"to be filled".
+- P0 module page must contain fixed title (anchor stable):`## TL;DR`、`## API Contract`、`## Data Contract`、`## Evidence`、`## Evidence Gaps`.
+- Write if there is lack of evidence`Evidence Gaps`(Structured: gap/expected granularity/candidate evidence location/impact), prohibiting "to be filled/not found/TODO" scattered in the text.
+- Scope stop loss first: first make 1–3 P0 modules a traceable three-piece set, and then expand.
+- Products converges to<= 6（否则地图失效；无法收敛要写明原因与治理建议入口）。
 
 #### 4.4 Discover MVP：做到什么程度，才“值得大规模跑 Spec Pack”
 
@@ -109,286 +106,266 @@ markdown-sharing:
 - **Level-1（地图层）**：`.aisdlc/project/components/index.md`（只导航 + 依赖图 + 进度复选框）
 - **P0 模块 1–3 个先做深**：`.aisdlc/project/components/{module}.md`（含 `TL;DR` + `API/Data Contract` + `Evidence/Evidence Gaps`）
 
-> 若项目级知识库尚未达到 MVP：需求侧仍可跑 Spec Pack，但必须接受“`CONTEXT GAP` 多、影响分析弱、设计/实现更容易漂移”的现实，并把 Discover MVP 纳入近期优先事项。
+>If the project-level knowledge base has not reached MVP: the demand side can still run Spec Pack, but must accept "`CONTEXT GAP`multiple, weak impact analysis, and design/implementation more prone to drift” reality, and make the Discover MVP a near-term priority.
 
 ---
 
-### 5. 需求级 Spec Pack：端到端流程（R → D → I → Finish）
+### 5. Requirement-level Spec Pack: End-to-end process (R → D → I → Finish)
 
-#### 4.1 总览（一个节点 = 一个技能 = 一个落盘产物）
+#### 4.1 Overview (one node = one skill = one product)
 
-**需求链路（可选 R0–R4）**：
+**Demand Link (optional R0–R4)**:
 
-- R0：`raw.md`（原始输入落盘）
-- R1：`solution.md`（澄清完成后产出推荐方案 + 验证清单）
-- R2：`prd.md`（可选，冻结交付规格）
-- R3：`prototype.md`（可选，ASCII 原型，消除交互歧义）
-- R4：Demo（可选，可交互走查）
+- R0：`raw.md`(Original input placement)
+- R1:`solution.md`(Recommended plan + verification checklist will be produced after the clarification is completed)
+- R2:`prd.md`(Optional, freeze delivery specifications)
+- R3:`prototype.md`(optional, ASCII prototype, to disambiguate interactions)
+- R4: Demo (optional, interactive walkthrough)
 
-**设计决策链路（可选 D0–D2，整体可跳过）**：
+**Design decision link (optional D0–D2, the whole can be skipped)**:
 
-- D0：分流（判断是否跳过 design；跳过时 `plan.md` 补齐最小决策信息）
-- D1：`design/research.md`（可选，调研结论 + 验证清单）
-- D2：`design/design.md`（未跳过时必做，决策文档 / RFC）
+- D0: Diversion (determine whether to skip design; when skipping`plan.md`Complete the minimum decision information)
+-D1:`design/research.md`(Optional, research conclusion + verification checklist)
+-D2:`design/design.md`(Required if not skipped, decision document/RFC)
 
-**开发执行链路（必做 I1–I2 + Finish）**：
+**Develop execution link (must do I1–I2 + Finish)**:
 
-- I1：`implementation/plan.md`（**唯一执行清单与状态 SSOT**）
-- I2：按 `plan.md` 分批执行并回写状态/审计信息（状态只写回 `plan.md`）
-- Finish：只做验证，生成完成确认报告（全绿才算完成）
+- I1:`implementation/plan.md`(**Only execution list and status SSOT**)
+- I2: Press`plan.md`Execute in batches and write back status/audit information (status only writes back`plan.md`)
+- Finish: only perform verification and generate a completion confirmation report (all green is considered complete)
 
-#### 4.2 需求级硬门禁：先定位 `FEATURE_DIR`（禁止猜路径）
+#### 4.2 Demand-level hard access control: positioning first`FEATURE_DIR`(Guessing the path is prohibited)
 
-只要会读写任一 Spec Pack 文件（`requirements/*`、`design/*`、`implementation/*` 或 R4 写 demo），都必须先用 **`spec-context`** 得到并回显：
+As long as you can read and write any Spec Pack file (`requirements/*`、`design/*`、`implementation/*`Or R4 to write demo), you must first use **`spec-context`** Get and echo:
 
-- `FEATURE_DIR=...`（需求包根目录）
--（R4 还需要）`CURRENT_BRANCH`、`REPO_ROOT`
+-`FEATURE_DIR=...`(Requirement package root directory)
+- (still needed for R4)`CURRENT_BRANCH`、`REPO_ROOT`Corresponding skills:
 
-对应技能：
+-`skills/spec-context/SKILL.md`：`spec-context`#### 4.3 Shortest closed loop (recommended path for simple requirements)
 
-- `skills/spec-context/SKILL.md`：`spec-context`
+Applicable: Single scope, low risk, acceptance criteria can be within`solution.md`Write clearly.
 
-#### 4.3 最短闭环（简单需求的推荐路径）
+-`spec-init` → `spec-context` → `spec-product-clarify` → `spec-plan` → `spec-execute` → `finishing-development`#### 4.4 Regular closed loop (when specification/interaction alignment is required)
 
-适用：范围单一、风险低、验收口径能在 `solution.md` 写清楚。
+-`spec-init` → `spec-context` → R1 `spec-product-clarify`- Execute on demand: R2`spec-product-prd` → R3 `spec-product-prototype` → R4 `spec-product-demo`- Enter design on demand: D1`spec-design-research`(optional) → D2`spec-design`- Must-do implementation: I1`spec-plan` → I2 `spec-execute` → Finish `finishing-development`---
 
-- `spec-init` → `spec-context` → `spec-product-clarify` → `spec-plan` → `spec-execute` → `finishing-development`
+### 6. Demand link (R0–R4): Applicable scenarios and skills
 
-#### 4.4 常规闭环（需要规格/交互对齐时）
+#### 5.1 R0: Initializing Spec Pack (starting work on new requirements)
 
-- `spec-init` → `spec-context` → R1 `spec-product-clarify`
-- 按需执行：R2 `spec-product-prd` → R3 `spec-product-prototype` → R4 `spec-product-demo`
-- 按需进入设计：D1 `spec-design-research`（可选）→ D2 `spec-design`
-- 必做实现：I1 `spec-plan` → I2 `spec-execute` → Finish `finishing-development`
+- **Applicable Scenarios**: Not legal yet`{num}-{short-name}`branch with`.aisdlc/specs/...`Table of contents.
+- **Skill**:`spec-init`（`skills/spec-init/SKILL.md`)
+- **Output**:`{FEATURE_DIR}/requirements/raw.md`(UTF-8 with BOM)
+- **Key Note**:
+  -`spec-init`Force the original requirement to be passed in as "file path" (to avoid Chinese parameter encoding issues).
+  - The script will delete the incoming source files (which need to be backed up first).
 
----
+#### 5.2 R1: Clarification + Solution Decision (raw → solution)
 
-### 6. 需求链路（R0–R4）：适用场景与技能
+- **Applicable scenarios**: vague requirements, unstable scope, unclear constraints, and easy to make up.
+- **Skill**:`spec-product-clarify`（`skills/spec-product-clarify/SKILL.md`)
+- **Output**:`{FEATURE_DIR}/requirements/solution.md`- **Key Disciplines**:
+  - ** Clarification not completed, writing prohibited`solution.md`**.
+  - Only **1 highest leverage multiple-choice question** will be asked in each round, and "questions/recommendations/answers/conclusions/remaining ambiguities/unclarified points/whether completed" will be written back to`raw.md/## 澄清记录`.
+  - Uncertainty prohibits writing the "List of Issues to be Confirmed" and uniformly enters the **Verification List** (Owner/Deadline/Signal/Action).
 
-#### 5.1 R0：初始化 Spec Pack（新需求开工）
+#### 5.3 R2: PRD (solution → prd, optional)
 
-- **适用场景**：还没有合法 `{num}-{short-name}` 分支与 `.aisdlc/specs/...` 目录。
-- **技能**：`spec-init`（`skills/spec-init/SKILL.md`）
-- **输出**：`{FEATURE_DIR}/requirements/raw.md`（UTF-8 with BOM）
-- **关键注意**：
-  - `spec-init` 强制以“文件路径”传入原始需求（避免中文参数编码问题）。
-  - 脚本会删除传入的源文件（需要保留要先备份）。
+- **Applicable scenarios**: Delivery specifications need to be frozen, QA needs testable AC, and R&D needs specifications for detachable tasks.
+- **Skill**:`spec-product-prd`（`skills/spec-product-prd/SKILL.md`)
+- **Enter Access**: must exist`{FEATURE_DIR}/requirements/solution.md`.
+- **Output**:`{FEATURE_DIR}/requirements/prd.md`- **Diversion**: If it is a "simple need", it does not necessarily need to be independent`prd.md`, available at`solution.md`After adding Mini-PRD, it enters the subsequent stage.
 
-#### 5.2 R1：澄清 + 方案决策（raw → solution）
+#### 5.4 R3: prototype (prd → prototype, optional)
 
-- **适用场景**：需求模糊、范围不稳、约束不清、易脑补。
-- **技能**：`spec-product-clarify`（`skills/spec-product-clarify/SKILL.md`）
-- **输出**：`{FEATURE_DIR}/requirements/solution.md`
-- **关键纪律**：
-  - **澄清未完成，禁止写 `solution.md`**。
-  - 每轮只问 **1 个最高杠杆选择题**，并把“问题/推荐/回答/结论/遗留歧义/未澄清点/是否完成”回写到 `raw.md/## 澄清记录`。
-  - 不确定性禁止写“待确认问题清单”，统一进入**验证清单**（Owner/截止/信号/动作）。
+- **Applicable scenarios**: There are new/changed interactions, or the interactions are not clear enough, and "text prototype + wireframe" needs to be used to eliminate ambiguity.
+- **Skill**:`spec-product-prototype`（`skills/spec-product-prototype/SKILL.md`)
+- **Enter Access**: must exist`{FEATURE_DIR}/requirements/prd.md`.
+- **Output**:`{FEATURE_DIR}/requirements/prototype.md`- **hard requirements**:
+  - Must be **Pure ASCII wireframe**.
+  - Must include: task flow (T-xxx), page/pop-up list (P/D/W-xxx), page-by-page description, AC→node mapping, walkthrough script.
 
-#### 5.3 R2：PRD（solution → prd，可选）
+#### 5.5 R4: Interactive Demo (prototype → demo, optional)
 
-- **适用场景**：需要冻结交付规格、QA 需要可测试 AC、研发需要可拆任务的规格说明。
-- **技能**：`spec-product-prd`（`skills/spec-product-prd/SKILL.md`）
-- **输入门禁**：必须存在 `{FEATURE_DIR}/requirements/solution.md`。
-- **输出**：`{FEATURE_DIR}/requirements/prd.md`
-- **分流**：若是“简单需求”，不一定需要独立 `prd.md`，可在 `solution.md` 追加 Mini-PRD 后进入后续阶段。
-
-#### 5.4 R3：原型（prd → prototype，可选）
-
-- **适用场景**：存在新增/变更交互、或交互不够明确，需要用“文本原型+线框”消除歧义。
-- **技能**：`spec-product-prototype`（`skills/spec-product-prototype/SKILL.md`）
-- **输入门禁**：必须存在 `{FEATURE_DIR}/requirements/prd.md`。
-- **输出**：`{FEATURE_DIR}/requirements/prototype.md`
-- **硬要求**：
-  - 必须是 **纯 ASCII 线框**。
-  - 必须包含：任务流（T-xxx）、页面/弹窗清单（P/D/W-xxx）、逐页说明、AC→节点映射、走查脚本。
-
-#### 5.5 R4：可交互 Demo（prototype → demo，可选）
-
-- **适用场景**：需要更高保真走查（可用性验证/干系人对齐/研发与测试理解一致性校验）。
-- **技能**：`spec-product-demo`（`skills/spec-product-demo/SKILL.md`）
-- **输入门禁**：必须存在 `{FEATURE_DIR}/requirements/prototype.md`。
-- **输出**：默认 `{REPO_ROOT}/demo/prototypes/{CURRENT_BRANCH}/`
-- **硬禁止**：
-  - 找不到可运行 Demo 工程根目录时，**禁止**自行初始化新前端工程污染仓库；必须停止并要求 `DEMO_PROJECT_ROOT`。
-  - **禁止自创页面**：页面清单只能来自 `prototype.md`。
+- **Applicable scenarios**: Higher fidelity walkthroughs are required (usability verification/stakeholder alignment/development and testing understanding consistency verification).
+- **Skill**:`spec-product-demo`（`skills/spec-product-demo/SKILL.md`)
+- **Enter Access**: must exist`{FEATURE_DIR}/requirements/prototype.md`.
+- **Output**: Default`{REPO_ROOT}/demo/prototypes/{CURRENT_BRANCH}/`- **Hard Ban**:
+  - When the root directory of the runnable Demo project cannot be found, it is **prohibited** to initialize the new front-end project by itself to pollute the warehouse; it must be stopped and requested`DEMO_PROJECT_ROOT`.
+  - **No self-created pages**: Page lists can only come from`prototype.md`.
 
 ---
 
-### 7. 设计链路（D0–D2）：适用场景与技能
+### 7. Design link (D0–D2): Applicable scenarios and skills
 
-#### 6.1 D0 分流：是否可以跳过设计
+#### 6.1 D0 diversion: whether the design can be skipped
 
-在本仓库的设计链路中，“跳过设计”不是偷懒，而是一个明确决策：  
-若跳过，必须在 `implementation/plan.md` 补齐最小决策信息，并保持可追溯与可验证。
+In the design link of this repository, "skipping design" is not laziness, but a clear decision:
+If skipped, it must be in`implementation/plan.md`Complete the minimum decision-making information and keep it traceable and verifiable.
 
-#### 6.2 D1：Research（可选调研）
+#### 6.2 D1: Research (optional research)
 
-- **适用场景**：关键不确定性/高风险点需要先验证；多方案缺证据支撑取舍。
-- **技能**：`spec-design-research`（`skills/spec-design-research/SKILL.md`）
-- **输出**：`{FEATURE_DIR}/design/research.md`
-- **关键约束**：
-  - 研究产物不写实现规格（任务/字段/DDL/脚本），只写可被 D2 引用的结论与验证清单。
-  - 禁止 TODO/待确认清单，未知统一进入验证清单（Owner/截止/信号/动作）。
+- **Applicable scenarios**: Key uncertainties/high risk points need to be verified first; multiple options lack evidence to support the choice.
+- **Skill**:`spec-design-research`（`skills/spec-design-research/SKILL.md`)
+- **Output**:`{FEATURE_DIR}/design/research.md`- **Key Constraints**:
+  - Research products do not write implementation specifications (task/field/DDL/script), only conclusions and verification lists that can be referenced by D2.
+  - TODO/to-be-confirmed list is prohibited, and unknown items are uniformly entered into the verification list (Owner/deadline/signal/action).
 
-#### 6.3 D2：Decision Doc / RFC（设计决策文档）
+#### 6.3 D2: Decision Doc/RFC (Design Decision Document)
 
-- **适用场景**：涉及对外契约/权限/数据口径变化；跨系统影响大；需要评审共识与冻结口径。
-- **技能**：`spec-design`（`skills/spec-design/SKILL.md`）
-- **输出**：`{FEATURE_DIR}/design/design.md`
-- **写作边界**：写“决策与对外承诺要点 + 追溯链接”，不写实现步骤与任务拆分。
+- **Applicable scenarios**: Involves changes in external contracts/permissions/data standards; has a large cross-system impact; requires consensus review and frozen standards.
+- **Skill**:`spec-design`（`skills/spec-design/SKILL.md`)
+- **Output**:`{FEATURE_DIR}/design/design.md`- **Writing Boundary**: Write "key points of decision-making and external commitments + traceability links", do not write implementation steps and task splits.
 
 ---
 
-### 8. 实现链路（I1–I2）：适用场景与技能
+### 8. Implementing links (I1–I2): Applicable scenarios and skills
 
-#### 7.1 I1：实现计划（plan.md = 唯一 SSOT）
+#### 7.1 I1: Implementation Plan (plan.md = unique SSOT)
 
-- **适用场景**：任何要进入开发执行的需求（必做）。
-- **技能**：`spec-plan`（`skills/spec-plan/SKILL.md`）
-- **输出**：`{FEATURE_DIR}/implementation/plan.md`
-- **关键要求**：
-  - `plan.md` 内必须有可勾选任务（`- [ ]/- [x]`），且每个任务包含：精确文件路径、可执行步骤、最小验证命令与期望信号、提交点与审计信息。
-  - 不确定性统一写到 `plan.md/NEEDS CLARIFICATION`，并**阻断进入 I2**。
-  - **Commit message 必须中文**（计划里也要体现）。
+- **Applicable Scenarios**: Any need to enter development execution (must be done).
+- **Skill**:`spec-plan`（`skills/spec-plan/SKILL.md`)
+- **Output**:`{FEATURE_DIR}/implementation/plan.md`- **Key Requirements**:
+  -`plan.md`There must be checkable tasks (`- [ ]/- [x]`), and each task contains: precise file path, executable steps, minimum verification commands and expected signals, submission points and audit information.
+  -Uncertainty written in`plan.md/NEEDS CLARIFICATION`, and **block access to I2**.
+  - **Commit message must be in Chinese** (it must also be reflected in the plan).
 
-#### 7.2 I2：按计划分批执行并回写
+#### 7.2 I2: Execute in batches as planned and write back
 
-- **适用场景**：已有可执行的 `plan.md`，要按批次实现并做检查点汇报。
-- **技能**：`spec-execute`（`skills/spec-execute/SKILL.md`）
-- **输出**：
-  - 代码与配置变更
-  - **唯一状态回写**：只回写到 `{FEATURE_DIR}/implementation/plan.md`（checkbox + commit/pr/changed_files + 验证结果摘要）
-- **关键纪律**：
-  - 默认每批执行前 3 个未完成任务，批次之间只汇报并等待反馈。
-  - 遇阻塞/澄清项立即停止（寻求澄清，不猜测推进）。
-  - 执行中若出现 ADR/契约变化：只在 `{FEATURE_DIR}` 内草拟，并在 `plan.md` 记录 Merge-back 待办；I2 不直接改 `project/*`。
+- **Applicable scenarios**: Executable`plan.md`, it is necessary to implement it in batches and make checkpoint reports.
+- **Skill**:`spec-execute`（`skills/spec-execute/SKILL.md`)
+- **Output**:
+  - Code and configuration changes
+  - **Only Status Writeback**: Only writeback to`{FEATURE_DIR}/implementation/plan.md`(checkbox + commit/pr/changed_files + verification result summary)
+- **Key Disciplines**:
+  - By default, the first 3 unfinished tasks are executed in each batch, and only reporting and waiting for feedback between batches are performed.
+  - Stop immediately on blocked/clarified items (seek clarification, no guesswork to advance).
+  - If ADR/contract changes occur during execution: only`{FEATURE_DIR}`drafted within the`plan.md`Record Merge-back pending; I2 does not change directly`project/*`.
 
-#### 7.3 Finish：开发收尾确认（只验证）
+#### 7.3 Finish: Development closing confirmation (only verification)
 
-- **适用场景**：实现已完成，需要证明“全绿”并生成可复现的完成确认报告。
-- **技能**：`finishing-development`（`skills/finishing-development/SKILL.md`）
-- **产出**：完成确认报告（含实际运行的命令与结果）。
+- **Applicable scenario**: The implementation has been completed, and it is necessary to prove "full green" and generate a reproducible completion confirmation report.
+- **Skill**:`finishing-development`（`skills/finishing-development/SKILL.md`)
+- **Output**: Completion confirmation report (including actual running commands and results).
 
 ---
 
 ---
 
-### 9. 场景 → 技能选择速查
+### 9. Scenario → Skill Selection Quick Check
 
-#### 9.1 我现在在做“需求”还是“项目知识库”？
+#### 9.1 Am I currently working on “requirements” or “project knowledge base”?
 
-- **交付一个需求**：走 `using-aisdlc` 导航 Spec Pack（R/D/I/Finish）。
-  - 技能：`using-aisdlc`（`skills/using-aisdlc/SKILL.md`）
-- **让 AI/新人不再猜入口**：走 `project-discover` 总控（Discover）。
-  - 技能：`project-discover`（`skills/project-discover/SKILL.md`）
+- **Deliver a requirement**: Go`using-aisdlc`Navigation Spec Pack (R/D/I/Finish).
+  - Skill:`using-aisdlc`（`skills/using-aisdlc/SKILL.md`)
+- **Make AI/newcomers stop guessing the entrance**: Go`project-discover`Discover.
+  - Skill:`project-discover`（`skills/project-discover/SKILL.md`)
 
-#### 9.2 典型场景表
+#### 9.2 Typical scene table
 
-| 典型场景 | 推荐技能链路 | 你要得到的核心产物 |
+| Typical scenarios | Recommended skill links | The core products you want to get |
 |---|---|---|
-| 新需求刚来，没有分支/目录 | `spec-init` → `spec-context` | `requirements/raw.md` + 可定位 `FEATURE_DIR` |
-| 需求模糊、争议大、容易脑补 | `spec-context` → `spec-product-clarify` | `solution.md`（含验证清单）+ `raw.md/澄清记录` |
-| 需要冻结规格供评审/研发拆解/QA用例 | `spec-context` → `spec-product-prd` | `prd.md`（场景+AC 可测试） |
-| 交互有歧义，需要文本原型对齐 | `spec-context` → `spec-product-prototype` | `prototype.md`（ASCII 线框 + AC 映射 + 走查脚本） |
-| 干系人需要可点可跑走查 | `spec-context` → `spec-product-demo` | Demo（严格按 prototype 页面清单） |
-| 需要 RFC 决策文档/涉及对外承诺变更 | `spec-context` → `spec-design`（按需先 `spec-design-research`） | `design/design.md`（决策与验证清单） |
-| 要进入开发执行，但没有可执行计划 | `spec-context` → `spec-plan` | `implementation/plan.md`（唯一 SSOT） |
-| 按计划落地实现，并要求审计与检查点 | `spec-context` → `spec-execute` | 代码变更 + `plan.md` 回写（唯一状态来源） |
-| 开发已完成，需要“全绿”证明 | `finishing-development` | 完成确认报告（命令+结果可复现） |
-| 存量项目：入口/边界/契约总在猜 | `project-discover`（按子技能分段） | `.aisdlc/project/*`（memory+index+模块页+ops+DoD） |
+| New requirements have just arrived and there are no branches/directories |`spec-init` → `spec-context` | `requirements/raw.md`+ Targetable`FEATURE_DIR`|
+| The needs are vague, controversial, and easy to figure out |`spec-context` → `spec-product-clarify` | `solution.md`(Including verification checklist)+`raw.md/澄清记录`|
+| Need to freeze specifications for review/R&D teardown/QA use cases |`spec-context` → `spec-product-prd` | `prd.md`(Scenario + AC testable) |
+| The interaction is ambiguous and requires text prototype alignment |`spec-context` → `spec-product-prototype` | `prototype.md`(ASCII wireframe + AC mapping + walkthrough script) |
+| Stakeholders can click and run to check if needed |`spec-context` → `spec-product-demo`| Demo (strictly according to the prototype page list) |
+| RFC decision document required/involving changes in external commitments |`spec-context` → `spec-design`(As needed first`spec-design-research`） | `design/design.md`(Decision and Verification Checklist) |
+| To enter development execution, but there is no executable plan |`spec-context` → `spec-plan` | `implementation/plan.md`(SSOT ONLY) |
+| Implement as planned and require audits and checkpoints |`spec-context` → `spec-execute`| Code changes +`plan.md`Writeback (sole status source) |
+| Development completed, “full green” certification required |`finishing-development`| Completion confirmation report (command + results can be reproduced) |
+| Existing projects: entrance/boundary/contract is always guessing |`project-discover`(Segmented by sub-skills) |`.aisdlc/project/*`(memory+index+module page+ops+DoD) |
 
 ---
 
-### 10. 培训演练（建议两小时可跑通）
+### 10. Training drill (it is recommended to run through it in two hours)
 
-#### 10.1 演练 A：存量项目 Discover（最小可用交付，建议先做）
+#### 10.1 Exercise A: Stock project Discover (minimum available delivery, recommended to be done first)
 
-目标：先交付“可消费的项目级知识库 MVP”：memory + components index + 1–3 个 P0 模块页（含契约段落与证据链）。
+Goal: First deliver a "consumable project-level knowledge base MVP": memory + components index + 1–3 P0 module pages (including contract paragraphs and evidence chains).
 
-- `project-discover-preflight-scope`
+-`project-discover-preflight-scope`
 - `project-discover-memory-index`
-- `project-discover-modules-contracts`（选 1–3 个 P0 模块）
-- `project-discover-products-ops-dod`（只做必要收敛与 DoD）
+- `project-discover-modules-contracts`(Select 1–3 P0 modules)
+-`project-discover-products-ops-dod`(Only do necessary convergence with DoD)
 
-#### 10.2 演练 B：最短闭环（简单需求）
+#### 10.2 Exercise B: Shortest closed loop (simple requirement)
 
-目标：让学员体验“一个节点一个产物”的节奏，以及 `plan.md` 作为唯一 SSOT 的执行方式。
+Goal: Let students experience the rhythm of “one node, one product”, and`plan.md`As the only way SSOT is performed.
 
-- R0：`spec-init` 生成 `raw.md`
-- 门禁：`spec-context` 回显 `FEATURE_DIR=...`
-- R1：`spec-product-clarify`（要求：澄清记录回写 + 产出 `solution.md`）
-- I1：`spec-plan`（任务清单可执行、含最小验证命令）
-- I2：`spec-execute`（分批执行、回写审计到 `plan.md`）
-- Finish：`finishing-development`（输出完成确认报告）
+- R0：`spec-init`generate`raw.md`- Access control:`spec-context`Encyclopedia`FEATURE_DIR=...`
+- R1：`spec-product-clarify`(Required: Clarification Record Writeback + Output`solution.md`）
+- I1：`spec-plan`(The task list is executable and contains minimal verification commands)
+-I2:`spec-execute`(Execute in batches, write back audit to`plan.md`）
+- Finish：`finishing-development`(Output completion confirmation report)
 
-#### 10.3 演练 C：复杂交互需求（R2+R3+R4）
+#### 10.3 Exercise C: Complex interaction requirements (R2+R3+R4)
 
-目标：体验“PRD（可测）→ 原型（可走查）→ Demo（可点可跑）”的闭环与回流机制。
+Goal: Experience the closed-loop and backflow mechanism of "PRD (testable) → prototype (available for review) → Demo (clickable and runable)".
 
-- R2：`spec-product-prd`（AC 可测试）
-- R3：`spec-product-prototype`（ASCII 线框 + AC→节点映射 + 走查脚本）
-- R4：`spec-product-demo`（严格按 prototype 页面清单生成）
-- 发现问题：按规则回流更新 `solution/prd/prototype`（而不是在 demo 里自由发挥）
-
----
-
-### 11. 常见红旗（出现任一条：当场纠偏）
-
-#### 11.1 Discover 常见红旗
-
-- 在索引里写细节（不变量/字段/流程/待补），导致双写与漂移。
-- 出现 `.aisdlc/project/contracts/**`（违反硬规则）。
-- 模块页正文用“待补/未发现”占位而不是写到 `Evidence Gaps`。
-- P0 模块在索引被打勾，但模块页不达标（缺固定标题、缺权威入口/不变量/证据入口、缺 frontmatter 元数据）。
-
-#### 11.2 Spec Pack 常见红旗
-
-- 没跑 `spec-context` 就开始读写 `requirements/*` / `design/*` / `implementation/*`。
-- 用户口头给了路径/分支，你就跳过门禁“信了并继续写”。
-- R1 澄清未完成就写 `solution.md`。
-- 用“待确认问题/Open Questions/TODO”清单承接不确定性（应该改为验证清单：Owner/截止/信号/动作）。
-- 没有 `implementation/plan.md`（或 plan 不可执行）就直接开始写代码。
-- 执行状态写到聊天/issue/另一个文件，而不是回写 `plan.md`（破坏 SSOT）。
+- R2:`spec-product-prd`(AC testable)
+- R3:`spec-product-prototype`(ASCII wireframe + AC→node mapping + walkthrough script)
+- R4:`spec-product-demo`(Generated strictly according to prototype page list)
+- Found problems: reflow updates according to rules`solution/prd/prototype`(Instead of free play in the demo)
 
 ---
 
-### 12. 附录：技能清单（按流程排序）
+### 11. Common red flags (if any of them appear: correct the error on the spot)
 
-#### 12.1 Discover（项目级知识库）
+#### 11.1 Discover Common Red Flags
 
-- `project-discover`：Discover 总控（硬规则：无 `contracts/**`、索引只导航、模块页单页 SSOT、Evidence Gaps）。
-- `project-discover-preflight-scope`：证据入口盘点 + P0/P1/P2 止损。
-- `project-discover-memory-index`：memory 北极星 + 索引骨架（地图层）。
-- `project-discover-modules-contracts`：模块页 + 契约段落 + 证据链。
-- `project-discover-products-ops-dod`：Products 收敛 + Ops 入口 + DoD 门禁 + Delta Discover/stale。
+- Writing details (invariants/fields/processes/to-be-filled) in the index leads to double writing and drift.
+- Appear`.aisdlc/project/contracts/**`(Breaking hard rules).
+- The text of the module page uses "to be filled/not found" placeholder instead of writing`Evidence Gaps`.
+- The P0 module is checked in the index, but the module page is not up to standard (missing fixed title, missing authoritative entry/invariant/evidence entry, missing frontmatter metadata).
 
-#### 12.2 Spec Pack 导航与门禁
+#### 11.2 Spec Pack Common Red Flags
 
-- `using-aisdlc`：流程导航 + 门禁总控（R0–R4 与 I1–Finish 的“下一步选技能”）。
-- `spec-context`：唯一上下文定位（`FEATURE_DIR`），失败即停止。
-- `spec-init`：创建新 Spec Pack（分支+目录+`raw.md`，UTF-8 with BOM）。
+- Didn't run`spec-context`Just start reading and writing`requirements/*` / `design/*` / `implementation/*`.
+- The user verbally gives the path/branch, and you skip the gate and "believe it and keep writing".
+- R1 Write before clarification is completed`solution.md`.
+- Accept uncertainty with the "Open Questions/TODO" list (should be changed to verification list: Owner/Deadline/Signal/Action).
+- No`implementation/plan.md`(or the plan is not executable) and start writing code directly.
+- Execution status is written to chat/issue/another file instead of writing back`plan.md`(Breaking SSOT).
 
-#### 12.3 需求侧（R1–R4）
+---
 
-- `spec-product-clarify`：澄清循环 + `solution.md`（澄清未完成禁止写 `solution.md`）。
-- `spec-product-prd`：`solution.md` → `prd.md`（可交付/可验收/可测试）。
-- `spec-product-prototype`：`prd.md` → `prototype.md`（ASCII 原型 + AC 映射 + 走查脚本）。
-- `spec-product-demo`：`prototype.md` → Demo（必须找到可运行 Demo 根目录；禁止自创页面/工程）。
+### 12. Appendix: Skills List (sorted by process)
 
-#### 12.4 设计侧（D1–D2）
+#### 12.1 Discover (project-level knowledge base)
 
-- `spec-design-research`：可选调研，产出 `design/research.md`（结论 + 验证清单）。
-- `spec-design`：产出 `design/design.md`（决策文档/RFC，写决策不写实现）。
+-`project-discover`:Discover master control (hard rule: none`contracts/**`, index navigation only, module page single page SSOT, Evidence Gaps).
+-`project-discover-preflight-scope`: Evidence entry inventory + P0/P1/P2 stop loss.
+-`project-discover-memory-index`:memory North Star + index skeleton (map layer).
+-`project-discover-modules-contracts`: Module page + Contract paragraph + Evidence chain.
+-`project-discover-products-ops-dod`: Products Convergence + Ops Portal + DoD Access Control + Delta Discover/stale.
 
-#### 12.5 实现侧（I1–I2）与收尾
+#### 12.2 Spec Pack Navigation and Access Control
 
-- `spec-plan`：产出 `implementation/plan.md`（唯一执行清单与状态 SSOT）。
-- `spec-execute`：按 `plan.md` 分批执行并回写审计（状态只写回 `plan.md`）。
-- `finishing-development`：收尾确认（只验证，全绿才算完成）。
+-`using-aisdlc`: Process navigation + general access control ("Next step selection skills" of R0–R4 and I1–Finish).
+-`spec-context`: unique contextual positioning (`FEATURE_DIR`), it will stop if it fails.
+-`spec-init`:Create new Spec Pack (branch+directory+`raw.md`, UTF-8 with BOM).
 
-#### 12.6 并行与协作（可选加餐）
+#### 12.3 Demand side (R1–R4)
 
-- `dispatching-parallel-agents`：2+ 独立问题域并行处理的派发方法。
-- `subagent-driven-development`：按 `plan.md` 每任务派发子智能体并两阶段审查。
-- `spec-requesting-code-review` / `spec-receiving-code-review`：代码审查请求与接收（强调技术验证，避免表演性同意）。
+-`spec-product-clarify`: Clarification loop +`solution.md`(Clarification prohibits writing before completion`solution.md`）。
+- `spec-product-prd`：`solution.md` → `prd.md`(Deliverable/Acceptable/Testable).
+-`spec-product-prototype`：`prd.md` → `prototype.md`(ASCII prototype + AC map + walkthrough script).
+-`spec-product-demo`：`prototype.md`→ Demo (must find the root directory to run the Demo; self-created pages/projects are prohibited).
 
+#### 12.4 Design side (D1–D2)
+
+-`spec-design-research`: Optional research, output`design/research.md`(Conclusion + Verification Checklist).
+-`spec-design`:output`design/design.md`(Decision document/RFC, write decisions but not implementation).
+
+#### 12.5 Implementation side (I1–I2) and closing
+
+-`spec-plan`:output`implementation/plan.md`(Only execution list with status SSOT).
+-`spec-execute`:according to`plan.md`Execute in batches and write back the audit (status is only written back`plan.md`）。
+- `finishing-development`: Closing confirmation (only verification, all green is considered complete).
+
+#### 12.6 Parallelism and collaboration (optional meals)
+
+-`dispatching-parallel-agents`: 2+ Dispatch methods for parallel processing of independent problem domains.
+-`subagent-driven-development`:according to`plan.md`Each task is dispatched with sub-agents and reviewed in two stages.
+-`spec-requesting-code-review` / `spec-receiving-code-review`: Code review requests and receipts (emphasis on technical verification, avoidance of performative consent).

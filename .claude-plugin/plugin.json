@@ -1,11 +1,10 @@
 {
     "name": "sdlc-dev-skills",
     "version": "0.1.1",
-    "description": "SDLC Dev 技能库：用于 spec 初始化、需求澄清、上下文定位与写作规范等工作流的可组合技能集合。",
+    "description": "SDLC Dev Skills Library: A collection of composable skills for workflows such as spec initialization, requirements clarification, context positioning, and writing specifications.",
     "author": {
       "name": "sdlc-dev"
     },
     "skills": "./",
     "keywords": ["ai-sdlc", "spec", "workflow", "cursor", "claude-code"]
   }
-  

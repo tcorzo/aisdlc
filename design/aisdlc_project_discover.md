@@ -2,62 +2,58 @@
 markdown-sharing:
   uri: 9d3f0083-b31b-4525-a493-fd9105927981
 ---
+# AI SDLC: Discover (reverse) SOP for existing projects - reversely generate project knowledge base from code
 
-# AI SDLC：存量项目 Discover（逆向）SOP —— 从代码反向产出项目知识库
-
-> 本文是**项目知识库建设的设计指南（逆向工程版）**：面向“已有代码的存量项目”，用一套可执行的 SOP，把仓库事实（代码/配置/CI/契约/运行入口）反向沉淀为 `.aisdlc/project/` 项目级 SSOT。
-> 重点不是“把代码翻译成文档”，而是建立**地图层 + 权威入口 + 证据链**，让后续 AI 辅助开发更稳定、更少猜测、更可追溯。
-
----
-
-## 0. 你会得到什么（收益）与不做什么（止损线）
-
-### 0.1 主要收益（面向 AI + 面向协作）
-
-- **减少 AI 的“猜边界/猜入口”**：项目级地图层把“哪里是权威、从哪里进、边界在哪”固定下来。
-- **减少重复扫描与上下文浪费**：索引只做导航，细节按需进入模块页（包含 API/Data 契约段落）。
-- **提升一致性与可追溯**：把 API/Data 契约、关键决策（ADR）、运行入口（ops）变成可链接的证据链。
-- **降低返工**：当发生变更/故障/对接时，能快速定位“该看哪里、该改哪里、如何验证”。
-
-### 0.2 非目标（避免维护成本爆炸）
-
-- 不追求“全量字段级数据字典”；除非合规/对账/KPI 口径治理需要，否则只做**权威入口页 + 不变量摘要 + 证据链接**。
-- 不把需求级一次性交付细节写进项目级；一次性交付细节归档在 `specs/<DEMAND-ID>/`，可复用资产通过 Merge-back 晋升回项目级（原则见 `design/aisdlc.md`）。
+> This article is **Design Guide for Project Knowledge Base Construction (Reverse Engineering Version)**: For "stock projects with existing code", use a set of executable SOP to reversely precipitate the warehouse facts (code/configuration/CI/contract/run entry) into`.aisdlc/project/`Project-level SSOT.
+> The focus is not on "translating code into documents", but on establishing a **map layer + authoritative portal + evidence chain** to make subsequent AI-assisted development more stable, less guessing, and more traceable.
 
 ---
 
-## 1. 产物与落盘位置（项目级 SSOT）
+## 0. What you will get (profit) and what you will not do (stop loss line)
 
-> 下面是**输出的标准落盘结构**。
+### 0.1 Main benefits (AI + collaboration)
 
-### 1.1 Level-0（北极星 / Memory）
+- **Reduce AI's "guessing the boundary/guessing the entrance"**: The project-level map layer fixes "where is the authority, where to enter, and where the boundary is".
+- **Reduce repeated scanning and context waste**: The index is only used for navigation, and details are entered into the module page (including API/Data contract paragraphs) on demand.
+- **Improve consistency and traceability**: Turn API/Data contracts, key decisions (ADR), and operation portals (ops) into linkable evidence chains.
+- **Reduce rework**: When changes/faults/connections occur, you can quickly locate "where to look, where to change, and how to verify".
 
-- `.aisdlc/project/memory/structure.md`：仓库结构与入口（如何定位模块、如何运行/测试/发布的入口链接）
-- `.aisdlc/project/memory/tech.md`：技术栈与工程护栏（质量门禁、依赖约束、NFR 预算入口）
-- `.aisdlc/project/memory/product.md`：业务边界与核心术语入口（只写稳定语义）
-- `.aisdlc/project/memory/glossary.md`：术语表（尽量短，链接到权威出处）
+### 0.2 Non-target (avoid maintenance cost explosion)
 
-### 1.2 Level-1（地图层索引）
+- Do not pursue "full field-level data dictionary"; unless required by compliance/reconciliation/KPI caliber governance, only create **authoritative entry page + invariant summary + evidence link**.
+- Do not write requirement-level one-time delivery details into the project level; one-time delivery details are archived in`specs/<DEMAND-ID>/`, reusable assets are promoted back to the project level through Merge-back (for principles, see`design/aisdlc.md`).
 
-- `.aisdlc/project/components/index.md` 与 `.aisdlc/project/components/{module}.md`：应用组件地图与模块页
-- `.aisdlc/project/products/index.md` 与 `.aisdlc/project/products/{module}.md`：业务模块地图与模块页（可选；但建议收敛到 <= 6）
+---
 
-> **结构约束**：不产出 `.aisdlc/project/contracts/**`。
+## 1. Product and placement location (project-level SSOT)
+
+> Below is the **standard placement structure** for output.
+
+### 1.1 Level-0 (Polaris / Memory)
+
+-`.aisdlc/project/memory/structure.md`: Warehouse structure and entrance (how to locate the module, how to run/test/release the entrance link)
+-`.aisdlc/project/memory/tech.md`: Technology stack and engineering guardrails (quality access control, dependency constraints, NFR budget entrance)
+-`.aisdlc/project/memory/product.md`:Business boundary and core terminology entry (only write stable semantics)
+-`.aisdlc/project/memory/glossary.md`: Glossary (keep it short, link to authoritative source)
+
+### 1.2 Level-1 (map layer index)
+
+-`.aisdlc/project/components/index.md`and`.aisdlc/project/components/{module}.md`: Application component map and module page
+-`.aisdlc/project/products/index.md`and`.aisdlc/project/products/{module}.md`: Business module map and module page (optional; but it is recommended to converge to<= 6）
+
+>**Structural constraints**: No output`.aisdlc/project/contracts/**`.
 >
-> 模块的 **API 与 Data 契约**统一合并到 `.aisdlc/project/components/{module}.md` 内的固定段落：
-> - `## API Contract`
-> - `## Data Contract`
->
-### 1.3 运行入口（可选但高 ROI）
+> The **API and Data contract** of the module are unified and merged into`.aisdlc/project/components/{module}.md`Fixed paragraph within:
+> -`## API Contract`
+> - `## Data Contract`>
+### 1.3 Run the portal (optional but high ROI)
 
-- `.aisdlc/project/ops/`：Runbook/监控告警/回滚等“入口页”（不重复操作步骤，只挂链接与要点）
-- `.aisdlc/project/nfr.md`：NFR 预算/基线（若团队已有体系，可只做入口链接）
+-`.aisdlc/project/ops/`: Runbook/monitoring alarm/rollback and other "entry pages" (no repeated steps, only links and key points)
+-`.aisdlc/project/nfr.md`: NFR budget/baseline (if the team already has a system, you can only make the entrance link)
 
 ---
 
-## 2. SOP 总览（先有地图，再逐步补证据）
-
-```mermaid
+## 2. SOP overview (first have a map, then gradually add evidence)```mermaid
 flowchart TD
   preflight[Step0_Preflight] --> scope[Step1_Scope]
   scope --> l0[Step2_Level0_Memory]
@@ -68,175 +64,154 @@ flowchart TD
   products --> dod[Step7_DoD_Gates]
   ops --> dod
   dod --> iterate[Iterate_Maintain]
-```
+```---
+
+## 3. Step 0: Preflight (preparation and material inventory)
+
+**Goal**: First, clarify "what facts can be used as evidence". What is subsequently written into the knowledge base is not the opinion, but the "entry link + evidence location".
+**Principle**: Prioritize quoting "executable evidence" (scripts/CI/contract files), followed by descriptive documents.
+
+### Input
+
+- Warehouse (directory structure, build scripts, dependency files, configuration files, CI/CD configuration)
+- Running mode (local startup, environment variables, deployment entry)
+- Test entrance (single test/integrated test/E2E, quality access control)
+- Existing contracts and structured facts (OpenAPI/Proto/JSON Schema/SQL migrations/ORM models)
+- Observability portal (monitoring, log query, alarm, runbook, rollback strategy)
+
+### Actions (minimal list)
+
+- Find the **only trusted entrance** (priority script/CI/README/Makefile/package.json and other executable evidence)
+- Marking: Which are "long-term stable entries" (suitable for project level), which are "requirements one-time details" (suitable to stay in spec)
+- Compile an "evidence entry list" (you can make a draft first, and then write it into the module page (including API/Data contract paragraphs) and ops page)
+
+### Output
+
+- A traceable entry list (link to: Run/Test/CI/Contract/Key Directory/Monitoring Alarm)
 
 ---
 
-## 3. Step 0：Preflight（准备与素材盘点）
+## 4. Step 1: Scope (range stop loss: P0/P1/P2)
 
-**目标**：先把“有哪些事实可作为证据”盘清楚，后续写入知识库的不是观点，而是“入口链接 + 证据位置”。
-**原则**：优先引用“可执行证据”（脚本/CI/契约文件），其次才是描述性文档。
+**Goal**: The biggest risk of reverse engineering is "trying to cover all modules leading to maintenance failure". Scope's task is to first clarify: which modules must be done, which ones can be done on demand, and which ones are postponed.
 
-### 输入
+### 4.1 Module classification (recommended)
 
-- 仓库（目录结构、构建脚本、依赖文件、配置文件、CI/CD 配置）
-- 运行方式（本地启动、环境变量、部署入口）
-- 测试入口（单测/集成测/E2E、质量门禁）
-- 已有契约与结构化事实（OpenAPI/Proto/JSON Schema/SQL migrations/ORM models）
-- 可观测性入口（监控、日志查询、告警、Runbook、回滚策略）
+- **P0 (must be reversed)**: high-frequency changes, cross-team interfaces, many external integrations, accident/fault hotspots, and high compliance risks
+- **P1 (recommendation)**: Stable but often quoted/asked/relied on basic abilities
+- **P2 (reverse on demand)**: low risk, low collaboration, short life cycle; only index placeholders and entries are retained
 
-### 动作（最小清单）
+### 4.2 Reverse depth and product requirements (strong constraints)
 
-- 找到**唯一可信入口**（优先脚本/CI/README/Makefile/package.json 等可执行证据）
-- 标记：哪些是“长期稳定入口”（适合项目级），哪些是“需求一次性细节”（适合留在 spec）
-- 汇总一份“证据入口清单”（可先做草稿，后续分散写入模块页〔含 API/Data 契约段落〕与 ops 页）
-
-### 输出
-
-- 一份可追溯的入口清单（链接到：运行/测试/CI/契约/关键目录/监控告警）
+- P0: Must have`components/{module}.md`, and the file **also contains**`API Contract` + `Data Contract` + `Evidence`(Code/Test/CI/ops entry)
+- P1: Must have`components/{module}.md`, allowing a section of the API or Data to be downgraded in the **Evidence gap** way (see Step 4 template)
+- P2: Only in`components/index.md`and`products/index.md`Placeholder navigation (optional)`components/{module}.md`); just keep the entry link
 
 ---
 
-## 4. Step 1：Scope（范围止损：P0/P1/P2）
+## 5. Step 2: Level-0 (Memory / Polaris)
 
-**目标**：逆向工程最大风险是“试图覆盖所有模块导致维护失败”。Scope 的任务是先明确：哪些模块必须做、哪些可以按需做、哪些暂缓。
+**Goal**: Let anyone/AI know within 3 minutes: what the project is, what its boundaries are, how to run it, how to verify it, and where the authoritative entrance is.
 
-### 4.1 模块分级（建议）
+### 5.1 Writing constraints (project level must be short)
 
-- **P0（必须逆向）**：高频变更、跨团队交界、对外集成多、事故/故障热点、合规风险高
-- **P1（建议逆向）**：稳定但经常被引用/被问到/被依赖的基础能力
-- **P2（按需逆向）**：低风险、低协作、生命周期短；只保留索引占位与入口
+- **Only write stable entrances and boundaries**: Directory/Command/Contract/Run Entrance/Guardrails
+- **Avoid one-time delivery of details**: field-level constraints, detailed timing, and migration steps are dropped to spec
+- **Links must be "clickable and locatable"**: Prioritize linking to specific files (or reproducible commands) in the warehouse, avoid using directory placeholders or writing methods that will break the link under the current relative path (such as writing only`design/`、`docs/`).
+- **Gap must be structured**: avoid scattering "not found/to be filled" in the text; write them uniformly`## Evidence Gaps（缺口清单）`, and give the location and impact of candidate evidence (so that the follow-up does not rely on guessing).
 
-### 4.2 逆向深度与产物要求（强约束）
+### 5.2 Memory minimal template (can be copied)
 
-- P0：必须具备 `components/{module}.md`，且该文件内 **同时包含** `API Contract` + `Data Contract` + `Evidence`（代码/测试/CI/ops 入口）
-- P1：必须具备 `components/{module}.md`，允许 API 或 Data 其中一段以 **Evidence gap** 方式降级占位（见 Step4 模板）
-- P2：只在 `components/index.md` 与 `products/index.md` 占位导航（可不创建 `components/{module}.md`）；保留入口链接即可
+####`memory/structure.md`- Project form: single/multi-service/Monorepo (use the warehouse facts as evidence)
+- Entrance:
+  - Local startup:`<命令/脚本路径>`- test:`<命令/脚本路径>`- Build/Release:`<CI job / pipeline 链接或脚本>`- Code Map:
+  - Component index entry:`components/index.md`- Contract entrance: enter the corresponding`components/{module}.md`,exist`API Contract` / `Data Contract`Paragraph View Authoritative Entrance and Invariants
+  - Run entry:`ops/`(if any)
+-`## Evidence Gaps（缺口清单）`:
+  - What is missing (such as coverage access control/monitoring entrance/contract generation command)
+  - Candidate evidence location (specific to "File/job/Command/Platform Entry")
+  - Impact (guess what requirements/collaboration scenarios will result)
 
----
+####`memory/tech.md`- Technology stack: Language/Framework/Database/Message/Gateway (only stable selections are listed)
+- Quality access control entrance: lint/test/security scan (command and CI job link)
+- NFR Guardrail Entry: Performance/Usability/Cost/Safety (link to`nfr.md`or external specification)
+-`## Evidence Gaps（缺口清单）`: Same as above (such as front-end lint, stress test entrance, security baseline entrance)
 
-## 5. Step 2：Level-0（Memory / 北极星）
+####`memory/product.md`- Business boundaries: In/Out (one sentence + evidence entry)
+- Key business module entrance:`products/index.md`(if any)
+- Entry of key terms:`glossary.md`- Authoritative entrance (recommended minimum set):`components/index.md`、`products/index.md`(if any),`ops/index.md`(if any)
 
-**目标**：让任何人/AI 在 3 分钟内知道：项目是什么、边界是什么、怎么跑、怎么验证、权威入口在哪。
-
-### 5.1 写法约束（项目级必须短）
-
-- **只写稳定入口与边界**：目录/命令/契约/运行入口/护栏
-- **避免一次性交付细节**：字段级约束、详细时序、迁移步骤下沉到 spec
-- **链接必须“可点击且可定位”**：优先链接到仓库内具体文件（或可复现命令），避免使用目录占位或在当前相对路径下会断链的写法（例如只写 `design/`、`docs/`）。
-- **缺口必须结构化**：避免在正文里散落“未发现/待补”；统一写入 `## Evidence Gaps（缺口清单）`，并给出候选证据位置与影响（让后续不靠猜）。
-
-### 5.2 Memory 最小模板（可复制）
-
-#### `memory/structure.md`
-
-- 项目形态：单体/多服务/Monorepo（以仓库事实为证据）
-- 入口：
-  - 本地启动：`<命令/脚本路径>`
-  - 测试：`<命令/脚本路径>`
-  - 构建/发布：`<CI job / pipeline 链接或脚本>`
-- 代码地图：
-  - 组件索引入口：`components/index.md`
-  - 契约入口：进入对应的 `components/{module}.md`，在 `API Contract` / `Data Contract` 段落查看权威入口与不变量
-  - 运行入口：`ops/`（若有）
-- `## Evidence Gaps（缺口清单）`：
-  - 缺什么（例如覆盖率门禁/监控入口/契约生成命令）
-  - 候选证据位置（具体到“文件/job/命令/平台入口”）
-  - 影响（会导致哪些需求/协作场景继续猜）
-
-#### `memory/tech.md`
-
-- 技术栈：语言/框架/数据库/消息/网关（只列稳定选择）
-- 质量门禁入口：lint/test/安全扫描（命令与 CI job 链接）
-- NFR 护栏入口：性能/可用性/成本/安全（链接到 `nfr.md` 或外部规范）
-- `## Evidence Gaps（缺口清单）`：同上（例如前端 lint、压测入口、安全基线入口）
-
-#### `memory/product.md`
-
-- 业务边界：In/Out（一句话 + 证据入口）
-- 关键业务模块入口：`products/index.md`（若有）
-- 关键术语入口：`glossary.md`
-- 权威入口（推荐最小集合）：`components/index.md`、`products/index.md`（若有）、`ops/index.md`（若有）
-
-#### `memory/glossary.md`
-
-- 术语：定义（1 句）+ 权威出处链接（优先 `components/{module}.md#api-contract` / `#data-contract`，其次 ADR/代码类型/外部文档；链接需可点击可定位）
+####`memory/glossary.md`- Terminology: definition (1 sentence) + authoritative source link (priority`components/{module}.md#api-contract` / `#data-contract`, followed by ADR/code type/external document; the link must be clickable and locatable)
 
 ---
 
-## 6. Step 3：Level-1（索引骨架 + 复选框任务面板）
+## 6. Step 3: Level-1 (index skeleton + checkbox task panel)
 
-**目标**：先生成“地图骨架”，再按模块迭代补齐；索引只做导航与进度面板。
+**Goal**: First generate a "map skeleton", and then complete it iteratively by module; the index is only used for navigation and progress panels.
 
-### 6.1 索引写法约束
+### 6.1 Index writing constraints
 
-- `index.md` **只做导航**：表格列出模块/Owner/入口/（同页锚点）契约链接/运行链接；不复制模块细节与不变量
-- 用复选框管理补齐进度：
-  - `- [ ] moduleA` 表示模块页/契约入口页未完成
-  - `- [x] moduleA` 表示已达到该模块的 DoD
+-`index.md`**Navigation only**: The table lists the module/Owner/entry/(same page anchor) contract link/running link; module details and invariants are not copied
+- Manage completion progress with checkboxes:
+  -`- [ ] moduleA`Indicates that the module page/contract entry page is not completed
+  -`- [x] moduleA`Indicates that the DoD for the module has been reached
 
-#### 索引硬规则（可检查）
+#### Index hard rules (checkable)
 
-- **唯一地图索引**：以 `components/index.md` 为唯一地图索引。
-  - API/Data 契约不维护 `contracts/**` 索引；从 `components/index.md` 直接链接到模块页内锚点即可。
-- **禁止在索引里写细节**：索引中不得出现 `invariants`、`evidence`、`待补`、`未发现` 等占位或细节字段。
-  - 细节必须下沉到 `components/{module}.md` 的 `API Contract` / `Data Contract` / `Evidence` / `Evidence Gaps` 段落。
+- **Unique map index**: with`components/index.md`is the unique map index.
+  - API/Data contracts are not maintained`contracts/**`Index; from`components/index.md`Just link directly to the anchor point within the module page.
+- **No writing details in the index**: must not appear in the index`invariants`、`evidence`、`待补`、`未发现`Placeholder or detail fields.
+  - Details must sink to`components/{module}.md`of`API Contract` / `Data Contract` / `Evidence` / `Evidence Gaps`paragraph.
 
-#### `components/index.md` 跨模块依赖关系图（新增，推荐）
+####`components/index.md`Cross-module dependency graph (new, recommended)
 
-在 `components/index.md` 末尾维护一份 Mermaid 格式的模块间调用关系图，让 AI 在做需求影响分析时能快速判断"改了 A 还需要关注 B、C"：
-
-```mermaid
+in`components/index.md`At the end, a call relationship diagram between modules in Mermaid format is maintained, so that AI can quickly determine "if A is changed, B and C need to be paid attention to" when doing demand impact analysis:```mermaid
 graph LR
   moduleA --> moduleB
   moduleA --> moduleC
   moduleB --> moduleD
-```
+```> **Maintenance Rules**: Only draw direct dependencies (first-level calls), not transitive dependencies; mark the interaction mode (API/Event/DB) on the side; and maintain it synchronously with module page updates.
 
-> **维护规则**：只画直接依赖（一级调用），不画传递依赖；边标注交互方式（API/Event/DB）；随模块页更新同步维护。
+####`components/index.md`Recommended columns (minimally stable)
 
-#### `components/index.md` 推荐列（最小稳定）
+-`module`:Module short name (recommended kebab-case)
+-`priority`：P0/P1/P2
+- `owner`:Team/Responsible person (can be left blank, but do not write "to be determined", leaving blank means not registered)
+-`code_entry`: Minimum locatable entry (directory or key entry file)
+-`api_contract`: link to`./{module}.md#api-contract`
+- `data_contract`: link to`./{module}.md#data-contract`
+- `ops_entry`: link to`../ops/...`(if any)
+-`status`: Check box (whether it can be checked is determined by the SSOT access control in Step 7)
 
-- `module`：模块短名（建议 kebab-case）
-- `priority`：P0/P1/P2
-- `owner`：团队/负责人（可留空，但不写“待定”，留空即表示未登记）
-- `code_entry`：最小可定位入口（目录或关键入口文件）
-- `api_contract`：链接到 `./{module}.md#api-contract`
-- `data_contract`：链接到 `./{module}.md#data-contract`
-- `ops_entry`：链接到 `../ops/...`（若有）
-- `status`：复选框（由 Step7 的 SSOT 门禁决定能否勾选）
+#### Correct/wrong example (minimal snippet)
 
-#### 正确/错误示例（最小片段）
-
-正确（索引只导航，契约指向同页锚点）：
+Correct (index navigation only, contract points to same page anchor):
 
 | module | priority | owner | code_entry | api_contract | data_contract | ops_entry | status |
 |--------|----------|-------|------------|--------------|---------------|-----------|--------|
-| environment-management | P0 | platform-team | `server/module/environment/` | [api](./environment-management.md#api-contract) | [data](./environment-management.md#data-contract) | [ops](../ops/index.md) | - [ ] |
+| environment-management | P0 | platform-team |`server/module/environment/`| [api](./environment-management.md#api-contract) | [data](./environment-management.md#data-contract) | [ops](../ops/index.md) | - [ ] |
 
-错误（索引写细节/占位，导致双写与漂移）：
+Error (index write details/placeholders, resulting in double writes and drift):
 
 | module | invariants | evidence |
-|--------|------------|----------|
-| environment-management | 待补 | 未发现 |
+|--------|----------------|----------|
+| environment-management | To be added | Not found |
 
 ---
 
-## 7. Step 4：Modules（单页模块 SSOT：把“权威”立起来）
+## 7. Step 4: Modules (Single-page module SSOT: establish “authority”)
 
-**目标**：对每个选中的模块（优先 P0），产出**单一模块页** `components/{module}.md`，并在该页内同时建立 API/Data 契约的权威入口与证据链；再回填 `components/index.md` 的导航链接与状态。
-**关键约束**：模块页里的契约段落不是“字段大全”，而是“权威入口 + 不变量摘要 + 证据入口 + 缺口清单”。
+**Goal**: For each selected module (priority P0), output **single module page**`components/{module}.md`, and establish the authoritative entrance and evidence chain of the API/Data contract at the same time in this page; then backfill`components/index.md`Navigation links and status.
+**Key constraint**: The contract paragraph in the module page is not the "field encyclopedia", but the "authoritative entry + invariant summary + evidence entry + gap list".
 
-### 7.1 `components/{module}.md` 最小模板（可复制，单页 SSOT）
+### 7.1`components/{module}.md`Minimal template (copiable, single page SSOT)
 
-> **锚点稳定性要求**：为了让 AI 与人都能稳定跳转，模块页内必须包含以下固定二级标题：
-> - `## TL;DR`（锚点 `#tldr`）
-> - `## API Contract`（锚点 `#api-contract`）
-> - `## Data Contract`（锚点 `#data-contract`）
+> **Anchor point stability requirements**: In order to allow both AI and humans to jump stably, the module page must contain the following fixed secondary titles:
+> -`## TL;DR`(anchor`#tldr`）
+> - `## API Contract`(anchor`#api-contract`）
+> - `## Data Contract`(anchor`#data-contract`)
 
-**Frontmatter 元数据（必填）**：
-
-```yaml
+**Frontmatter metadata (required)**:```yaml
 ---
 module: <module-short-name>
 priority: P0|P1|P2
@@ -246,243 +221,223 @@ source_files:                         # 关键源文件（用于过期检测）
   - <path/to/key/file1>
   - <path/to/key/file2>
 ---
-```
+```- **TL;DR (decision-level summary, 3-5 sentences, required)**: What does the module do, what are the boundaries, and what are the key invariants - let AI use the summary to determine whether it needs to go deeper during the map browsing stage
+- Module positioning: In/Out (clearly what is not responsible for)
+- Owner: Team/system leader (can be linked to organizational address book/duty list)
+- Entrance:
+  - Code entry:`<目录/路由/handler/consumer/job/cli 的路径>`- Run entry:`ops/<...>`(if any)
+- Bearer service mapping (if any`products/*`): CAP/BP/BO number or minimum reference
+- Representative collaboration scenarios (1–2): only write “who calls whom + key boundaries”, detailed timing sinking spec
+- **Key state machines and domain events**: State machines (enum/status + transition logic) and domain events (publish/subscribe) identified from the code, only write summary (object name + state enumeration + key transition rules + event name + trigger timing)
+- NFR allocation summary: performance/availability/security key points (only write guardrails and entrances)
 
-- **TL;DR（决策级摘要，3-5 句话，必填）**：模块做什么、边界是什么、关键不变量是什么——让 AI 在地图浏览阶段用摘要判断是否需要深入
-- 模块定位：In/Out（明确不负责什么）
-- Owner：团队/系统负责人（可链接到组织通讯录/值班表）
-- 入口：
-  - 代码入口：`<目录/路由/handler/consumer/job/cli 的路径>`
-  - 运行入口：`ops/<...>`（若有）
-- 承载的业务映射（若有 `products/*`）：CAP/BP/BO 编号或最小引用
-- 代表性协作场景（1–2 个）：只写“谁调用谁 + 关键边界”，详细时序下沉 spec
-- **关键状态机与领域事件**：从代码中识别的状态机（enum/status + 转移逻辑）和领域事件（publish/subscribe），只写摘要（对象名 + 状态枚举 + 关键转移规则 + 事件名 + 触发时机）
-- NFR 分摊摘要：性能/可用性/安全关键点（只写护栏与入口）
+#### Recommended structure of module pages (strongly recommended in this order)
 
-#### 模块页推荐结构（强烈建议按此顺序）
+-`# <模块中文名>（<module>）`(title)
+-`## TL;DR`: 3-5 sentence decision-level summary (what the module does, boundaries, key invariants)
+-`## 模块定位`：In/Out
+  - **In**: one sentence ability boundary
+  - **Out**: One sentence is not responsible for the scope
+-`## Owner`-Team/Responsible Person/Duty Entry (leave blank if not available, do not write "to be determined")
+-`## 入口`- Code entry (at least the directory can be located; P0 is recommended to key files)
+  - Run portal (ops page link, if available)
+-`## 协作场景（1–2 个）`- Only write "who calls whom + key boundaries", and the timing details are sunk into the spec
+-`## State Machines & Domain Events`- Key state machine summary (object name + state enumeration + transition rule)
+  - Summary of events in key areas (event name + trigger time + consumer)
+-`## API Contract`- **Authoritative entrance (must be clickable/locatable)**: OpenAPI/Proto generated product path + generated command/phase; gateway/routing entrance
+  - **Invariant summary (3–7 items)**: authentication/idempotence/error code family/version policy/audit requirements, etc.
+  - **Evidence entry (minimum granularity)**:
+    - At least 2 key handler file paths
+    - At least 1 representative test classpath (if not, write`Evidence Gaps`)
+    - CI access control: specific job name or command, and specify "whether to execute tests" (for example, whether to skip tests)
+-`## Data Contract`- **Data Ownership**: Primary write/read-only/synchronization source (clear boundaries)
+  - **Core objects and primary keys**: object name + primary key/unique identifier + life cycle in one sentence
+  - **Authoritative entrance (must be clickable/locatable)**: Schema/DDL/Migration + ORM model
+  - **Invariant summary (3–7 items)**: caliber/state machine/constraints
+  - **Evidence entry (minimum granularity)**:
+    - At least 1 repository/mapper path
+    - At least 1 representative data read and write service path (optional)
+    - Test evidence (if not, write it down`Evidence Gaps`)
+    - CI evidence as above
+-`## Evidence（证据入口）`- Code: key directory/file entry
+  - Tests: specific test entrance (class/directory)
+  - CI: specific job/pipeline entry
+  - Ops: dashboard/alerts/logs/runbook/rollback (if yes, it will be linked, if not, it will enter the gap list)
+-`## Evidence Gaps（缺口清单）`(When "To be filled/not found" appears, it must be written as a structured gap)
+  - **Gap**: What is missing (testing/monitoring/generating commands/contract authority entry...)
+  - **Expected granularity**: specific to "file/class/job/command"
+  - **Candidate evidence location**: which directory/CI file/platform is most likely to be in
+  - **Impact**: It will cause AI/collaboration to continue guessing at which step (for example, requirements analysis cannot determine idempotent/rollback semantics)
 
-- `# <模块中文名>（<module>）`（标题）
-- `## TL;DR`：3-5 句话决策级摘要（模块做什么、边界、关键不变量）
-- `## 模块定位`：In/Out
-  - **In**：一句话能力边界
-  - **Out**：一句话不负责范围
-- `## Owner`
-  - 团队/负责人/值班入口（无则留空，不写“待定”）
-- `## 入口`
-  - 代码入口（最少可定位到目录；P0 建议给到关键文件）
-  - 运行入口（ops 页链接，若有）
-- `## 协作场景（1–2 个）`
-  - 只写“谁调用谁 + 关键边界”，细节时序下沉 spec
-- `## State Machines & Domain Events`
-  - 关键状态机摘要（对象名 + 状态枚举 + 转移规则）
-  - 关键领域事件摘要（事件名 + 触发时机 + 消费者）
-- `## API Contract`
-  - **权威入口（必须可点击/可定位）**：OpenAPI/Proto 生成物路径 + 生成命令/phase；网关/路由入口
-  - **不变量摘要（3–7 条）**：鉴权/幂等/错误码族/版本策略/审计要求等
-  - **证据入口（最小粒度）**：
-    - 至少 2 个关键 handler 文件路径
-    - 至少 1 个代表性测试类路径（没有就写到 `Evidence Gaps`）
-    - CI 门禁：具体 job 名或命令，并明确“是否执行测试”（例如是否 skip tests）
-- `## Data Contract`
-  - **数据主责（Ownership）**：主写/只读/同步来源（明确边界）
-  - **核心对象与主键**：对象名 + 主键/唯一标识 + 生命周期一句话
-  - **权威入口（必须可点击/可定位）**：Schema/DDL/迁移 + ORM model
-  - **不变量摘要（3–7 条）**：口径/状态机/约束
-  - **证据入口（最小粒度）**：
-    - 至少 1 个 repository/mapper 路径
-    - 至少 1 个代表性数据读写服务路径（可选）
-    - 测试证据（没有就写到 `Evidence Gaps`）
-    - CI 证据同上
-- `## Evidence（证据入口）`
-  - Code：关键目录/文件入口
-  - Tests：具体测试入口（类/目录）
-  - CI：具体 job/流水线入口
-  - Ops：dashboard/alerts/logs/runbook/rollback（有则链接，无则进入缺口清单）
-- `## Evidence Gaps（缺口清单）`（当出现“待补/未发现”时必须写成结构化缺口）
-  - **缺口**：缺什么（测试/监控/生成命令/契约权威入口…）
-  - **期望补齐到的粒度**：具体到“文件/类/job/命令”
-  - **候选证据位置**：最可能在哪个目录/CI 文件/平台
-  - **影响**：会导致 AI/协作在哪一步继续猜（例如需求分析无法判定幂等/回滚语义）
+> **Forbidden**: Write API/Data paragraphs as field encyclopedias; field-level details are only pointed to schema/code through "authoritative entry" when necessary.
 
-> **禁止**：把 API/Data 段落写成字段大全；字段级细节只在必要时通过“权威入口”指向 schema/代码。
+### 7.2 (Optional, high ROI) Requirements Analysis Semantic Card: Feature Impact Checklist
 
-### 7.2（可选，高 ROI）需求分析语义卡片：Feature Impact Checklist
+When the module often undertakes "copy/initialization/IaC/orchestration" type requirements (such as "environment replication"), it is recommended to append a section to the module page (still keep it short):
 
-当模块经常承接“复制/初始化/IaC/编排”类需求（例如“环境复制”）时，建议在模块页追加一个小节（仍保持短）：
-
-- `## Feature Impact Checklist（<feature>）`
-  - 数据：涉及哪些对象/字段（只列关键字段名与权威入口）
-  - 异步：是否走 Job/Flow，幂等键是什么，失败如何回滚
-  - IaC：仓库/模板来源、目标路径与权限约束
-  - K8s：命名空间/资源边界、配额与回收策略
-  - 鉴权审计：权限模型、审计点、操作留痕
-  - 验证：如何在 CI/环境中验证复制结果（入口链接）
+-`## Feature Impact Checklist（<feature>）`- Data: Which objects/fields are involved (only key field names and authoritative entries are listed)
+  - Asynchronous: whether to use Job/Flow, what is the idempotent key, and how to roll back if it fails
+  - IaC: warehouse/template source, target path and permission constraints
+  - K8s: namespace/resource boundaries, quotas and recycling strategies
+  - Authentication audit: permission model, audit points, operation traces
+  - Verification: How to verify replication results in CI/environment (entry link)
 
 ---
 
-## 8. Step 5：Products（业务模块聚合与收敛 <= 6）
+## 8. Step 5: Products (Business module aggregation and convergence<= 6）
 
 **目标**：从存量代码推导出“可治理的业务模块地图”，并把数量收敛到 <= 6（否则认知与维护会失控）。
 
 ### 8.1 从代码反推业务模块的线索（建议优先级）
 
-> **优化（相比仅做聚合收敛）**：Step5 不仅聚合模块名，还应从代码反推业务能力清单、业务规则索引与关键领域事件，为需求阶段提供业务语义锚定。
+>**Optimization (compared to only aggregation and convergence)**: Step 5 not only aggregates module names, but also deduces the business capability list, business rule index and key domain events from the code to provide business semantic anchoring for the demand phase.
 
-- 数据主责（最强线索）：哪个模块主写哪些核心对象（见 `components/{module}.md` 的 `Data Contract`）
-- 对外能力边界：哪些 API 是面向外部/其他系统的稳定承诺（见 `components/{module}.md` 的 `API Contract`）
-- 组织边界：不同团队负责的模块群（Owner）
-- 运行边界：独立部署/独立扩缩容/独立 SLO 的单元（若有）
+- Data responsibility (strongest clue): which module is responsible for writing which core objects (see`components/{module}.md`of`Data Contract`)
+- External capability boundaries: which APIs are stable commitments to external/other systems (see`components/{module}.md`of`API Contract`)
+- Organizational boundaries: Module groups (Owners) responsible for different teams
+- Operation boundary: independent deployment/independent scaling/independent SLO unit (if any)
 
-### 8.2 业务能力清单提取（新增，推荐）
+### 8.2 Business capability list extraction (new, recommended)
 
-在 Products 模块页（`products/{module}.md`）中增加：
+On the Products module page (`products/{module}.md`) added:
 
-- **业务能力清单（Capability Catalog）**：从 API 路由/handler 名/数据对象反推该模块对外提供的业务能力（粒度到 CAP-001 级别），这是需求落点的关键锚定
-- **业务规则索引（Business Rules Index）**：从代码中的 validation/policy/rule 逻辑提取关键约束，标注规则来源（代码文件路径），让需求阶段能回答"现在系统在这个场景下有什么约束"
-- **关键领域事件（Domain Events）**：从代码中的 event publish/subscribe 提取事件清单，标注事件语义与消费者
+- **Business Capability Catalog**: Deducing the external business capabilities provided by the module from the API route/handler name/data object (granularity to CAP-001 level), this is the key anchor of the demand placement
+- **Business Rules Index**: Extract key constraints from the validation/policy/rule logic in the code, mark the source of the rules (code file path), so that the requirements stage can answer "What constraints does the system have in this scenario now?"
+- **Key Domain Events**: Extract the event list from event publish/subscribe in the code, and mark the event semantics and consumers
 
-> **写法约束**：只写入口级摘要（能力名 + 一句话描述 + 代码入口），不写实现细节；字段级/时序级细节通过证据入口指向代码。
+> **Writing Constraints**: Only write entry-level summary (capability name + one-sentence description + code entry), do not write implementation details; field-level/timing-level details point to the code through the evidence entry.
 
-### 8.3 无法收敛时怎么办
+### 8.3 What to do when convergence fails
 
-- 允许 >6，但必须写明原因（合规隔离/数据主责分裂/组织边界/历史包袱），并给出治理建议（拆分/合并/迁移路线的入口）。
-
----
-
-## 9. Step 6：Ops & Evidence（运行入口与证据链）
-
-**目标**：把“能跑、能验、能回滚、能排障”的入口固定下来，这往往比补全字段字典更高 ROI。
-
-### 9.1 运行入口页的写法约束（短、可执行、可升级）
-
-- Runbook/告警说明要**可操作**：避免泛泛“检查日志”，应提供具体入口（dashboard、日志查询、常见修复、升级联系人）。
-  - 参考：Google SRE Workbook
-    - `https://sre.google/workbook/incident-response/`
-    - `https://sre.google/workbook/postmortem-culture/`
-
-### 9.2 证据链（写在入口页里）
-
-- Spec（需求） ↔ Components（模块页：API/Data/Evidence） ↔ Code（实现入口） ↔ Tests（验证入口） ↔ CI（门禁） ↔ Ops（运行入口）
+- >6 is allowed, but the reasons (compliance isolation/split of data responsibilities/organizational boundaries/historical baggage) must be stated, and governance suggestions (entry to split/merge/migration route) given.
 
 ---
 
-## 10. Step 7：DoD（完成标准）与门禁建议
+## 9. Step 6: Ops & Evidence (operation entry and evidence chain)
 
-### 10.1 项目级 DoD（最小自检清单）
+**Goal**: Fix the entrance that can be run, verified, rolled back, and troubleshooted. This often has a higher ROI than completing the field dictionary.
 
-- [ ] Level-0 四份 Memory 已具备“入口清晰/边界清晰/可导航”
-- [ ] Level-1 索引骨架已生成，且复选框任务清单可用
-- [ ] 每个 P0 模块都满足：存在 `components/{module}.md`，且该页内包含 `TL;DR` + `API Contract` + `Data Contract` + `Evidence`（满足最小粒度）
-- [ ] 每个 P0 模块页包含 frontmatter 元数据（`change_frequency`、`last_verified_at`、`source_files`）
-- [ ] products 已收敛到 <= 6；或已记录不可收敛原因与治理建议
+### 9.1 Writing constraints of running entry page (short, executable, upgradeable)
+
+- Runbook/alarm descriptions should be **operational**: avoid general "checking logs" and should provide specific entrances (dashboard, log query, common repairs, upgrade contacts).
+  - Reference: Google SRE Workbook
+    -`https://sre.google/workbook/incident-response/`
+    - `https://sre.google/workbook/postmortem-culture/`### 9.2 Evidence chain (written on the entry page)
+
+- Spec (requirements) ↔ Components (module page: API/Data/Evidence) ↔ Code (implementation entry) ↔ Tests (verification entry) ↔ CI (access control) ↔ Ops (operation entry)
+
+---
+
+## 10. Step 7: DoD (Completion Standard) and Access Control Recommendations
+
+### 10.1 Project Level DoD (Minimum Self-Checklist)
+
+- [ ] Level-0 four copies of Memory already have "clear entrance/clear boundary/navigable"
+- [ ] Level-1 index skeleton generated and checkbox task list available
+- [ ] Each P0 module satisfies: exists`components/{module}.md`, and the page contains`TL;DR` + `API Contract` + `Data Contract` + `Evidence`(Satisfies the minimum granularity)
+- [ ] Each P0 module page contains frontmatter metadata (`change_frequency`、`last_verified_at`、`source_files`)
+- [ ] products has converged to<= 6；或已记录不可收敛原因与治理建议
 - [ ] `components/index.md` 包含跨模块依赖关系图（Mermaid）
 - [ ] 索引只导航，细节不双写；模块页是权威入口
 
 #### 10.1.1 状态一致性门禁（SSOT，必须遵守）
 
-> **唯一事实来源**：模块是否“完成”，只由该模块的 `components/{module}.md` 内容是否达标决定；`components/index.md` 的勾选只是反映这一事实。
+>**Sole Source of Truth**: Whether a module is "done" is determined solely by that module's`components/{module}.md`Determine whether the content meets the standards;`components/index.md`The check mark simply reflects this fact.
 
-- `components/index.md` 中某模块允许标记 `- [x]` 的前置条件（P0）：
-  - 模块页存在且可导航（`components/{module}.md` 可达）
-  - 模块页包含固定标题：`## TL;DR`、`## API Contract` 与 `## Data Contract`
-  - 模块页 frontmatter 包含 `change_frequency`、`last_verified_at`、`source_files`
-  - `API Contract` 与 `Data Contract` 内至少具备：权威入口 + 3–7 条不变量 + 证据入口（达到“文件/类/job/命令”最小粒度）
-  - 若存在缺口（例如无测试/无监控/无生成命令），必须写入 `## Evidence Gaps` 并且**不允许**把该模块标记为完成
-- P1 的 `- [x]` 允许降级条件：
-  - 模块页存在；API 或 Data 其中之一可缺失，但必须以 `Evidence Gaps` 结构化记录缺口与影响
-- P2 不建议在 `components/index.md` 打勾：
-  - 仅占位导航即可；需要时再升级为 P1/P0
+-`components/index.md`Allow tags in a module`- [x]`Precondition (P0):
+  - The module page exists and is navigable (`components/{module}.md`reachable)
+  - Module pages contain fixed titles:`## TL;DR`、`## API Contract`and`## Data Contract`- Module page frontmatter contains`change_frequency`、`last_verified_at`、`source_files`
+  - `API Contract`and`Data Contract`It must have at least: authoritative entry + 3–7 invariants + evidence entry (reaching the minimum granularity of “file/class/job/command”)
+  - If there is a gap (e.g. no test/no monitoring/no build command), it must be written`## Evidence Gaps`and **not allowed** to mark this module as complete
+- P1's`- [x]`Downgrade conditions are allowed:
+  - The module page exists; either API or Data can be missing, but it must end with`Evidence Gaps`Structured record gaps and impacts
+- P2 is not recommended in`components/index.md`Tick:
+  - Only placeholder navigation is sufficient; upgrade to P1/P0 when necessary
 
-### 10.2 门禁建议
+### 10.2 Access control recommendations
 
-- **Docs-as-Code**：文档与代码同 PR、同评审；提供 PR 预览；自动检查断链/格式
-  - 参考：Read the Docs（docs-as-code、PR previews）
-    - `https://about.readthedocs.com/docs-as-code`
-- **Catalog 完整性**：P0 模块必须存在 `components/{module}.md` 且包含 `API Contract` / `Data Contract` / `Evidence` 段落；在 CI 中 enforce（借鉴软件目录/服务目录治理思路）
-  - 参考：Backstage（确保 catalog 完整性）
-    - `https://backstage.io/docs/golden-path/adoption/full-catalog`
-- **可自动化检查方向（建议）**：
-  - 断链检查（相对路径可达）
-  - `components/index.md` 列白名单检查（禁止细节列/占位词）
-  - 禁止词检查：在索引中出现 `待补`、`未发现` 视为违规（必须下沉到模块页 `Evidence Gaps`）
-  - P0 段落完整性：模块页必须包含 `## API Contract` 与 `## Data Contract` 标题
-  - Evidence 最小粒度：P0 模块页中必须出现至少 N 个“文件级路径”证据（可用简单规则校验）
+- **Docs-as-Code**: Documents and code are subject to the same PR and review; provide PR preview; automatically check for broken links/formats
+  - Reference: Read the Docs (docs-as-code, PR previews)
+    -`https://about.readthedocs.com/docs-as-code`- **Catalog Completeness**: P0 module must exist`components/{module}.md`and contains`API Contract` / `Data Contract` / `Evidence`Paragraph; enforce in CI (drawing inspiration from software catalog/service catalog governance ideas)
+  - Reference: Backstage (ensure catalog integrity)
+    -`https://backstage.io/docs/golden-path/adoption/full-catalog`- **Orientation can be automated (recommended)**:
+  - Broken link check (relative path is reachable)
+  -`components/index.md`Whitelist check (disable detail columns/placeholders)
+  - Check for forbidden words: appearing in the index`待补`、`未发现`Considered a violation (must be moved down to the module page`Evidence Gaps`)
+  - P0 Paragraph Completeness: Module pages must contain`## API Contract`and`## Data Contract`Title
+  - Evidence minimum granularity: at least N "file-level path" evidence must appear in the P0 module page (simple rule verification available)
 
 ---
 
-## 11. 增量 Discover 与知识保鲜（新增）
+## 11. Incremental Discover and knowledge preservation (new)
 
-> **问题**：全量 Discover SOP 适合初始化，但项目持续演进，知识库如果不能随代码变化而更新，很快就会"过时即无效"。
+> **Problem**: The full Discover SOP is suitable for initialization, but the project continues to evolve. If the knowledge base cannot be updated with code changes, it will soon become "outdated and invalid".
 
-### 11.1 增量 Discover（Delta Discover）
+### 11.1 Delta Discover (Delta Discover)
 
-**触发时机**：
-- Merge-back 完成时（需求引入了新的契约/ADR/能力）
-- PR 涉及 P0/P1 模块的核心文件变更时
-- 模块被标记为 `stale`（过期检测触发）时
+**Trigger time**:
+- When Merge-back is completed (requirements introduce new contracts/ADRs/capabilities)
+- When PR involves changes to the core files of the P0/P1 module
+- Modules are marked as`stale`(when expiration detection is triggered)
 
-**执行范围**：
-- 基于 `git diff --stat`（或 PR 变更文件列表），识别受影响的模块
-- 只对这些模块执行 Step4（模块页更新）+ Step7（DoD 校验），而非重跑全量 SOP
-- 更新受影响模块的 `components/{module}.md`（包括 TL;DR、契约段落、状态机/事件、Evidence），并回填 `components/index.md` 状态
+**Execution scope**:
+- Based on`git diff --stat`(or PR change file list) to identify affected modules
+- Only execute Step 4 (module page update) + Step 7 (DoD verification) for these modules instead of re-running the full SOP
+- Update affected modules`components/{module}.md`(includes TL;DR, contract paragraphs, state machines/events, Evidence), and backfill`components/index.md`Status
 
-**产出**：更新后的模块页 + 更新后的 `last_verified_at` + 索引状态回填
+**Output**: updated module page + updated`last_verified_at`+ Index status backfill
 
-### 11.2 过期检测（Staleness Detection）
+### 11.2 Staleness Detection
 
-- 每个模块页 frontmatter 中记录 `last_verified_at`（最后校验时间）和 `source_files`（关键源文件列表）
-- CI 可检查"距离上次校验是否超过 N 次提交/N 天"，超期的标记为 `stale`
-- `stale` 模块在被 Impact Analysis 命中时，自动提示"此模块知识可能过期，建议先执行 Delta Discover"
-- 建议过期阈值：P0 模块 ≤ 30 天或 50 次提交；P1 模块 ≤ 90 天
+- Record in frontmatter of each module page`last_verified_at`(last verification time) and`source_files`(List of key source files)
+- CI can check "whether more than N submissions/N days have passed since the last verification", and the expired mark is`stale`
+- `stale`When the module is hit by Impact Analysis, it automatically prompts "The knowledge of this module may be expired. It is recommended to execute Delta Discover first."
+- Recommended expiration threshold: P0 module ≤ 30 days or 50 submissions; P1 module ≤ 90 days
 
-### 11.3 知识质量度量
+### 11.3 Knowledge Quality Measurement
 
-| 指标 | 定义 | 用途 |
+| Indicators | Definition | Purpose |
 |---|---|---|
-| **知识覆盖率** | 已完成模块页的 P0 模块数 / 总 P0 模块数 × 100% | 项目健康度指标 |
-| **链接可达率** | `.aisdlc/` 中可达的相对链接数 / 总链接数 × 100% | CI 自动校验，断链即报错 |
-| **知识新鲜度** | 非 `stale` 的 P0 模块数 / 总 P0 模块数 × 100% | 过期检测的量化反映 |
-| **知识利用率** | Spec Pack 各阶段 `depends_on` 中引用项目级知识的比例 | 指导后续维护优先级 |
+| **Knowledge coverage** | Number of P0 modules on completed module pages / Total number of P0 modules × 100% | Project health index |
+| **Link reachability rate** |`.aisdlc/`The number of relative links that can be reached / the total number of links × 100% | CI is automatically verified, and an error is reported when the link is broken |
+| **Knowledge Freshness** | Not`stale`Number of P0 modules / Total number of P0 modules × 100% | Quantitative reflection of expiration detection |
+| **Knowledge Utilization** | Spec Pack stages`depends_on`Proportion of project-level knowledge cited in | Guiding subsequent maintenance priorities |
 
 ---
 
-## 12. 常见陷阱与规避（逆向工程版）
+## 12. Common pitfalls and avoidance (reverse engineering version)
 
-- **陷阱：试图一次性写全**
-  - **规避**：先 Scope 分级；P0 先落地，再迭代补齐 P1/P2
-- **陷阱：把一次性交付细节写进项目级**
-  - **规避**：项目级只写入口/边界/护栏；字段级与时序级细节下沉 spec，复用资产再 Merge-back
-- **陷阱：索引与模块双写**
-  - **规避**：索引只导航；模块页是权威；索引只回填摘要 + 链接
-- **陷阱：契约不权威**
-  - **规避**：模块页中的 `API Contract` / `Data Contract` 段落至少要有“权威入口链接 + 不变量摘要 + 证据入口”；必要时用 ADR 记录取舍
+- **Trap: Trying to write it all in one go**
+  - **Evasion**: Scope classification first; P0 lands first, then iteratively completes P1/P2
+- **Trap: Writing one-time delivery details into the project level**
+  - **Avoidance**: Only write entries/boundaries/guardrails at the project level; field-level and timing-level details are sunk into spec, and reused assets are then merge-backed.
+- **Trap: Index and module double writing**
+  - **Circumvention**: Index only navigation; module page is authoritative; index only backfills summary + link
+- **Trap: The contract is not authoritative**
+  - **Circumvention**: in module page`API Contract` / `Data Contract`The paragraph must have at least "authoritative entry link + invariant summary + evidence entry"; use ADR to record trade-offs if necessary
 
-### 12.1 文件数量与合并策略（面向 AI 辅助的止损线）
+### 12.1 Number of files and merge strategy (for AI-assisted stop loss lines)
 
-- **文件组织**：每模块一页 `components/{module}.md`。
-- **禁止**：把多个模块合并成一个大文件。
-- **控规模**：通过 Scope 降级；P2 只在 `components/index.md` 占位，不生成模块页；需要时再升级为 P1/P0。
-
----
-
-## 附录 A：Discover 与 Design 的关键差异
-
-- **证据来源**：Discover 以仓库事实为证据；Design 以 ADR/组件页契约段落 等设计资产为证据并在实现后补齐代码入口。
-- **起步方式**：Discover 先 Preflight + Scope，再补地图层；Design 先定义地图层与契约，再驱动实现。
-- **风险**：Discover 最大风险是“覆盖面失控”；Design 最大风险是“契约不落地/实现漂移”。两者都用“门禁 + 证据链 + Merge-back”降低风险。
-- **契约形态**：Discover 倾向“先链接到现有 schema/代码入口”；Design 倾向“先定义权威契约再实现对齐”。共同原则：契约必须权威、可追溯、可验证。
-- **输出位置**：共同输出都落在 `.aisdlc/project/`；需求级细节仍在 `.aisdlc/specs/<DEMAND-ID>/`。
+- **Document Organization**: One page per module`components/{module}.md`.
+- **BANNED**: Merge multiple modules into one large file.
+- **Scale control**: Downgrade via Scope; P2 only in`components/index.md`Placeholder, no module page is generated; upgrade to P1/P0 when necessary.
 
 ---
 
-## 附录 B：参考资料
+## Appendix A: Key differences between Discover and Design
 
-- 文档信息架构（Diátaxis：Tutorial/How-to/Reference/Explanation）：`https://diataxis.fr/foundations/`
-- Docs-as-Code（Git 版本化、PR 预览、自动部署示例）：`https://about.readthedocs.com/docs-as-code`
-- ADR（Michael Nygard 模板，用于记录关键取舍）：`https://tarf.co.uk/Reference/Architecture/adr/decision_record_template/`
-- 架构地图分层（C4 Model）：`https://c4model.com/`
+- **Source of evidence**: Discover uses warehouse facts as evidence; Design uses design assets such as ADR/component page contract paragraphs as evidence and completes the code entry after implementation.
+- **How ​​to start**: Discover first Preflight + Scope, then add the map layer; Design first defines the map layer and contract, and then drives the implementation.
+- **Risk**: The biggest risk for Discover is "loss of coverage"; the biggest risk for Design is "contract failure/implementation drift". Both use "gate control + evidence chain + merge-back" to reduce risks.
+- **Contract form**: Discover tends to "link to the existing schema/code entry first"; Design tends to "define the authoritative contract first and then implement alignment". Common principles: Contracts must be authoritative, traceable, and verifiable.
+- **Output Position**: Common outputs are located on`.aisdlc/project/`;requirement level details still`.aisdlc/specs/<DEMAND-ID>/`.
+
+---
+
+## Appendix B: References
+
+- Document Information Architecture (Diátaxis: Tutorial/How-to/Reference/Explanation):`https://diataxis.fr/foundations/`- Docs-as-Code (Git versioning, PR preview, automated deployment examples):`https://about.readthedocs.com/docs-as-code`- ADR (Michael Nygard template for documenting key trade-offs):`https://tarf.co.uk/Reference/Architecture/adr/decision_record_template/`- Architecture map layering (C4 Model):`https://c4model.com/`
 - SRE（incident response & postmortem）：
   - `https://sre.google/workbook/incident-response/`
-  - `https://sre.google/workbook/postmortem-culture/`
-- 软件目录/服务目录治理（Backstage catalog 完整性）：`https://backstage.io/docs/golden-path/adoption/full-catalog`
+  - `https://sre.google/workbook/postmortem-culture/`- Software catalog/service catalog management (Backstage catalog integrity):`https://backstage.io/docs/golden-path/adoption/full-catalog`
 

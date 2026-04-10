@@ -2,153 +2,146 @@
 markdown-sharing:
   uri: cbc531dd-b12e-410f-a6f0-6ca66abc360f
 ---
+# AI SDLC Product Requirements Process User Manual
 
-# AI SDLC 产品需求流程用户手册
+* Installation: [Reference Document](https://markdown.fzzixun.com/d/9ad9e4f3-f0ac-40f2-ad7d-e4676a39dafe)## Who is this manual for?
 
-* 安装: [参考文档](https://markdown.fzzixun.com/d/9ad9e4f3-f0ac-40f2-ad7d-e4676a39dafe)
-
-## 这份手册适合谁
-
-这份手册面向产品经理、业务分析、设计、研发、测试，以及所有参与需求到交付闭环的同学。  
-目标是帮助你在不陷入技术细节的前提下，快速理解 AI SDLC 在“产品需求澄清”阶段的理念、流程和技能分工。
+This manual is intended for product managers, business analysis, design, R&D, testing, and all students involved in the closed loop from demand to delivery.  
+The goal is to help you quickly understand the concepts, processes, and skill division of AI SDLC in the "product requirements clarification" phase without getting bogged down in technical details.
 
 ---
 
-## 一、先理解三条核心理念
+## 1. First understand the three core concepts
 
-### 1) 双层 SSOT：项目级稳定，需求级灵活
+### 1) Two-tier SSOT: stable at the project level and flexible at the demand level
 
-- **项目级 SSOT**：沉淀长期稳定的业务边界、术语、模块与约束。  
-- **需求级 SSOT（Spec Pack）**：围绕单个需求建立独立空间，专注本次目标与决策。  
-- 价值：既能复用组织知识，又能避免“一个需求改坏全局文档”。
+- **Project-level SSOT**: Precipitate long-term stable business boundaries, terminology, modules and constraints.  
+- **Requirement-level SSOT (Spec Pack)**: Establish an independent space around a single requirement and focus on this goal and decision-making.  
+- Value: It can not only reuse organizational knowledge, but also avoid "one requirement changing the global document".
 
-### 2) Spec as Code：像管理代码一样管理需求
+### 2) Spec as Code: Manage requirements like code
 
-- 每个需求都有独立分支与结构化目录。  
-- 每个阶段只产出该阶段的权威文档。  
-- 所有结论可追溯、可回看、可迭代。  
-- 价值：减少口头同步损耗，让跨角色协作更可控。
+- Each requirement has an independent branch and structured directory.  
+- Each stage only produces authoritative documents for that stage.  
+- All conclusions are traceable, reviewable and iterable.  
+- Value: Reduce verbal synchronization loss and make cross-role collaboration more controllable.
 
-### 3) 渐进式披露：按需读取，按阶段收敛
+### 3) Progressive disclosure: read on demand, converge by stages
 
-- 不一次性读取全部信息。  
-- 当前阶段只消费“最小必要上下文”。  
-- 输出遵循“结论优先、证据支撑、可验证”。
-- 价值：避免信息过载，提升决策速度与质量。
-
----
-
-## 二、你会经历的标准流程（R0-R4）
-
-流程按模块推进，每一步都可独立执行、独立评审、独立回流。
-
-### R0：Spec 初始化
-
-- 作用：为本需求创建独立工作空间。  
-- 结果：形成需求的基础上下文与原始输入沉淀。  
-- 对应技能：`spec-init`。
-
-### R1：需求澄清与方案形成
-
-- 作用：把模糊需求变成可评审方案。  
-- 核心产出：`solution.md`（明确做什么、不做什么、怎么验收）。  
-- 对应技能：`spec-product-clarify`。
-
-### R1.5：影响分析（R1 后自动补强）
-
-- 作用：识别受影响模块、约束与潜在风险。  
-- 核心产出：`solution.md` 中的 `Impact Analysis`。  
-- 价值：为后续设计与实现提供边界护栏。
-
-### R2：PRD 生成（可选）
-
-- 作用：把方案转成可交付规格。  
-- 适用：需求复杂、跨角色协作成本高、需要冻结验收口径时。  
-- 对应技能：`spec-product-prd`。
-
-### R3：原型生成（可选）
-
-- 作用：把场景与规则转成可走查的交互与线框表达。  
-- 适用：存在明显交互变化或易产生理解偏差时。  
-- 对应技能：`spec-product-prototype`。
-
-### R4：可交互 Demo（可选）
-
-- 作用：把关键交互“跑起来”，用于更高保真评审。  
-- 适用：需要和业务方、研发、测试快速对齐体验预期时。  
-- 对应技能：`spec-product-demo`。
+- Not reading all the information at once.  
+- Only the "minimum necessary context" is consumed in the current stage.  
+- The output follows "conclusion first, supported by evidence, and verifiable".
+- Value: Avoid information overload and improve decision-making speed and quality.
 
 ---
 
-## 三、路由原则：一个“大脑”做决策，其它技能专注执行
+## 2. The standard process you will go through (R0-R4)
 
-在 AI SDLC 中，`using-aisdlc` 是唯一路由器（Router）：
+The process is advanced in modules, and each step can be independently executed, reviewed, and reflowed independently.
 
-- 负责判断“下一步做什么”。  
-- 负责门禁检查（是否具备继续条件）。  
-- 负责在阶段之间自动推进或在必要时中断。  
+### R0: Spec initialization
 
-各阶段技能（如 `spec-product-clarify`、`spec-product-prd`）是 Worker：
+- Function: Create an independent workspace for this requirement.  
+- Result: The underlying context forming the requirements is precipitated with the original input.  
+- Corresponding skills:`spec-init`.
 
-- 只负责本阶段目标、产物与质量门槛。  
-- 完成后回到 Router 决定下一步。  
+### R1: Requirements clarification and plan formation
 
-这样做的好处是：减少“每个人按自己理解跳步骤”的流程漂移。
+- Function: Turn vague requirements into reviewable solutions.  
+- Core output:`solution.md`(Clear what to do, what not to do, and how to accept it).  
+- Corresponding skills:`spec-product-clarify`.
 
----
+### R1.5: Impact analysis (automatic enhancement after R1)
 
-## 四、最常用的两条落地路径
+- Role: Identify affected modules, constraints and potential risks.  
+- Core output:`solution.md`in`Impact Analysis`.  
+- Value: Provide boundary guardrails for subsequent design and implementation.
 
-### 路径 A：最短闭环（适合简单需求）
+### R2: PRD generation (optional)
 
-`spec-init` → `spec-product-clarify`（含影响分析）→ 进入设计阶段
+- Function: Convert the plan into deliverable specifications.  
+- Applicable: When the requirements are complex, the cost of cross-role collaboration is high, and the acceptance criteria need to be frozen.  
+- Corresponding skills:`spec-product-prd`.
 
-适用特征：
+### R3: Prototype generation (optional)
 
-- 规则/配置/文案类变更为主；  
-- 交互变化很小；  
-- 验收口径可在方案文档中直接写清。
+- Function: Convert scenes and rules into walkable interactions and wireframe expressions.  
+- Applicable: When there are obvious interactive changes or easy to produce misunderstandings.  
+- Corresponding skills:`spec-product-prototype`.
 
-### 路径 B：标准闭环（适合中复杂需求）
+### R4: Interactive Demo (optional)
 
-`spec-init` → `spec-product-clarify` → `spec-product-prd` →（按需）`spec-product-prototype` →（按需）`spec-product-demo` → 进入设计阶段
-
-适用特征：
-
-- 存在明显交互或流程变化；  
-- 涉及多角色协同与评审；  
-- 需要更高确定性的交付与验收标准。
-
----
-
-## 五、使用时请坚持的实践准则
-
-- **结论优先**：先说结论，再给证据与验证方式。  
-- **范围清晰**：In/Out 明确，避免需求蔓延。  
-- **未知不悬空**：不要写“待确认问题”，用“假设 + 验证清单”承接。  
-- **阶段内闭环**：每一步都要有可评审产物，不把问题推给下一阶段。  
-- **可追溯**：关键结论都能回到原始需求和前序文档。
+- Function: "run" key interactions for higher-fidelity review.  
+- Applicable: When it is necessary to quickly align experience expectations with business parties, R&D, and testing.  
+- Corresponding skills:`spec-product-demo`.
 
 ---
 
-## 六、技能速查（产品需求侧）
+## 3. Routing principle: One "brain" makes decisions, and other skills focus on execution.
 
-- `using-aisdlc`：流程导航与门禁路由中枢  
-- `spec-context`：定位当前需求上下文（执行前置保障）  
-- `spec-init`：初始化 Spec Pack  
-- `spec-product-clarify`：澄清并生成方案  
-- `spec-product-prd`：生成 PRD（可选）  
-- `spec-product-prototype`：生成原型（可选）  
-- `spec-product-demo`：生成可交互 Demo（可选）
+In AI SDLC,`using-aisdlc`Is the only router (Router):
+
+- Responsible for determining “what to do next”.  
+- Responsible for access control inspection (whether conditions are met to continue).  
+- Responsible for automatically advancing between stages or interrupting when necessary.  
+
+Skills at each stage (such as`spec-product-clarify`、`spec-product-prd`) is Worker:
+
+- Only responsible for the goals, products and quality thresholds of this stage.  
+- When finished, go back to Router to decide the next step.  
+
+The advantage of this is to reduce the process drift of "everyone jumps steps according to their own understanding".
 
 ---
 
-## 七、你可以这样开始
+## 4. The two most commonly used landing paths
 
-1. 先判断需求属于“简单闭环”还是“标准闭环”。  
-2. 用 `using-aisdlc` 进入对应路径。  
-3. 每完成一步就做最小评审，不把关键分歧留到后面。  
-4. 出现歧义时优先回流上一阶段文档，不直接跳改后续阶段。  
+### Path A: Shortest closed loop (suitable for simple needs)`spec-init` → `spec-product-clarify`(Including impact analysis) → Enter the design stage
 
-当团队按照这套方式运行一段时间后，你会看到三个明显变化：  
-需求更快收敛、跨角色误解更少、评审与交付的可预测性更高。
+Applicable features:
+
+- Mainly changes in rules/configuration/copywriting;
+- Interaction changes are minimal;
+- The acceptance criteria can be written directly in the plan document.
+
+### Path B: Standard closed loop (suitable for medium to complex requirements)`spec-init` → `spec-product-clarify` → `spec-product-prd`→(on demand)`spec-product-prototype`→(on demand)`spec-product-demo`→ Enter the design stage
+
+Applicable features:
+
+- There are significant interactions or process changes;
+- Involves multi-role collaboration and review;
+- Need for higher certainty in delivery and acceptance standards.
+
+---
+
+## 5. Please adhere to the practical guidelines when using
+
+- **Conclusion first**: state the conclusion first, and then provide evidence and verification methods.  
+- **Clear Scope**: In/Out is clear to avoid requirement creep.  
+- **Unknowns are not left vacant**: Do not write "problems to be confirmed", use "hypothesis + verification list" to undertake.  
+- **Closed loop within the stage**: Every step must have evaluable products, and problems should not be pushed to the next stage.  
+- **Traceability**: Key conclusions can be traced back to the original requirements and previous documents.
+
+---
+
+## 6. Skills quick check (product demand side)
+
+-`using-aisdlc`: Process navigation and access control routing center
+-`spec-context`: Locate the current demand context (execute pre-guarantee)
+-`spec-init`:Initialize Spec Pack
+-`spec-product-clarify`: Clarify and generate solutions
+-`spec-product-prd`: Generate PRD (optional)
+-`spec-product-prototype`: Generate prototype (optional)
+-`spec-product-demo`: Generate interactive demo (optional)
+
+---
+
+## 7. You can start like this
+
+1. First determine whether the requirement belongs to "simple closed loop" or "standard closed loop".  
+2. use`using-aisdlc`Enter the corresponding path.  
+3. Do a minimum review after each step is completed, and do not leave key differences until later.  
+4. When ambiguity occurs, the documents of the previous stage will be reflowed first, and subsequent stages will not be directly jumped.  
+
+When the team runs this way for a while, you will see three obvious changes:
+Requirements converge faster, there are fewer misunderstandings across roles, and reviews and deliveries are more predictable.

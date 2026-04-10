@@ -1,165 +1,154 @@
 ---
-title: Spec 级 Merge-back 阶段 SOP（晋升到 Project SSOT + 归档证据）
+title: Spec-level Merge-back phase SOP (promotion to Project SSOT + archiving evidence)
 status: draft
 audience: [PM, BA, SA, DEV, QA]
 principles_ref: design/aisdlc.md
 ---
+## 1. Background and target (alignment`design/aisdlc.md`)
 
-## 1. 背景与目标（对齐 `design/aisdlc.md`）
+Merge-back (return/promotion) is the final stage of the Spec Pack life cycle: the "reusable, manageable, and binding future requirements" information in the **Requirement-level Spec Pack** is promoted to the **Project-level SSOT (Project SSOT / project/)**, and the remaining content remains in the Spec Pack as delivery evidence and audit materials.
 
-Merge-back（回档/晋升）是 Spec Pack 生命周期的最后阶段：将**需求级 Spec Pack**中“可复用、可治理、会约束未来需求”的信息晋升到**项目级 SSOT（Project SSOT / project/）**，其余内容仍保留在 Spec Pack 作为交付证据与审计材料。
+### 1.1 Construction goals of Project SSOT (deciding “what should be upgraded / what should not be upgraded”)
 
-### 1.1 Project SSOT 的建设目标（决定“该升什么 / 不该升什么”）
+The value of Project SSOT is not to "summarize all the requirements details", but to provide long-term stability:
 
-Project SSOT 的价值不是“汇总所有需求细节”，而是长期稳定地提供：
+- **Map layer (clear entrance)**: where is the authoritative entrance, where are the boundaries, and where to view the contract/ADR/Runbook.
+- **Guardrail layer (clear invariants)**: Key invariants of API/Data, component boundary cutting, permissions/auditing/idempotence/version compatibility and other long-term constraints.
+- **Evidence chain (traceable/executable)**: points to the authoritative evidence in the warehouse (OpenAPI/Schema/DDL/script/CI job/monitoring entry), rather than an unverifiable description.
+- **Progressive Disclosure (Low Noise)**: Project layers are kept short and stable; one-time delivery details stay in Spec Pack (avoiding long-term assets being polluted by noise).
 
-- **地图层（入口清晰）**：哪里是权威入口、边界在哪、从哪里看契约/ADR/Runbook。
-- **护栏层（不变量清晰）**：API/Data 的关键不变量、组件边界裁切、权限/审计/幂等/版本兼容等长期约束。
-- **证据链（可追溯/可执行）**：指向仓库内的权威证据（OpenAPI/Schema/DDL/脚本/CI job/监控入口），而不是不可验证的描述。
-- **渐进式披露（低噪音）**：项目层保持短、稳定；一次性交付细节留在 Spec Pack（避免长期资产被噪音污染）。
+Therefore, the focus of Merge-back is to precipitate the content in this Spec Pack that will affect future collaboration and subsequent needs into the "entrance + guardrail + evidence chain" of the project layer.
 
-因此，Merge-back 的重点是：把本次 Spec Pack 里**会影响未来协作与后续需求**的内容，沉淀为 project 层的“入口 + 护栏 + 证据链”。
+### 1.2 Minimum output of Merge-back
 
-### 1.2 Merge-back 的最小输出
-
-- **需求级输出（证据清单）**：`{FEATURE_DIR}/merge_back.md`
-  - 记录本次晋升清单的 Done/Not Done 状态
-  - 每项必须给出 project 级目标落点与证据入口
-- **项目级输出（长期资产）**：更新 `.aisdlc/project/` 下相关资产：
-  - ADR：`.aisdlc/project/adr/`
-  - 契约：`.aisdlc/project/components/{module}.md#api-contract` / `#data-contract`
+- **Requirements level output (evidence list)**:`{FEATURE_DIR}/merge_back.md`- Record the Done/Not Done status of this promotion list
+  - Each item must provide project-level target placement and evidence entry
+- **Project Level Output (Long Term Assets)**: Updated`.aisdlc/project/`The following related assets:
+  - ADR:`.aisdlc/project/adr/`- Contract:`.aisdlc/project/components/{module}.md#api-contract` / `#data-contract`
   - Ops：`.aisdlc/project/ops/`
-  - NFR：`.aisdlc/project/nfr.md`（如适用）
-  - Registry：`.aisdlc/project/index.md`（需求状态与索引）
+  - NFR：`.aisdlc/project/nfr.md`(if applicable)
+  - Registry:`.aisdlc/project/index.md`(Requirement status and index)
 
 ---
 
-## 2. 输入 / 前置条件 / 上下文门禁
+## 2. Input / Precondition / Contextual Access Control
 
-### 2.1 上下文门禁（强制）
+### 2.1 Contextual access control (mandatory)
 
-凡读写 Spec Pack 与 project 级资产，必须先定位 `{FEATURE_DIR}`，禁止猜路径。
+Before reading or writing Spec Pack and project-level assets, you must first locate`{FEATURE_DIR}`, it is forbidden to guess the path.
 
-PowerShell（必须回显 `FEATURE_DIR=...`）：
+PowerShell (must echo`FEATURE_DIR=...`）：
 
 ```powershell
 . ".\skills\spec-context\scripts\spec-common.ps1"
 $context = Get-SpecContext
 $FEATURE_DIR = $context.FEATURE_DIR
 Write-Host "FEATURE_DIR=$FEATURE_DIR"
-```
+```> Stop on failure:`Get-SpecContext`Report an error (e.g. missing`.aisdlc`, not in the spec branch, the Spec directory structure is incomplete) must be stopped and the context repaired first.
 
-> 失败即停止：`Get-SpecContext` 报错（例如缺少 `.aisdlc`、不在 spec 分支、Spec 目录结构不完整）必须停止，先修复上下文。
+### 2.2 Preconditions (recommended as the entry threshold for Merge-back)
 
-### 2.2 前置条件（建议作为 Merge-back 的进入门槛）
+-`{FEATURE_DIR}/implementation/plan.md`Exists, and the task list in it is completed or explicitly blocked (execution period evidence and audit have been written back).
+- If there are external commitment/contract changes, the drafting and evidence linking have been completed in the Spec Pack (the I2 phase only allows recording to-do, and does not directly update the project).
+-`.aisdlc/project/`Exists and writable (if it does not exist:`CONTEXT GAP`, you need to complete the project layer initialization/Discover/skeleton construction first).
 
-- `{FEATURE_DIR}/implementation/plan.md` 已存在，并且其中的任务清单已完成或明确阻塞（执行期证据与审计已回写）。
-- 若存在对外承诺/契约变更，已在 Spec Pack 内完成草拟与证据链接（I2 阶段只允许记录待办，不直接更新 project）。
-- `.aisdlc/project/` 已存在且可写（若不存在：`CONTEXT GAP`，需先完成 project 层初始化/Discover/骨架搭建）。
+### 2.3 Merge-back "The only collection entrance" to be done (recommended)
 
-### 2.3 Merge-back 待办的“唯一收集入口”（推荐）
+The implementation phase product template has been required to be in`{FEATURE_DIR}/implementation/plan.md`Medium maintenance:
 
-实现阶段产物模板已要求在 `{FEATURE_DIR}/implementation/plan.md` 中维护：
-
-- `## Merge-back 待办清单（仅记录，不在本阶段执行）`
-
-Merge-back 阶段应以该段落作为**主要输入**，再补充来自 `design/*`、`release/*`、`verification/*` 的差量。
+-`## Merge-back 待办清单（仅记录，不在本阶段执行）`The Merge-back stage should use this paragraph as the **main input**, supplemented by`design/*`、`release/*`、`verification/*`The difference.
 
 ---
 
-## 3. 渐进式披露：读取顺序（Merge-back 阶段）
+## 3. Progressive disclosure: reading order (Merge-back phase)
 
-### 3.1 必读（项目级，强制）
+### 3.1 Required reading (project level, mandatory)
 
-- `.aisdlc/project/index.md`（Registry：需求状态、索引入口）
-- `.aisdlc/project/adr/index.md`（ADR 索引）
-- `.aisdlc/project/components/index.md`（组件地图与模块页入口）
-- `.aisdlc/project/ops/`（如存在：运行资产入口）
-- `.aisdlc/project/nfr.md`（如存在：NFR 预算入口）
+-`.aisdlc/project/index.md`(Registry: demand status, index entry)
+-`.aisdlc/project/adr/index.md`(ADR index)
+-`.aisdlc/project/components/index.md`(Component map and module page entrance)
+-`.aisdlc/project/ops/`(If exists: run the asset portal)
+-`.aisdlc/project/nfr.md`(If present: NFR budget entry)
 
-读取失败或不存在时必须显式标注 `CONTEXT GAP`，不得静默跳过。
+Must be explicitly marked when the read fails or does not exist`CONTEXT GAP`, cannot be skipped silently.
 
-### 3.2 按需（需求级，最小必要）
+### 3.2 On demand (demand level, minimum necessary)
 
-- `{FEATURE_DIR}/implementation/plan.md`（Merge-back 待办与证据入口）
-- `{FEATURE_DIR}/design/*`（如存在：决策/契约草拟的证据入口）
-- `{FEATURE_DIR}/release/*`（如存在：runbook/monitoring/rollback）
-- `{FEATURE_DIR}/verification/*`（如存在：可复用验证策略、质量门禁口径）
-
----
-
-## 4. “该升什么 / 不该升什么”：晋升判定口径（写进流程的核心）
-
-对 Spec Pack 中每条信息，按以下问题判断是否晋升到 project：
-
-- **跨需求复用**：下次类似需求仍会用到/会重复被问到吗？
-- **长期护栏/对外承诺**：它是否约束调用方、数据口径、组件边界、权限审计、幂等等不变量？
-- **需要被检索与导航**：未来是否需要“快速定位权威入口”来减少猜测？
-
-命中任意一条：应晋升为 project 层资产（入口 + 不变量 + 证据链）。
-
-### 4.1 必须晋升（默认）
-
-对齐 `design/aisdlc.md`：
-
-- **ADR（关键决策）**：任何关键取舍必须进入 `.aisdlc/project/adr/` 并在索引汇总。
-- **对外契约（默认合并到组件页）**
-  - API：更新 `.aisdlc/project/components/{module}.md#api-contract`
-  - Data：更新 `.aisdlc/project/components/{module}.md#data-contract`
-- **运行资产**：Runbook/监控告警/回滚策略更新到 `.aisdlc/project/ops/`
-- **NFR 预算与基线**：如对性能/稳定性/成本/安全产生影响，更新 `.aisdlc/project/nfr.md`
-- **Registry 状态**：更新 `.aisdlc/project/index.md`（状态：Released / Merged 等）
-
-### 4.2 可选晋升（高 ROI，但视团队习惯）
-
-- **可复用测试策略/门禁口径**：例如通用回归套件划分、质量门禁约束（当多次需求重复复用时晋升）
-- **通用设计规范**：会被多个模块长期遵循的规范（而非单次实现细节）
-
-### 4.3 禁止晋升（避免污染 project）
-
-- 一次性交付过程细节：任务拆分、排期、临时 workaround、单次排障记录
-- 字段级/时序级大段细节：项目层只放“权威入口”，必要细节留在 Spec Pack 或指向 schema / OpenAPI / 代码证据
-- 仅对本次发布窗口有效的执行步骤：项目层写入口与护栏，本次执行细节仍归档在 Spec Pack
+-`{FEATURE_DIR}/implementation/plan.md`(Merge-back to-do and evidence entry)
+-`{FEATURE_DIR}/design/*`(If exists: evidence entry for decision/contract drafting)
+-`{FEATURE_DIR}/release/*`(If exists: runbook/monitoring/rollback)
+-`{FEATURE_DIR}/verification/*`(If existing: reusable verification strategy, quality access control caliber)
 
 ---
 
-## 5. 执行步骤（可照做的 Merge-back 操作手册）
+## 4. “What should be promoted/what should not be promoted”: promotion judgment criteria (written into the core of the process)
 
-> 约定：命令示例默认面向 PowerShell；同一行多命令用 `;` 分隔（不要用 `&&`）。
+For each piece of information in the Spec Pack, judge whether to be promoted to project according to the following questions:
 
-### Step 0：定位上下文并进行前置检查
+- **Cross-requirement reuse**: Will similar requirements still be used/asked repeatedly next time?
+- **Long-term guardrails/external commitments**: Does it constrain callers, data calibers, component boundaries, permission auditing, exponentiation, etc. invariants?
+- **Need to be retrieved and navigated**: Will "quickly locate authoritative portals" be needed in the future to reduce guesswork?
 
-1. 运行 `spec-context`，回显 `FEATURE_DIR=...`。
-2. 检查 project 层是否存在：`.aisdlc/project/`。
-3. 打开 `{FEATURE_DIR}/implementation/plan.md`，定位 `## Merge-back 待办清单`，作为本次“晋升工作清单”的主来源。
+Hit any one: should be promoted to project layer assets (entry + invariant + evidence chain).
 
-若 `.aisdlc/project/` 不存在：标注 `CONTEXT GAP` 并停止（需要先完成 project 层初始化/Discover/骨架搭建）。
+### 4.1 Must be promoted (default)
 
-### Step 1：汇总“晋升清单”（从待办 → 分类）
+Alignment`design/aisdlc.md`:
 
-把 `{FEATURE_DIR}/implementation/plan.md` 中的 Merge-back 待办，按下列类别归档到 `{FEATURE_DIR}/merge_back.md`：
+- **ADR (Key Decision)**: Any critical trade-off must be entered into`.aisdlc/project/adr/`and summarized in the index.
+- **External contract (merged into component page by default)**
+  - API: updated`.aisdlc/project/components/{module}.md#api-contract`- Data: Update`.aisdlc/project/components/{module}.md#data-contract`- **Running Assets**: Runbook/monitoring alarm/rollback policy updated to`.aisdlc/project/ops/`- **NFR Budget and Baseline**: Update if there is an impact on performance/stability/cost/security`.aisdlc/project/nfr.md`- **Registry Status**: Updated`.aisdlc/project/index.md`(Status: Released / Merged, etc.)
+
+### 4.2 Optional promotion (high ROI, but depends on team habits)
+
+- **Reusable testing strategies/access control standards**: such as general regression suite division, quality access control constraints (promoted when multiple requirements are reused)
+- **Universal design specifications**: specifications that will be followed by multiple modules for a long time (not a single implementation detail)
+
+### 4.3 Prohibition of promotion (to avoid contaminating the project)
+
+- Details of one-time delivery process: task splitting, scheduling, temporary workaround, single troubleshooting record
+- Large details at the field level/timing level: only put the "authoritative entry" at the project level, and the necessary details are left in the Spec Pack or pointed to schema / OpenAPI / code evidence
+- Execution steps that are only valid for this release window: project layer writing port and guardrails, this execution details are still archived in Spec Pack
+
+---
+
+## 5. Execution steps (Merge-back operation manual that can be followed)
+
+> Convention: Command examples are for PowerShell by default; multiple commands on the same line are used`;`separated (do not use`&&`).
+
+### Step 0: Locate the context and perform pre-checking
+
+1. Run`spec-context`，Return`FEATURE_DIR=...`.
+2. Check whether the project layer exists:`.aisdlc/project/`.
+3. Open`{FEATURE_DIR}/implementation/plan.md`,position`## Merge-back 待办清单`, as the main source of this "promotion job list".
+
+like`.aisdlc/project/`Does not exist: mark`CONTEXT GAP`and stop (project layer initialization/Discover/skeleton construction needs to be completed first).
+
+### Step 1: Summarize the "Promotion List" (from To-Do → Category)
+
+put`{FEATURE_DIR}/implementation/plan.md`Merge-back to-dos in , filed under the following categories:`{FEATURE_DIR}/merge_back.md`:
 
 - ADR
-- API Contract（按模块）
-- Data Contract（按模块）
-- Ops（runbook / monitoring / rollback）
-- NFR（如适用）
-- Registry（需求状态）
-- 可选晋升（测试策略/门禁口径等）
+- API Contract (by module)
+- Data Contract (by module)
+- Ops (runbook/monitoring/rollback)
+- NFR (if applicable)
+- Registry (requirement status)
+- Optional promotions (testing strategies/access control caliber, etc.)
 
-每条待办至少包含：
+Each to-do item contains at least:
 
-- **晋升目标路径**（project 层落点）
-- **证据入口**（Spec Pack 内证据、仓库内权威证据）
-- **不变量摘要（3–7 条）**（仅当晋升到组件页契约段落时需要）
-- **缺口（如未完成）**：缺什么、候选证据位置、影响
+- **Promotion target path** (project layer landing point)
+- **Evidence Entry** (evidence in Spec Pack, authoritative evidence in warehouse)
+- **Invariant summary (3–7 items)** (only required when promoted to component page contract paragraph)
+- **Gap (if not completed)**: What is missing, location of candidate evidence, impact
 
-### Step 2：ADR 晋升（关键决策）
+### Step 2: ADR promotion (key decision)
 
-对每条 ADR：
+For each ADR:
 
-- 在 `.aisdlc/project/adr/` 新增或更新对应 ADR 文件（编号与命名按项目约定）。
-- 更新 `.aisdlc/project/adr/index.md`，确保可导航。
+- in`.aisdlc/project/adr/`Add or update the corresponding ADR file (the numbering and naming are according to the project agreement).
+- renew`.aisdlc/project/adr/index.md`，确保可导航。
 - 在 `{FEATURE_DIR}/merge_back.md` 中将该项标记为 Done，并附上链接与证据入口（例如：Spec 中的决策段落、相关 commit/PR）。
 
 ### Step 3：API Contract 晋升（按模块更新组件页）

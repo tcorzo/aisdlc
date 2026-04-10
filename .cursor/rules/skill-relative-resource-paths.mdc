@@ -2,30 +2,22 @@
 description: Skills must reference resources via skill-relative paths
 alwaysApply: true
 ---
+# Skill resource path rules (portable)
 
-# 技能资源路径规则（可移植）
+Applicable scenarios: writing or modifying`skills/**/SKILL.md`Match it`assets`/`router`document time.
 
-适用场景：编写或修改 `skills/**/SKILL.md` 与其配套 `assets`/`router` 文档时。
+## Mandatory requirements
 
-## 强制要求
+- When referencing the template/resource path within a skill, the path relative to the skill directory must be used.
+- It is forbidden to write warehouse root path references in skill descriptions (such as`skills/<name>/assets/...`).
+- After the skill is installed into the user project, the path must be directly resolvable and not dependent on the current warehouse structure.
 
-- 技能内部引用模板/资源路径时，必须使用**相对技能目录**的路径。
-- 禁止在技能说明中写仓库根路径式引用（如 `skills/<name>/assets/...`）。
-- 技能安装到使用方项目后，路径必须可直接解析，不依赖当前仓库结构。
+## Recommended writing method
 
-## 推荐写法
+-Same skill directory resources:`assets/<file>.md`- Router subdocument:`router/<file>.md`- Subdirectory resources:`assets/templates/<file>.md`## Prohibited writing
 
-- 同技能目录资源：`assets/<file>.md`
-- Router 子文档：`router/<file>.md`
-- 子目录资源：`assets/templates/<file>.md`
+-`skills/spec-test-plan/assets/test_plan_template.md`
+- `E:/dev/tools/sdlc-dev/skills/...`## Change self-test
 
-## 禁止写法
-
-- `skills/spec-test-plan/assets/test_plan_template.md`
-- `E:/dev/tools/sdlc-dev/skills/...`
-
-## 变更自检
-
-- 检查 `SKILL.md` 中是否仍存在 `skills/` 前缀资源引用。
-- 确认新加模板默认不做语言版本拆分（无需 `_zh`/`_en` 后缀），除非用户明确要求。
-
+- Check`SKILL.md`does it still exist in`skills/`Prefix resource reference.
+- Confirm that newly added templates will not be split into language versions by default (no need to`_zh`/`_en`suffix) unless explicitly requested by the user.

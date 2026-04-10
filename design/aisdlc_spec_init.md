@@ -1,75 +1,71 @@
 ---
-title: Spec 初始化命令设计实现（创建 spec 工作分支和目录）
+title: Spec initialization command design and implementation (create spec working branch and directory)
 status: draft
 audience: [PM, BA, DEV]
 principles_ref: design/aisdlc.md
 ---
+## 0. Background and target (aligned`design/aisdlc.md`)
 
-## 0. 背景与目标（对齐 `design/aisdlc.md`）
+This solution is used to implement the **Spec initialization command**: automatically create the spec working branch and directory structure, ensuring that the "dual-layer SSOT + Spec as Code" principle in the AI SDLC specification is followed.
 
-本方案用于实现 **Spec 初始化命令**：自动化创建 spec 工作分支和目录结构，确保遵循 AI SDLC 规范中的"双层 SSOT + Spec as Code"原则。
+### 0.1 Core Objectives
 
-### 0.1 核心目标
+Through automated processes, quickly create standardized requirements working branches and directory structures to ensure:
 
-通过自动化流程，快速创建规范的需求工作分支和目录结构，确保：
+- **Naming Consistency**: Unified numbering and naming rules
+- **Structural Integrity**: Standard directory structure, compliant with AI SDLC specifications
+- **Traceability**: original requirements remain in`requirements/raw.md`in
+- **Automatic context identification**: Automatically identify the requirement directory through the branch name, no additional parameters are required
 
-- **命名一致性**：统一的编号和命名规则
-- **结构完整性**：标准的目录结构，符合 AI SDLC 规范
-- **可追溯性**：原始需求保留在 `requirements/raw.md` 中
-- **上下文自动识别**：通过分支名称自动识别需求目录，无需额外参数
+### 0.2 Unify output location
 
-### 0.2 统一输出位置
+All output is unified to:`.aisdlc/specs/{num}-{short-name}/`(Requirement level Spec Pack root directory)
 
-所有输出统一到：`.aisdlc/specs/{num}-{short-name}/`（需求级 Spec Pack 根目录）
-
-> 约束：Spec Pack 与需求/设计/实现文档始终位于根项目；即使仓库包含 `git submodule`，submodule 也只作为后续实现阶段的代码工作区，不承载 Spec 文档。
+> Constraint: Spec Pack and requirements/design/implementation documents are always in the root project; even if the repository contains`git submodule`, the submodule is only used as a code workspace for the subsequent implementation phase and does not host Spec documents.
 
 ---
 
-## 1. 为什么采用分支形式？
+## 1. Why use branch form?
 
-### 1.1 分支作为上下文识别机制
+### 1.1 Branching as a context identification mechanism
 
-**核心设计理念**：将 Git 分支作为 Spec 级需求的**上下文标识符**，实现"零参数"上下文获取。
+**Core design concept**: Use Git branches as **context identifier** for Spec-level requirements to achieve "zero parameter" context acquisition.
 
-#### 1.1.1 问题背景
+#### 1.1.1 Problem background
 
-在 AI SDLC 流程中，每个需求都有独立的 Spec Pack，包含多个阶段的文档（requirements、design、implementation 等）。当执行 spec 级辅助命令时（如需求分析、方案设计、代码实现等），需要明确知道：
+In the AI SDLC process, each requirement has an independent Spec Pack, which contains documents for multiple stages (requirements, design, implementation, etc.). When executing spec-level auxiliary commands (such as requirements analysis, solution design, code implementation, etc.), you need to know clearly:
 
-- **当前处理哪个需求？**
-- **该需求的 Spec Pack 目录在哪里？**
-- **如何自动加载该需求的上下文信息？**
+- **Which requirement is currently being processed? **
+- **Where is the Spec Pack directory for this requirement? **
+- **How to automatically load the contextual information of this requirement? **
 
-#### 1.1.2 分支设计的优势
+#### 1.1.2 Advantages of branch design
 
-**1. 自动上下文识别**
+**1. Automatic context recognition**
 
-- Git 分支名称 `{num}-{short-name}` 直接映射到 Spec 目录 `.aisdlc/specs/{num}-{short-name}/`
-- 通过 `git branch --show-current` 即可获取当前分支名称
-- 无需用户手动指定需求 ID 或目录路径
+- Git branch name`{num}-{short-name}`Maps directly to the Spec directory`.aisdlc/specs/{num}-{short-name}/`- pass`git branch --show-current`You can get the current branch name
+- No need for users to manually specify requirement IDs or directory paths
 
-**2. 工作空间隔离**
+**2. Workspace Isolation**
 
-- 每个需求在独立分支中工作，避免不同需求的文档和代码相互干扰
-- 符合 Git Flow 最佳实践，便于代码审查和合并管理
-- 支持并行开发多个需求，互不冲突
-- 若后续实现涉及 submodule，子仓原则上应使用与根项目一致的同名 Spec 分支，但这些子仓分支不在 `spec-init` 阶段批量创建
+- Work on each requirement in an independent branch to avoid documents and codes with different requirements from interfering with each other
+- Comply with Git Flow best practices for easy code review and merge management
+- Supports parallel development of multiple requirements without conflicting with each other
+- If the subsequent implementation involves submodules, the sub-repository should in principle use the Spec branch with the same name as the root project, but these sub-repository branches are not`spec-init`Stage batch creation
 
-**3. 版本控制与追溯**
+**3. Version control and traceability**
 
-- 分支的提交历史完整记录需求的演进过程
-- 每个阶段的文档变更都有独立的提交记录
-- 便于回滚和问题排查
+- The commit history of the branch completely records the evolution of requirements
+- Document changes at each stage have independent submission records
+- Facilitates rollback and troubleshooting
 
-**4. 渐进式披露支持**
+**4. Progressive disclosure support**
 
-- 当 Agent 检测到当前在某个 spec 分支时，自动加载该需求的 Spec Pack
-- 无需在每次对话中重复指定需求上下文
-- 符合 `design/aisdlc.md` 中的"渐进式披露"原则
+- When the Agent detects that it is currently in a certain spec branch, it automatically loads the Spec Pack for that requirement.
+- No need to specify the requirements context repeatedly in every conversation
+- conform to`design/aisdlc.md`"Progressive Disclosure" Principle in
 
-#### 1.1.3 上下文获取流程
-
-```
+#### 1.1.3 Context acquisition process```
 用户执行 spec 级辅助命令
     ↓
 检测当前 Git 分支名称（如：001-user-auth）
@@ -81,239 +77,218 @@ principles_ref: design/aisdlc.md
 加载该需求的上下文信息（requirements/*、design/* 等）
     ↓
 执行命令，无需用户额外提供需求信息
-```
+```### 1.2 Branch naming convention
 
-### 1.2 分支命名规范
+**Format**:`{num}-{short-name}`
 
-**格式**：`{num}-{short-name}`
+- **`{num}`**: three-digit number (such as`001`、`002`), used to uniquely identify and sort
+- **`{short-name}`**: A short name of 2-4 words (kebab-case), describing the required core functions
 
-- **`{num}`**：三位数字编号（如 `001`、`002`），用于唯一标识和排序
-- **`{short-name}`**：2-4 个单词的短名称（kebab-case），描述需求核心功能
-
-**示例**：
-- `001-user-auth`：用户认证需求
-- `002-payment-integration`：支付集成需求
-- `003-analytics-dashboard`：分析仪表板需求
+**Example**:
+-`001-user-auth`: User authentication requirements
+-`002-payment-integration`: Payment integration requirements
+-`003-analytics-dashboard`: Analyze dashboard requirements
 
 ---
 
-## 2. 功能概览
+## 2. Function Overview
 
-此命令用于自动化创建 spec 工作分支和目录结构：
+This command is used to automate the creation of the spec working branch and directory structure:
 
-- 分析原始需求，提取关键词生成 2-4 个单词的短名称（kebab-case）
-- 从远程分支、本地分支和 `.aisdlc/specs` 目录中查找最大编号
-- 创建新分支 `{num}-{short-name}`
-- 创建完整的 spec 目录结构
-- 将原始需求写入 `requirements/raw.md`，并删除原始文件（如有）
+- Analyze the original requirements, extract keywords and generate a short name of 2-4 words (kebab-case)
+- From remote branches, local branches and`.aisdlc/specs`Find the highest number in a directory
+- Create new branch`{num}-{short-name}`- Create a complete spec directory structure
+- Write original requirements`requirements/raw.md`, and delete the original file (if any)
 
 ---
 
-## 3. 执行流程
+## 3. Execution process
 
-### 3.1 第 0 步：预检
+### 3.1 Step 0: Preflight
 
-在执行主流程前，进行以下预检：
+Before executing the main process, perform the following pre-checks:
 
-- 确认当前在 Git 仓库根目录
-- 检查 `.aisdlc/specs` 目录是否存在（不存在则创建）
-- 验证 Git 仓库状态正常
+- Confirm that you are currently in the Git repository root directory
+- Check`.aisdlc/specs`Whether the directory exists (create it if it does not exist)
+- Verify that the Git repository status is normal
 
-**目的**：确保环境就绪，避免后续操作失败。
+**Purpose**: Ensure that the environment is ready to avoid failure of subsequent operations.
 
-### 3.2 第 1 步：解析输入
+### 3.2 Step 1: Parse the input
 
-**输入来源**：
-- **文件路径**：如果输入包含文件路径且文件存在，读取文件内容作为原始需求
-- **原始需求文本**：如果输入不是文件路径，直接作为原始需求文本处理
-- **空输入**：如果输入为空，提示用户输入原始需求
+**Input source**:
+- **File Path**: If the input contains a file path and the file exists, read the file content as the original requirement
+- **Original requirement text**: If the input is not a file path, it will be processed directly as the original requirement text.
+- **Empty Input**: If the input is empty, prompt the user to enter the original requirement
 
-**输出**：原始需求文本内容
+**Output**: Original requirement text content
 
-### 3.3 第 1.5 步：确定需求文件路径
+### 3.3 Step 1.5: Determine the requirements file path
 
-为了避免中文内容在参数传递时出现编码问题，统一使用文件路径传递需求内容：
+In order to avoid encoding problems in Chinese content when passing parameters, the file path is uniformly used to pass the required content:
 
-- **如果原始需求来自文件**：直接使用原始文件路径
-- **如果原始需求是文本输入**：创建临时文件保存需求内容（UTF-8 with BOM 编码），使用临时文件路径
+- **If the original requirement comes from a file**: use the original file path directly
+- **If the original requirement is text input**: Create a temporary file to save the requirement content (UTF-8 with BOM encoding), use the temporary file path
 
-**输出**：
-- 需求文件路径（原始文件路径或临时文件路径）
-- 是否为临时文件的标记（用于后续清理）
+**Output**:
+- Requirement file path (original file path or temporary file path)
+- Whether it is a mark of temporary files (for subsequent cleanup)
 
-### 3.4 第 2 步：生成短名称
+### 3.4 Step 2: Generate short name
 
-使用 AI 分析原始需求内容，生成短名称：
+Use AI to analyze the original requirement content and generate a short name:
 
-**生成规则**：
-- 分析功能描述并提取最有意义的关键词
-- 创建 2-4 个单词的短名称
-- 优先使用"动词-名词"格式（如 `add-user-auth`、`fix-payment-bug`）
-- 保留技术术语和缩略词（OAuth2、API、JWT 等）
-- 转换为 kebab-case（小写，单词间用连字符）
+**Generation Rules**:
+- Analyze function descriptions and extract the most meaningful keywords
+- Create short names of 2-4 words
+- Prefer the "verb-noun" format (e.g.`add-user-auth`、`fix-payment-bug`)
+- Preserve technical terms and acronyms (OAuth2, API, JWT, etc.)
+- Convert to kebab-case (lowercase, hyphen between words)
 
-**生成示例**：
-- "I want to add user authentication" → `user-auth`
+**Generate Example**:
+- "I want to add user authentication" →`user-auth`
 - "Implement OAuth2 integration for the API" → `oauth2-api-integration`
 - "Create a dashboard for analytics" → `analytics-dashboard`
-- "Fix payment processing timeout bug" → `fix-payment-timeout`
+- "Fix payment processing timeout bug" → `fix-payment-timeout`**Output**: short name (kebab-case format, 2-4 words)
 
-**输出**：短名称（kebab-case 格式，2-4 个单词）
+### 3.5 Step 3: Call the PowerShell script to execute the complete process
 
-### 3.5 第 3 步：调用 PowerShell 脚本执行完整流程
+Call a PowerShell script`skills/spec-init/scripts/spec-create-branch.ps1`of`Main`function, passing the following parameters:
 
-调用 PowerShell 脚本 `skills/spec-init/scripts/spec-create-branch.ps1` 的 `Main` 函数，传递以下参数：
+- **`ShortName`** (required): short name generated in step 2
+- **`SourceFilePath`**(Required): Requirements file path determined in step 1.5
+- **`Title`**(optional): Title of the requirement
 
-- **`ShortName`**（必需）：第 2 步生成的短名称
-- **`SourceFilePath`**（必需）：第 1.5 步确定的需求文件路径
-- **`Title`**（可选）：需求的标题
+The script performs the following operations in sequence:
 
-脚本会按顺序执行以下操作：
+#### 3.5.1 Find the maximum number
 
-#### 3.5.1 查找最大编号
+Find the maximum number from three sources:
+- **remote branch**: execute`git fetch --all --prune`Get all remote branches that match`{num}-{short-name}`Format
+- **Local branch**: Matches in the local branch`{num}-{short-name}`Format
+- **`.aisdlc/specs`Directory**: matches in the directory`{num}-{short-name}`Format
 
-从三个来源查找最大编号：
-- **远程分支**：执行 `git fetch --all --prune` 获取所有远程分支，匹配 `{num}-{short-name}` 格式
-- **本地分支**：匹配本地分支中的 `{num}-{short-name}` 格式
-- **`.aisdlc/specs` 目录**：匹配目录中的 `{num}-{short-name}` 格式
+Find the maximum number N, using N+1 as the new number (formatted as three digits, e.g.`001`、`002`).
 
-找到最大编号 N，使用 N+1 作为新编号（格式化为三位数字，如 `001`、`002`）。
+**Number search rules**:
+- Branch format:`{num}-{short-name}`,in`{num}`is 1-3 digits
+- Directory format:`.aisdlc/specs/{num}-{short-name}/`- Use regular expressions to match and extract numbers
 
-**编号查找规则**：
-- 分支格式：`{num}-{short-name}`，其中 `{num}` 为 1-3 位数字
-- 目录格式：`.aisdlc/specs/{num}-{short-name}/`
-- 使用正则表达式匹配并提取编号
+#### 3.5.2 Create branch
 
-#### 3.5.2 创建分支
+- Execute`git checkout -b {num}-{short-name}`Create and switch branches
+- Verify that the branch is created successfully
+- If the branch already exists, throw an error and stop execution
 
-- 执行 `git checkout -b {num}-{short-name}` 创建并切换分支
-- 验证分支创建成功
-- 如果分支已存在，抛出错误并停止执行
+#### 3.5.3 Create directory structure
 
-#### 3.5.3 创建目录结构
-
-- 创建 `.aisdlc/specs/{num}-{short-name}/` 主目录
-- 创建以下子目录：
-  - `requirements/`
+- Create`.aisdlc/specs/{num}-{short-name}/`Home directory
+- Create the following subdirectories:
+  -`requirements/`
   - `design/`
   - `implementation/`
   - `verification/`
-  - `release/`
-- 如果目录已存在，抛出错误并停止执行
+  - `release/`- If the directory already exists, throw an error and stop execution
 
-#### 3.5.4 写入原始需求
+#### 3.5.4 Write original requirements
 
-- 从文件读取原始需求内容（UTF-8 with BOM 编码）
-- 将内容写入 `requirements/raw.md`（UTF-8 with BOM 编码）
+- Read original requirement content from file (UTF-8 with BOM encoding)
+- write content`requirements/raw.md`(UTF-8 with BOM encoding)
 
-#### 3.5.5 删除原始文件
+#### 3.5.5 Delete original files
 
-- 删除源文件（原始文件或临时文件）
+- Delete source files (original or temporary files)
 
-**脚本返回值**：包含以下信息的哈希表
-- `number`：三位数字格式的编号
-- `shortName`：短名称
-- `branchName`：完整分支名称
-- `specDir`：Spec 目录路径
-- `title`：标题（如果提供）
+**Script return value**: A hash table containing the following information
+-`number`: Number in three-digit format
+-`shortName`:short name
+-`branchName`:Full branch name
+-`specDir`:Spec directory path
+-`title`:title (if provided)
 
 ---
 
-## 4. 上下文自动识别机制
+## 4. Automatic context recognition mechanism
 
-### 4.1 分支到目录的映射
+### 4.1 Branch to directory mapping
 
-**映射规则**：分支名称 `{num}-{short-name}` → 目录路径 `.aisdlc/specs/{num}-{short-name}/`
+**Mapping Rules**: Branch Name`{num}-{short-name}`→ directory path`.aisdlc/specs/{num}-{short-name}/`**Example**:
+- branch`001-user-auth`→ Table of Contents`.aisdlc/specs/001-user-auth/`- branch`002-payment-integration`→ Table of Contents`.aisdlc/specs/002-payment-integration/`### 4.2 Context acquisition of subsequent commands
 
-**示例**：
-- 分支 `001-user-auth` → 目录 `.aisdlc/specs/001-user-auth/`
-- 分支 `002-payment-integration` → 目录 `.aisdlc/specs/002-payment-integration/`
+When executing spec-level auxiliary commands (such as requirements analysis, solution design, etc.), the context is automatically obtained in the following ways:
 
-### 4.2 后续命令的上下文获取
+1. **Get the current branch name**:`git branch --show-current`2. **Resolve branch names**: Extract numbers and short names
+3. **Locate the Spec directory**:`.aisdlc/specs/{num}-{short-name}/`4. **Load context information**:
+   - read`requirements/raw.md`(original requirement)
+   - read`requirements/prd.md`(if present)
+   - read`design/design.md`(if present)
+   - Read other related documents
 
-当执行 spec 级辅助命令时（如需求分析、方案设计等），通过以下方式自动获取上下文：
+**Advantages**:
+- Users do not need to manually specify requirement IDs or directory paths
+- Reduce typing errors and contextual confusion
+- Improve the efficiency and accuracy of command execution
 
-1. **获取当前分支名称**：`git branch --show-current`
-2. **解析分支名称**：提取编号和短名称
-3. **定位 Spec 目录**：`.aisdlc/specs/{num}-{short-name}/`
-4. **加载上下文信息**：
-   - 读取 `requirements/raw.md`（原始需求）
-   - 读取 `requirements/prd.md`（如果存在）
-   - 读取 `design/design.md`（如果存在）
-   - 读取其他相关文档
+### 4.3 Usage scenarios of contextual information
 
-**优势**：
-- 用户无需手动指定需求 ID 或目录路径
-- 减少输入错误和上下文混淆
-- 提高命令执行的效率和准确性
+**Scenario 1: Requirements Analysis Command**
+- automatic reading`requirements/raw.md`- Analyze based on original requirements and generate PRD, use cases and other documents
+- No need for users to provide required content again
 
-### 4.3 上下文信息的使用场景
+**Scenario 2: Scheme design command**
+- automatic reading`requirements/prd.md`and related requirements documents
+- Design and generate solutions based on needs`design/design.md`- Automatically associate requirement context
 
-**场景 1：需求分析命令**
-- 自动读取 `requirements/raw.md`
-- 基于原始需求进行分析，生成 PRD、用例等文档
-- 无需用户再次提供需求内容
+**Scenario 3: Code to implement commands**
+- automatic reading`design/design.md`and requirements documentation
+- Code implementation based on design plan
+- Ensure implementation is consistent with requirements and design
 
-**场景 2：方案设计命令**
-- 自动读取 `requirements/prd.md` 和相关需求文档
-- 基于需求进行方案设计，生成 `design/design.md`
-- 自动关联需求上下文
+### 4.4 Standardized process for obtaining context information
 
-**场景 3：代码实现命令**
-- 自动读取 `design/design.md` 和需求文档
-- 基于设计方案进行代码实现
-- 确保实现与需求、设计一致
+In order to ensure that all spec-level commands can correctly obtain context information, a standardized context information acquisition process needs to be established.
 
-### 4.4 上下文信息获取的标准化流程
+#### 4.4.1 Standardization requirements
 
-为了确保所有 spec 级命令能够正确获取上下文信息，需要建立标准化的上下文信息获取流程。
+**Core Principle**: Before all subsequent spec-level commands are executed, context information related to the current spec must be obtained through a script.
 
-#### 4.4.1 标准化要求
+**Purpose**:
+- Ensure that the command can accurately locate the currently required workspace
+- Avoid hardcoding paths and branch names
+- Unify the method of obtaining context information to improve maintainability
+- Support correct execution in different environments (different developers, different machines)
 
-**核心原则**：所有后续的 spec 级命令在执行前，都必须先通过脚本获取当前 spec 相关的上下文信息。
+#### 4.4.2 Required basic information
 
-**目的**：
-- 确保命令能够准确定位当前需求的工作空间
-- 避免硬编码路径和分支名称
-- 统一上下文信息获取方式，提高可维护性
-- 支持在不同环境下正确执行（不同开发者、不同机器）
-
-#### 4.4.2 必需的基础信息
-
-所有 spec 级命令都需要获取以下基础信息：
+All spec-level commands require the following basic information:
 
 **1. REPO_ROOT**
-- **含义**：Git 仓库的根目录路径
-- **用途**：作为所有相对路径的基准，确保文件操作在正确的仓库范围内
-- **获取方式**：通过 Git 命令或脚本自动检测当前工作目录的 Git 根目录
+- **Meaning**: The root directory path of the Git repository
+- **Purpose**: Used as a baseline for all relative paths to ensure that file operations are within the correct warehouse scope
+- **Getting method**: Automatically detect the Git root directory of the current working directory through Git commands or scripts
 
-**2. CURRENT_BRANCH**
-- **含义**：当前 Git 分支名称（格式：`{num}-{short-name}`）
-- **用途**：
-  - 作为需求上下文的标识符
-  - 用于定位对应的 Spec 目录
-  - 验证当前是否在正确的 spec 分支上
-- **获取方式**：通过 `git branch --show-current` 获取
+**2.CURRENT_BRANCH**
+- **Meaning**: Current Git branch name (format:`{num}-{short-name}`)
+- **Use**:
+  - as an identifier of the requirement context
+  - Used to locate the corresponding Spec directory
+  - Verify you are on the correct spec branch
+- **Acquisition method**: Pass`git branch --show-current`Get
 
-**3. FEATURE_DIR**
-- **含义**：当前需求的 Spec Pack 根目录路径（格式：`.aisdlc/specs/{num}-{short-name}/`）
-- **用途**：
-  - 作为所有 spec 文档的根目录
-  - 用于读取和写入需求、设计、实现等阶段的文档
-  - 确保文件操作在正确的需求目录下进行
-- **获取方式**：基于 `CURRENT_BRANCH` 自动构建路径：`{REPO_ROOT}/.aisdlc/specs/{CURRENT_BRANCH}/`
+**3.FEATURE_DIR**
+- **Meaning**: The current required Spec Pack root directory path (format:`.aisdlc/specs/{num}-{short-name}/`)
+- **Use**:
+  - serves as the root directory for all spec documents
+  - Used to read and write documents in requirements, design, implementation and other stages
+  - Ensure that file operations are performed in the correct required directory
+- **Acquisition method**: Based on`CURRENT_BRANCH`Automatic build path:`{REPO_ROOT}/.aisdlc/specs/{CURRENT_BRANCH}/`**Additional note: submodule does not change the parsing rules of FEATURE_DIR**
 
-**补充说明：submodule 不改变 FEATURE_DIR 的解析规则**
+-`.gitmodules`It is only used in the subsequent implementation phase to identify "which sub-repositories can participate in code modification"
+- Even if the command is triggered from the submodule directory, it should trace back to the root project and resolve the same`FEATURE_DIR`- Do not allow separate mapping of new Spec directories based on submodule branches
 
-- `.gitmodules` 仅用于后续实现阶段识别“有哪些子仓可参与代码修改”
-- 即使命令从 submodule 目录触发，也应回溯到根项目并解析同一个 `FEATURE_DIR`
-- 不允许根据 submodule 分支单独映射新的 Spec 目录
+#### 4.4.3 Context information acquisition process
 
-#### 4.4.3 上下文信息获取流程
-
-**标准执行流程**：
-
-```
+**Standard execution process**:```
 执行 spec 级命令
     ↓
 调用上下文信息获取脚本/函数
@@ -331,151 +306,141 @@ principles_ref: design/aisdlc.md
 返回上下文信息（REPO_ROOT、CURRENT_BRANCH、FEATURE_DIR）
     ↓
 使用上下文信息执行命令逻辑
-```
+```#### 4.4.4 Verification and error handling
 
-#### 4.4.4 验证与错误处理
+**Validation Rules**:
 
-**验证规则**：
+1. **REPO_ROOT verification**
+   - must exist`.git`Directory
+   - must exist`.aisdlc/specs`directory (may need to be initialized if it does not exist)
 
-1. **REPO_ROOT 验证**
-   - 必须存在 `.git` 目录
-   - 必须存在 `.aisdlc/specs` 目录（如果不存在，可能需要初始化）
+2. **CURRENT_BRANCH Verification**
+   - Branch names must conform to the format:`{num}-{short-name}`- The number part must be 1-3 digits
+   - The short name part must be kebab-case (lowercase letters, numbers, hyphens)
 
-2. **CURRENT_BRANCH 验证**
-   - 分支名称必须符合格式：`{num}-{short-name}`
-   - 编号部分必须是 1-3 位数字
-   - 短名称部分必须是 kebab-case（小写字母、数字、连字符）
+3. **FEATURE_DIR Verification**
+   - Directory must exist
+   - The directory structure must be complete (including`requirements/`、`design/`subdirectories)
 
-3. **FEATURE_DIR 验证**
-   - 目录必须存在
-   - 目录结构必须完整（包含 `requirements/`、`design/` 等子目录）
+**Error handling**:
 
-**错误处理**：
+- If not currently in the Git repository: prompt the user to switch to the correct repository directory
+- If the current branch does not comply with the specification: prompt the user to switch to the correct spec branch
+- If FEATURE_DIR does not exist: prompt the user to execute first`spec-init`Command to create spec branch and directory
 
-- 如果当前不在 Git 仓库中：提示用户切换到正确的仓库目录
-- 如果当前分支不符合规范：提示用户切换到正确的 spec 分支
-- 如果 FEATURE_DIR 不存在：提示用户先执行 `spec-init` 命令创建 spec 分支和目录
+#### 4.4.5 Implementation method
 
-#### 4.4.5 实现方式
+**Script/Function Design**:
 
-**脚本/函数设计**：
+- Create a general context information acquisition function (such as`Get-SpecContext`)
+- This function can be called by all spec-level commands
+- Returns a standardized context information object (containing`REPO_ROOT`、`CURRENT_BRANCH`、`FEATURE_DIR`fields)
+- If the warehouse exists`.gitmodules`, can additionally return a submodule status snapshot for the implementation phase to verify branch consistency and workspace status.
 
-- 创建一个通用的上下文信息获取函数（如 `Get-SpecContext`）
-- 该函数可以被所有 spec 级命令调用
-- 返回标准化的上下文信息对象（包含 `REPO_ROOT`、`CURRENT_BRANCH`、`FEATURE_DIR` 等字段）
-- 若仓库存在 `.gitmodules`，可额外返回 submodule 状态快照，供实现阶段校验分支一致性与工作区状态
+**Calling Convention**:
 
-**调用约定**：
+- All spec-level commands must first call the context information acquisition function before executing the main logic.
+- If acquisition fails, the command should terminate immediately with an error
+- After successful acquisition, use the returned context information for subsequent operations
 
-- 所有 spec 级命令在执行主逻辑前，必须先调用上下文信息获取函数
-- 如果获取失败，命令应立即终止并提示错误
-- 获取成功后，使用返回的上下文信息进行后续操作
+#### 4.4.6 Advantages
 
-#### 4.4.6 优势
+By standardizing the context information acquisition process, we achieve:
 
-通过标准化上下文信息获取流程，实现：
-
-- **一致性**：所有命令使用相同的方式获取上下文，减少重复代码
-- **可靠性**：统一的验证机制确保上下文信息正确
-- **可维护性**：上下文获取逻辑集中管理，便于修改和优化
-- **可扩展性**：未来可以轻松添加新的上下文信息字段（如 `SPEC_NUMBER`、`SHORT_NAME` 等）
+- **Consistency**: All commands use the same way to obtain context, reducing duplicate code
+- **Reliability**: A unified verification mechanism ensures that the context information is correct
+- **Maintainability**: Context acquisition logic is centrally managed for easy modification and optimization
+- **Extensibility**: New contextual information fields can be easily added in the future (e.g.`SPEC_NUMBER`、`SHORT_NAME`etc.)
 
 ---
 
-## 5. 完成标准（DoD：用于自检）
+## 5. Completion standards (DoD: for self-test)
 
-- [ ] 短名称已生成，符合命名规范（2-4 个单词，kebab-case，优先动词-名词格式）
-- [ ] 需求文件路径已确定（原始文件路径或临时文件路径，UTF-8 with BOM 编码）
-- [ ] PowerShell 脚本已成功调用，传递了正确的参数
-- [ ] 源文件已在脚本执行完成后自动删除
-- [ ] 脚本返回了结果哈希表，包含 `number`、`shortName`、`branchName`、`specDir`、`title` 字段
-- [ ] 编号已正确查找（从远程分支、本地分支、specs 目录三个来源），并格式化为三位数字
-- [ ] Git 分支 `{num}-{short-name}` 已创建并切换成功
-- [ ] 目录结构 `.aisdlc/specs/{num}-{short-name}/` 已创建，包含所有必需子目录
-- [ ] `requirements/raw.md` 已创建，包含原始需求内容，使用 UTF-8 with BOM 编码
-- [ ] 分支名称与目录路径映射正确，可通过分支名称自动定位 Spec 目录
-
----
-
-## 6. 错误处理
-
-### 6.1 短名称冲突
-
-如果短名称已存在且编号冲突，提示用户确认或修改短名称。
-
-### 6.2 Git 操作失败
-
-如果 Git 操作失败（如分支已存在），提示错误并停止执行。
-
-### 6.2.1 Submodule 分支创建时机
-
-- `spec-init` 只负责根项目 Spec 分支与 Spec Pack 目录的初始化
-- 若后续需求会修改 submodule，应由实现计划在 `I1 -> I2` 之间根据 `impact-analysis` 明确受影响子仓
-- 进入 I2 前，再为 `required` 子仓创建并校验与根项目一致的同名 Spec 分支
-
-### 6.3 目录已存在
-
-如果目录已存在，提示用户确认覆盖或使用不同编号。
-
-### 6.4 文件读取失败
-
-如果指定的文件路径不存在或无法读取，提示错误。
+- [ ] Short name has been generated, conforming to naming convention (2-4 words, kebab-case, priority verb-noun format)
+- [ ] The required file path has been determined (original file path or temporary file path, UTF-8 with BOM encoding)
+- [ ] The PowerShell script was called successfully, passing the correct parameters
+- [ ] The source file has been automatically deleted after the script execution is completed.
+- [ ] The script returns a resulting hash table containing`number`、`shortName`、`branchName`、`specDir`、`title`Field
+- [ ] numbers have been correctly looked up (from three sources: remote branch, local branch, specs directory) and formatted as three digits
+- [ ] Git branch`{num}-{short-name}`Created and switched successfully
+- [ ] directory structure`.aisdlc/specs/{num}-{short-name}/`Created with all required subdirectories
+- [ ]`requirements/raw.md`Created, contains original requirement content, encoded using UTF-8 with BOM
+- [ ] The branch name and directory path are mapped correctly, and the Spec directory can be automatically located through the branch name.
 
 ---
 
-## 7. 后续命令（下一步做什么）
+## 6. Error handling
 
-当 spec 分支和目录创建完成后，可以：
+### 6.1 Short name conflict
 
-- 开始编写需求文档：编辑 `.aisdlc/specs/{num}-{short-name}/requirements/prd.md`
-- 进行需求分析：编辑 `.aisdlc/specs/{num}-{short-name}/requirements/usecase.md`
-- 开始方案设计：编辑 `.aisdlc/specs/{num}-{short-name}/design/design.md`
+If the short name already exists and the number conflicts, the user is prompted to confirm or modify the short name.
 
-**重要**：后续所有 spec 级辅助命令都可以通过当前分支名称自动识别需求上下文，无需额外提供需求信息。
+### 6.2 Git operation failed
 
-> 最短路径（小需求）：完成本命令（创建分支和目录）→ `spec-design-solution`（小需求直达 D2，基于 `requirements/raw.md`）→ 执行
+If the Git operation fails (for example, the branch already exists), an error is displayed and execution stops.
+
+### 6.2.1 Submodule branch creation timing
+
+-`spec-init`Only responsible for the initialization of the Spec branch and Spec Pack directory of the root project
+- If subsequent requirements will modify the submodule, the implementation plan should be`I1 -> I2`between based on`impact-analysis`Clearly identify the affected sub-warehouses
+- Before entering I2, again`required`The sub-repository creates and verifies the Spec branch with the same name as the root project
+
+### 6.3 Directory already exists
+
+If the directory already exists, prompt the user to confirm overwriting or use a different number.
+
+### 6.4 File reading failed
+
+If the specified file path does not exist or cannot be read, an error will be prompted.
 
 ---
 
-## 8. 操作约束
+## 7. Subsequent commands (what to do next)
 
-- **非破坏性**：不会覆盖已存在的分支或目录（除非用户明确确认）
-- **编号自动递增**：自动查找最大编号并递增
-- **短名称生成**：使用 AI 分析需求内容，生成符合规范的短名称
-- **编码统一**：所有文件操作使用 UTF-8 with BOM 编码，确保中文内容正确处理
-- **分支与目录一致性**：分支名称与目录路径必须保持一致，确保上下文自动识别机制正常工作
-- **子仓不承载 Spec 文档**：`.gitmodules` 与 submodule 只在实现阶段参与，不能替代根项目 `.aisdlc/specs/...`
+After the spec branch and directory are created, you can:
+
+- Start writing requirements document: Edit`.aisdlc/specs/{num}-{short-name}/requirements/prd.md`- Conduct needs analysis: Edit`.aisdlc/specs/{num}-{short-name}/requirements/usecase.md`- Start schematic design: Edit`.aisdlc/specs/{num}-{short-name}/design/design.md`**Important**: All subsequent spec-level auxiliary commands can automatically identify the requirement context through the current branch name, without providing additional requirement information.
+
+> Shortest path (minor requirement): Complete this command (create branches and directories) →`spec-design-solution`(Small requirements go directly to D2, based on`requirements/raw.md`) → execute
 
 ---
 
-## 9. 设计要点总结
+## 8. Operational constraints
 
-### 9.1 分支作为上下文标识符
+- **Non-destructive**: Will not overwrite existing branches or directories (unless explicitly confirmed by the user)
+- **Number auto-increment**: Automatically find the maximum number and increment it
+- **Short name generation**: Use AI to analyze demand content and generate short names that comply with specifications
+- **Unified encoding**: All file operations use UTF-8 with BOM encoding to ensure that Chinese content is processed correctly
+- **Branch and directory consistency**: The branch name and directory path must be consistent to ensure that the automatic context recognition mechanism works properly.
+- **The sub-warehouse does not carry Spec documents**:`.gitmodules`Submodule only participates in the implementation phase and cannot replace the root project.`.aisdlc/specs/...`---
 
-- **核心价值**：通过分支名称自动识别需求上下文，实现"零参数"上下文获取
-- **映射关系**：分支名称 `{num}-{short-name}` → Spec 目录 `.aisdlc/specs/{num}-{short-name}/`
-- **使用场景**：所有 spec 级辅助命令都可以通过当前分支自动获取需求上下文
+## 9. Summary of design points
 
-### 9.2 工作空间隔离
+### 9.1 Branch as context identifier
 
-- 每个需求在独立分支中工作，避免相互干扰
-- 支持并行开发多个需求
-- 符合 Git Flow 最佳实践
+- **Core Value**: Automatically identify the requirement context through branch names and achieve "zero parameter" context acquisition
+- **Mapping**: branch name`{num}-{short-name}`→Spec Catalog`.aisdlc/specs/{num}-{short-name}/`- **Usage scenario**: All spec-level auxiliary commands can automatically obtain the requirement context through the current branch
 
-### 9.3 版本控制与追溯
+### 9.2 Workspace isolation
 
-- 分支的提交历史完整记录需求的演进过程
-- 每个阶段的文档变更都有独立的提交记录
-- 便于回滚和问题排查
+- Work on each requirement in an independent branch to avoid mutual interference
+- Supports parallel development of multiple requirements
+- Comply with Git Flow best practices
 
-### 9.4 渐进式披露支持
+### 9.3 Version Control and Traceability
 
-- 当 Agent 检测到当前在某个 spec 分支时，自动加载该需求的 Spec Pack
-- 无需在每次对话中重复指定需求上下文
-- 符合 AI SDLC 规范中的"渐进式披露"原则
+- The commit history of the branch completely records the evolution of requirements
+- Document changes at each stage have independent submission records
+- Facilitates rollback and troubleshooting
 
-### 9.5 与 Submodule 的职责边界
+### 9.4 Progressive Disclosure Support
 
-- 根项目分支是 Spec 身份与 `FEATURE_DIR` 的唯一锚点
-- `.gitmodules` 只提供 submodule 的静态事实（路径/远程）
-- 子仓原则上使用与根项目一致的同名 Spec 分支，但创建与校验发生在实现阶段，不在 `spec-init` 阶段批量处理
+- When the Agent detects that it is currently in a certain spec branch, it automatically loads the Spec Pack for that requirement.
+- No need to specify the requirements context repeatedly in every conversation
+- Comply with the "Progressive Disclosure" principle in the AI SDLC specification
+
+### 9.5 Responsibility boundaries with Submodule
+
+- The root project branch is Spec identity with`FEATURE_DIR`the only anchor point
+-`.gitmodules`Provide only static facts for submodule (path/remote)
+- In principle, the sub-repository uses the Spec branch with the same name as the root project, but the creation and verification occur during the implementation phase, not`spec-init`stage batch processing
